@@ -120,7 +120,6 @@
 #include "ccp4_parser.h"
 #include "ccp4_errno.h"
 #include "ccp4_sysdep.h"
-static char rcsid[] = "$Id$";
 
 /* stuff for error reporting */
 #define CPARSER_ERRNO(n) (CCP4_ERR_PARS | (n))

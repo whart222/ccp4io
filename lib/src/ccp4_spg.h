@@ -55,7 +55,6 @@
 
 #ifndef __CCP4_SPG__
 #define __CCP4_SPG__
-static char rcsidhsp[] = "$Id$";
 
 #ifdef  __cplusplus
 namespace CSym {

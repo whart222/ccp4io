@@ -129,7 +129,6 @@ See examples on <a href="ftp://ftp.ccp4.ac.uk/pub/mdw/cmtz">ftp area</a>
 #ifndef __CMTZLib__
 #define __CMTZLib__
 
-static char rcsidhm[100] = "$Id$";
 
 /* defines CCP4::CCP4File */
 #include "ccp4_utils.h"

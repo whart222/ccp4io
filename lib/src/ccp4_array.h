@@ -99,7 +99,6 @@ extern "C" {
 
 #include <stdlib.h>
 #include <string.h>
-static char rcsidha[] = "$Id$";
 
 /*! constant pointer type */
 typedef const void *ccp4_constptr;

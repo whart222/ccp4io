@@ -56,7 +56,6 @@
 #include "library_file.h"
 #include "ccp4_errno.h"
 #include "ccp4_file_err.h"
-static char rcsid[] = "$Id$";
                                                         
 static uint16 nativeIT = NATIVEIT; /* machine integer type */ 
 static uint16 nativeFT = NATIVEFT; /* machine float type */

@@ -51,7 +51,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "ccp4_errno.h"
-static char rcsid[] = "$Id$";
 
 /** @global ccp4_errno: global to store data 
 */

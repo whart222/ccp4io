@@ -125,7 +125,6 @@ used.
 #ifndef __CSymLib__
 #define __CSymLib__
 
-static char rcsidhs[] = "$Id$";
 
 /* note that definitions in ccp4_spg.h are within the CSym namespace */
 #include "ccp4_spg.h"

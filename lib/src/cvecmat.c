@@ -48,7 +48,6 @@
  */
 
 #include "cvecmat.h"
-static char rcsid[] = "$Id$";
 
 /*  c = a X b  */
 
