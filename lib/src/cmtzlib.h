@@ -152,6 +152,15 @@ typedef CCP4::CCP4File CCP4File;
  */
 MTZ *MtzGet(const char *logname, int read_refs);
 
+/** Reads the contents of the MTZ file into an MTZ structure.
+ * @param logname logical name of MTZ file
+ * @param read_refs whether to read reflections into memory (non-zero) or
+ *        to read later from file (zero)
+ * @param cell_tolerance user-defined tolerance for ccp4uc_cells_differ
+ * @return pointer to MTZ struct
+ */
+MTZ *MtzGetUserCellTolerance(const char *logname, int read_refs, const double cell_tolerance);
+
 /** Reads reflection data from MTZ file.
  * @param filein pointer to input file
  * @param ncol number of columns to read
