@@ -84,7 +84,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
 
 { MTZ *mtz;
   CCP4File *filein;
-  int istat, newproj, cset_warn=0;
+  int istat, newproj, cset_warn=0, length;
   MTZCOL *colin[MCOLUMNS], *newcol;
   char *filename;
   char crysin[MXTALS][65],projin[MXTALS][65],crystal[65],project[65];
@@ -216,6 +216,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
     /* read total number of datasets over all projects/crystals */
     else if (ccp4_keymatch(key, "NDIF")) {
       ntotset = (int) token[1].value;
+      if (debug) printf(" MtzGet: NDIF is \n",ntotset);
     }
 
     /* PROJECT line. Projects are not part of data structure, but
@@ -432,7 +433,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
        }
     else if (strncmp (mkey, "TITL",4) == 0) {
        strncpy(mtz->title,hdrrec+6,70); 
-       mtz->title[70] = '\0';
+       length = 70;
+       while ((--length >= 0) && (mtz->title[length] == ' '));
+       mtz->title[length+1] = '\0';
        }
 
     else if (strncmp (mkey, "CELL",4) == 0) {
@@ -1061,7 +1064,7 @@ int ccp4_lrsymm(const MTZ *mtz, int *nsymx, float rsymx[192][4][4]) {
   for (i = 0; i < *nsymx; ++i) {
     for (j = 0; j < 4; ++j) {
       for (k = 0; k < 4; ++k) {
-        rsymx[i][k][j] = mtz->mtzsymm.sym[i][j][k];
+        rsymx[i][j][k] = mtz->mtzsymm.sym[i][j][k];
       }
     }
   }
@@ -1809,7 +1812,7 @@ int MtzSetSortOrder(MTZ *mtz, MTZCOL *colsort[5]) {
 int MtzAddHistory(MTZ *mtz, const char history[][MTZRECORDLENGTH], const int nlines) {
 
   int i,j,numlines=0;
-  char *newhist,*ich;
+  char *newhist;
 
   newhist = MtzCallocHist(mtz->histlines + nlines);
   /* write new history lines */
@@ -1960,7 +1963,7 @@ int ccp4_lwsymm(MTZ *mtz, int nsymx, int nsympx, float rsymx[192][4][4],
   for (i = 0; i < nsymx; ++i) {
     for (j = 0; j < 4; ++j) {
       for (k = 0; k < 4; ++k) {
-        mtz->mtzsymm.sym[i][j][k] = rsymx[i][k][j];
+        mtz->mtzsymm.sym[i][j][k] = rsymx[i][j][k];
       }
     }
   }
@@ -2246,7 +2249,7 @@ int MtzPut(MTZ *mtz, const char *logname)
  int i, j, k, l, hdrst, icol, numbat, isort[5], debug=0;
  int ind[3],ind_xtal,ind_set,ind_col[3],length;
  double coefhkl[6];
- float maxres=0.0,minres=100.0,res,refldata[200];
+ float res,refldata[200];
  int nwords=NBATCHWORDS,nintegers=NBATCHINTEGERS,nreals=NBATCHREALS;
  float buf[NBATCHWORDS];
  int *intbuf = (int *) buf;

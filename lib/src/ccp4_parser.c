@@ -1659,12 +1659,12 @@ char *mat4_to_symop(char *symchs_begin, char *symchs_end, const float rsm[4][4])
 	    ccp4_signal(CCP4_ERRLEVEL(3) | CPARSER_ERRNO(CPARSERR_MatToSymop), 
 			"mat4_to_symop 2", NULL);
 	    return NULL; }
-          if (jdo10 != 3) {
-            *ich++ = '-';
-          }
-          else {
-            *ich++ = '+'; /* because of "while (itr < 0) itr += 12;" below */
-          }
+	  if (jdo10 != 3) {
+	    *ich++ = '-';
+	  } else {
+	    /* translation part is forced to be positive, see below */
+	    *ich++ = '+';
+	  }
           ist = 1;
 	}
       
