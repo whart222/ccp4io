@@ -135,6 +135,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
   filein = ccp4_file_open(filename,O_RDONLY);
   if (! filein ) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_CantOpenFile),"MtzGet",NULL);
+    free(filename);
     return NULL;
   }
 
@@ -152,6 +153,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
   parser = ccp4_parse_start(20);
   if (parser == NULL) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ParserFail),"MtzGet",NULL);
+    free(filename);
+    ccp4_file_close(filein);
     return NULL;
   }
   /* Set some convenient pointers to members of the parser array */
@@ -164,6 +167,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
   /* We don't test all reads, but this one should trap for e.g. truncated files */
   if (istat == EOF || strlen(hdrrec) == 0) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    ccp4_parse_end(parser);
+    ccp4_file_close(filein);
+    free(filename);
     return NULL;
   }
   hdrrec[4] = '\0';
@@ -171,6 +177,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
 
   if (!ccp4_keymatch(key,"MTZ")) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_NotMTZ),"MtzGet",NULL);
+    ccp4_parse_end(parser);
+    ccp4_file_close(filein);
+    free(filename);
     return(NULL);
   }
 
@@ -187,6 +196,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
   /* We don't test all seeks, but this one might trap duff files */
   if ( ccp4_file_seek(filein, hdrst-1, SEEK_SET) ) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    ccp4_parse_end(parser);
+    ccp4_file_close(filein);
+    free(filename);
     return NULL;
   }
 
@@ -210,6 +222,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
   /* We don't test all reads, but this one should trap for e.g. truncated files */
   if (istat == EOF) {
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    ccp4_parse_end(parser);
+    ccp4_file_close(filein);
+    free(filename);
     return NULL;
   }
 
@@ -236,6 +251,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
       ++iiset;
       if (iiset >= MSETS) {
         printf("MtzGet: Maximum number of datasets exceeded! \n");
+        ccp4_parse_end(parser);
+        ccp4_file_close(filein);
+        free(filename);
         return NULL;
       }
       strcpy(project,"dummy");
@@ -254,6 +272,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
         ++nxtal;
         if (nxtal > MXTALS) {
           printf("MtzGet: Maximum number of crystals exceeded! \n");
+          ccp4_parse_end(parser);
+          ccp4_file_close(filein);
+          free(filename);
           return NULL;
         }
         jxtalin[iiset]=nxtal-1;
@@ -282,6 +303,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
           ++nxtal;
           if (nxtal > MXTALS) {
             printf("MtzGet: Maximum number of crystals exceeded! \n");
+            ccp4_parse_end(parser);
+            ccp4_file_close(filein);
+            free(filename);
             return NULL;
           }
           jxtalin[iiset]=nxtal-1;
@@ -319,6 +343,9 @@ MTZ *MtzGet(const char *logname, int read_refs)
         ++nxtal;
         if (nxtal > MXTALS) {
           printf("MtzGet: Maximum number of crystals exceeded! \n");
+          ccp4_parse_end(parser);
+          ccp4_file_close(filein);
+          free(filename);
           return NULL;
         }
         jxtalin[iiset]=nxtal-1;
@@ -349,7 +376,12 @@ MTZ *MtzGet(const char *logname, int read_refs)
     printf(" MtzGet: end of 1st pass \n");
 
   /* Allocate memory for input MTZ file */
-  if (! (mtz = MtzMalloc(nxtal, nset))) return NULL;
+  if (! (mtz = MtzMalloc(nxtal, nset))) {
+    ccp4_parse_end(parser);
+    ccp4_file_close(filein);
+    free(filename);
+    return NULL;
+  }
   if (debug) 
     printf(" MtzGet: created mtz \n");
   mtz->filein = filein;
@@ -403,6 +435,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
         if (!mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]) {
           ccp4_signal(CCP4_ERRLEVEL(3) | 
                       CMTZ_ERRNO(CMTZERR_NullDataset),"MtzGet",NULL);
+          ccp4_parse_end(parser);
+          free(filename);
           return NULL;
 	}
         mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]->setid = iset;
@@ -459,6 +493,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
          printf("Input MTZ file has major version %d and minor version %d \n",
 	       atoi(hdrrec+10),atoi(hdrrec+12));
          ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadVersion),"MtzGet",NULL);
+         ccp4_parse_end(parser);
+         free(filename);
          return(NULL);
          }  
       if (atoi(hdrrec+12) != MTZ_MINOR_VERSN) {
@@ -497,6 +533,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
       if (ntok < 7) {
 	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_SYMINFIncomplete),
                         "MtzGet", NULL);
+        ccp4_parse_end(parser);
+        free(filename);
 	return(NULL);
       }
       mtz->mtzsymm.nsym = (int) token[1].value;
@@ -515,11 +553,15 @@ MTZ *MtzGet(const char *logname, int read_refs)
       if (ntok < 5) {
 	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_COLUMNIncomplete),
                         "MtzGet", NULL);
+        ccp4_parse_end(parser);
+        free(filename);
 	return(NULL);
       }
       ++icolin;
       if (icolin >= MCOLUMNS) {
         printf("MtzGet: Maximum number of columns exceeded! \n");
+        ccp4_parse_end(parser);
+        free(filename);
         return NULL;
       }
       strcpy(label,token[1].fullstring);
@@ -625,6 +667,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
         if (!ccp4_keymatch(key, "BH")) {
           ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadBatchHeader),
                         "MtzGet", NULL);
+          ccp4_parse_end(parser);
+          free(filename);
           return(NULL);
         }
 
