@@ -55,7 +55,6 @@
 #include "ccp4_parser.h"
 #include "ccp4_vars.h"
 #include "ccp4_errno.h"
-static char rcsid[] = "$Id$";
 
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
