@@ -86,9 +86,9 @@
 #define  CMTZERR_BadBatchHeader    22
 #define  CMTZERR_DifferentVersion  23
 
-MTZ *MtzGet(const char *logname, int read_refs) {
+MTZ *MtzGet(const char *logname, int read_refs)
 
-  return MtzGetUserCellTolerance(logname, read_refs, 0.002);
+{ return MtzGetUserCellTolerance(logname, read_refs, 0.002);
 }
 
 MTZ *MtzGetUserCellTolerance(const char *logname, int read_refs, const double cell_tolerance)
