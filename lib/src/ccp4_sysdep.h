@@ -99,12 +99,22 @@
 #  define CALL_LIKE_VMS 1
 #endif
 
-#if defined(_MVS) || defined (WIN32)
+#if defined(_MSC_VER) || defined (WIN32)
+# if defined (_MSC_VER) && (_MSC_VER >= 800)
+#  define CALL_LIKE_MVS 2
+# else
 #  define CALL_LIKE_MVS 1
+# endif
 #  define KNOWN_MACHINE
 #endif
 
-#if defined (linux) || defined (__CYGWIN__)
+#if defined (linux) || defined __linux__ || defined (__CYGWIN__)
+#  undef CALL_LIKE_SUN
+#  define KNOWN_MACHINE
+#  define CALL_LIKE_SUN 1
+#endif
+
+#if defined __linux__ && ( defined __PPC || defined __PPC__ )
 #  undef CALL_LIKE_SUN
 #  define KNOWN_MACHINE
 #  define CALL_LIKE_SUN 1
@@ -123,6 +133,12 @@
 #endif
 
 #if defined(__APPLE__)
+#  undef CALL_LIKE_SUN
+#  define CALL_LIKE_SUN 1
+#  define KNOWN_MACHINE
+#endif
+
+#if defined (_CALL_SYSV) && ! defined (__APPLE__)
 #  undef CALL_LIKE_SUN
 #  define CALL_LIKE_SUN 1
 #  define KNOWN_MACHINE
@@ -149,10 +165,10 @@
 #else
 #  include <sys/types.h>
 #  include <sys/stat.h>
-#  if !defined (_WIN32) && !defined (_MVS)
+#  if !defined (_WIN32) && !defined (_MSC_VER)
 #    include <sys/times.h>
 #  endif
-#  ifdef _MVS
+#  ifdef _MSC_VER
 #    define NOUNISTD
 #  endif
 #endif
@@ -164,7 +180,7 @@
 #  include <unistd.h>
 #else
 #  ifndef VMS 
-#    ifndef _MVS
+#    ifndef _MSC_VER
 #      include <sys/file.h>     /* ESV, old Concentrix */ /* non-POSIX */
 #    endif
 #  endif
@@ -177,7 +193,7 @@
 #include <ctype.h>
 
 #if defined(_AIX) || defined (__hpux) || defined(F2C) ||\
-    defined(G77) || defined(_WIN32)/* would do no harm on others, though */
+    defined(G77) || defined(_WIN32) /* would do no harm on others, though */
 #  include <time.h>
 #endif
 
@@ -199,15 +215,15 @@
 
 /* rint() function does not seen to exist for mingw32
    defined in library_utils.c */
-#  if (defined _WIN32) || (defined _MVS)
+#  if (defined _WIN32) || (defined _MSC_VER)
   double rint(double x);
 #endif
 
-#ifdef _MVS
+#ifdef _MSC_VER
 #define  M_PI            3.14159265358979323846
 #endif
 
-#ifdef _MVS
+#ifdef _MSC_VER
 #  define PATH_SEPARATOR '\\'
 #  define EXT_SEPARATOR '.'
 #else
@@ -264,7 +280,7 @@
 #  define NATIVEFT DFNTF_LEIEEE
 #endif
 
-#if defined (powerpc) || defined (__ppc__)
+#if defined (powerpc) || defined (__ppc__) || defined __PPC
 #  define NATIVEIT DFNTI_MBO
 #  define NATIVEFT DFNTF_BEIEEE
 #endif

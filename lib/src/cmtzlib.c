@@ -55,6 +55,7 @@
 #include "ccp4_parser.h"
 #include "ccp4_vars.h"
 #include "ccp4_errno.h"
+#include "ccp4_unitcell.h"
 
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
@@ -93,7 +94,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
   MTZCOL *colin[MCOLUMNS], *newcol;
   char *filename;
   char crysin[MXTALS][65],projin[MXTALS][65],crystal[65],project[65];
-  float cellin[MXTALS][6],cell[6];
+  double cellin[MXTALS][6],cell[6];
   int jxtalin[MSETS];
   char mkey[4], keyarg[76], hdrrec[MTZRECORDLENGTH+1], label[30], type[3];
   int i, j, hdrst, ntotcol, nref, ntotset=0, nbat, nhist=0, icolin;
@@ -324,24 +325,23 @@ MTZ *MtzGet(const char *logname, int read_refs)
        don't increment as we already have it. */
     else if (ccp4_keymatch(key, "DATA")) {
       if ( ntok <= 2 || (ntok > 2 && strcmp(token[2].fullstring,"HKL_base")) )
-        ++nset[nxtal-1];
+        ++nset[jxtalin[iiset]];
     }
 
     /* DCELL line. */
     else if (ccp4_keymatch(key, "DCEL")) {
       for (i = 0; i < 6; ++i) 
-        cell[i] = (float) token[i+2].value;
+        cell[i] = token[i+2].value;
       /* If old crystal but cell dimensions differ, make new crystal.
          This is primarily for old files with no CRYSTAL cards. 
-         This test doesn't apply to base dataset. */
+         This test doesn't apply to base dataset. 
+         Chosen tolerance is arbitrary - there is no single correct value! */
       if (jxtal > 0 && iiset > 0 && 
-                (cellin[jxtal][0] != cell[0] || cellin[jxtal][1] != cell[1]
-              || cellin[jxtal][2] != cell[2] || cellin[jxtal][3] != cell[3]
-              || cellin[jxtal][4] != cell[4] || cellin[jxtal][5] != cell[5] )) {
+	  ccp4uc_cells_differ(cellin[jxtal], cell, 0.002)) {
         if (debug) {
           printf(" MtzGet: Old crystal %d but new cell dimensions. \n",jxtal);
           for (i = 0; i < 6; ++i) 
-            printf(" %f %f \n",cellin[jxtal][i],cell[i]);
+            printf(" %lf %lf \n",cellin[jxtal][i],cell[i]);
 	}
         ++nxtal;
         if (nxtal > MXTALS) {
@@ -352,17 +352,17 @@ MTZ *MtzGet(const char *logname, int read_refs)
           free(filename);
           return NULL;
         }
-        jxtalin[iiset]=nxtal-1;
         strcpy(projin[nxtal-1],project);
         strcpy(crysin[nxtal-1],crystal);
 	/* Try to make crystal name unique */
         sprintf(crysin[nxtal-1]+strlen(crystal),"%d",nxtal);
 	/* correct DATASET increment */
-        --nset[nxtal-2];
-        ++nset[nxtal-1];
+        --nset[jxtalin[iiset]];
+        jxtalin[iiset]=nxtal-1;
+        ++nset[jxtalin[iiset]];
       }
       for (i = 0; i < 6; ++i) 
-        cellin[nxtal-1][i] = cell[i];
+        cellin[jxtalin[iiset]][i] = cell[i];
     }
 
     istat = ccp4_file_readchar(filein, (uint8 *) hdrrec, MTZRECORDLENGTH);
@@ -1045,8 +1045,9 @@ void MtzDebugHierarchy(const MTZ *mtz) {
    printf("MtzDebugHierarchy: xtal = %s, nset = %d \n",mtz->xtal[i]->xname,
               mtz->xtal[i]->nset);
    for (j = 0; j < mtz->xtal[i]->nset; ++j) {
-    printf("MtzDebugHierarchy: xtal = %s, set = %s, ncol = %d \n",mtz->xtal[i]->xname,
-              mtz->xtal[i]->set[j]->dname,mtz->xtal[i]->set[j]->ncol);
+    printf("MtzDebugHierarchy: xtal = %s, set = %s, setid = %d, ncol = %d \n",
+              mtz->xtal[i]->xname,mtz->xtal[i]->set[j]->dname,
+              mtz->xtal[i]->set[j]->setid,mtz->xtal[i]->set[j]->ncol);
      for (k = 0; k < mtz->xtal[i]->set[j]->ncol; ++k) {
       printf("MtzDebugHierarchy: col = %s (in: %d) (out: %d) \n",
               mtz->xtal[i]->set[j]->col[k]->label,
@@ -1906,9 +1907,19 @@ int ccp4_lwtitl(MTZ *mtz, const char *ftitle, int flag) {
 
   } else {
 
+    /* Append ftitle to existing title.
+       BEWARE this has been fixed a few times for special
+       cases. There is often a reaons behind numbers
+       such as 69, so don't change it lightly */
+
     length = (int) strlen(mtz->title);
+    /* this shouldn't happen if title is NULL terminated */
+    if (length > 70) length = 70;
     while ((--length >= 0) && mtz->title[length] == ' ');
-    if (length >= 0)
+    /* if there is an existing title and it doesn't take
+       up all 70 chars, then add a space before appending
+       new title */
+    if (length >= 0 && length < 69)
       mtz->title[++length] = ' ';
     strncpy(mtz->title+length+1,ftitle,69-length);
 
@@ -3201,13 +3212,19 @@ MTZSET *MtzAddDataset(MTZ *mtz, MTZXTAL *xtl, const char *dname,
   strncpy( set->dname, dname, 64 );
   set->dname[64] = '\0';
   set->wavelength = wavelength;
-  /* new setid is one more than greatest current setid */
-  i = -1;
-  for (x = 0; x < mtz->nxtal; x++)
-    for (s = 0; s < mtz->xtal[x]->nset; s++)
-      if (mtz->xtal[x]->set[s]->setid > i) i = mtz->xtal[x]->set[s]->setid;
 
-  set->setid = ++i;
+  /* New setid is one more than greatest current setid.
+     It must be at least 1, unless it is the base dataset setid=0. */
+  if (!strcmp(set->dname,"HKL_base")) {
+    set->setid = 0;
+  } else {
+    i = 0;
+    for (x = 0; x < mtz->nxtal; x++)
+      for (s = 0; s < mtz->xtal[x]->nset; s++)
+        if (mtz->xtal[x]->set[s]->setid > i) i = mtz->xtal[x]->set[s]->setid;
+    set->setid = ++i;
+  }
+
   set->ncol = 0;
   /* create initial array of 20 pointers to columns */
   ccp4array_new_size(set->col,20);

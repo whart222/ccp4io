@@ -72,14 +72,14 @@ are just generally useful (platform independent date).
 #include "ccp4_utils.h"
 #include "ccp4_errno.h"
 
-#if defined (_MVS)
+#if defined (_MSC_VER)
 #include <tchar.h>
 #include <wchar.h>
 #include <direct.h>
 #include <io.h>
 #endif
 
-#if !defined (_MVS)
+#if !defined (_MSC_VER)
 #include <pwd.h>
 #endif
 
@@ -98,7 +98,7 @@ int ccp4_utils_translate_mode_float(float *out, const void *buffer, int dim, int
   unsigned char *ucp;
   unsigned short *usp;
   float *fp = out, *ufp, tmp1, tmp2;
-  register int ctr;
+  register int ctr=0;
 
   switch(mode) {
   case 0:
@@ -167,7 +167,7 @@ int ccp4_utils_setenv (char *str)
 #if defined (sgi) || defined (sun) || defined (__hpux) || \
     defined(_AIX) || defined (__OSF1__) || \
     defined (__osf__) || defined (__FreeBSD__) || defined (linux) || \
-    defined (_WIN32)
+    defined (_WIN32) || defined __linux__
   /* putenv is the POSIX.1, draft 3 proposed mechanism */
   int putenv ();
   char *param;
@@ -208,7 +208,7 @@ int ccp4_utils_outbuf(void)
     defined (__FreeBSD__)
   return setlinebuf(stdout);
 #else
-#if defined (_MVS)
+#if defined (_MSC_VER)
   return setvbuf(stdout, NULL, _IONBF, 80);
 #else
 #  if defined (_AIX)
@@ -317,7 +317,7 @@ void ccp4_utils_hgetlimits (int *IValueNotDet, float *ValueNotDet)
  * @return 
  */
 int ccp4_utils_mkdir (const char *path, const char *cmode)
-#if !defined (_MVS) && !defined(_WIN32)
+#if !defined (_MSC_VER) && !defined(_WIN32)
 {  
   mode_t mode = 0;
   int result; 
@@ -382,7 +382,7 @@ int ccp4_utils_mkdir (const char *path, const char *cmode)
  * @return 
  */
 int ccp4_utils_chmod (const char *path, const char *cmode)
-#if !defined (_MVS) || !defined(_WIN32)
+#if !defined (_MSC_VER) || !defined(_WIN32)
 { mode_t mode = 0;
 #if defined (__APPLE__)
   static const unsigned short TBM = 0x07;
@@ -482,7 +482,7 @@ void *ccp4_utils_calloc(size_t nelem , size_t elsize)
  * In these instances use getpwuid instead.
  * @return pointer to character string containing login name.
  */
-#if ! defined (_MVS)
+#if ! defined (_MSC_VER)
 char *ccp4_utils_username(void)
 { 
   struct passwd *passwd_struct=NULL;
@@ -669,7 +669,7 @@ char *ccp4_utils_time(char *time)
  * @param tarray Array containing User and System times.
  * @return Sum of User and System times.
  */
-#if ! defined (_MVS) 
+#if ! defined (_MSC_VER) 
 float ccp4_utils_etime (float tarray[2])
 {
   static long clk_tck = 0;
@@ -683,7 +683,7 @@ float ccp4_utils_etime (float tarray[2])
 }
 #endif
 
-#if defined (_MVS)
+#if defined (_MSC_VER)
 double ccp4_erfc( double x )
 {
   double t,z,ans;
@@ -717,7 +717,7 @@ float asinf(float x) {
 
 #endif
 
-#  if (defined _MVS)
+#  if (defined _MSC_VER)
 double rint(double x) { 
   if (x >= 0.) {
    return (double)(int)(x+.5);

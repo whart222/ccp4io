@@ -50,7 +50,7 @@
 #include<string.h>
 #include <limits.h>
 #include <fcntl.h>
-#if defined _MVS
+#if defined _MSC_VER
 #include <io.h>
 #endif
 #include "library_file.h"
@@ -332,7 +332,7 @@ int ccp4_file_raw_read(CCP4File *cfile, char *buffer, size_t n_items)
       cfile->iostat = CIO_ReadFail; 
       result = 0; }
   } else {
-#if defined _MVS
+#if defined _MSC_VER
     result = _read (cfile->fd, buffer, n_items);
 #else
     result = read (cfile->fd, buffer, n_items);
@@ -371,7 +371,7 @@ int ccp4_file_raw_write(CCP4File *cfile, const char *buffer, size_t n_items)
     result = fwrite (buffer, (size_t) sizeof(char), n_items,
                     cfile->stream);
   else 
-#if defined _MVS
+#if defined _MSC_VER
     result = _write (cfile->fd, buffer, n_items);
 #else
     result = write (cfile->fd, buffer, n_items);
@@ -421,7 +421,7 @@ int ccp4_file_raw_seek(CCP4File *cfile, long offset, int whence)
     if (!(result = (fseek (cfile->stream,offset,whence))))
       result = ftell(cfile->stream);   
   } else {
-#if defined _MVS
+#if defined _MSC_VER
      result = _lseek(cfile->fd,offset,whence);
 #else
      result = lseek(cfile->fd, offset, whence);
@@ -541,7 +541,7 @@ static int _file_close (CCP4File *cfile)
       result = fflush(cfile->stream);
   } else {
     if (cfile->own)
-#if defined _MVS
+#if defined _MSC_VER
       result = _close(cfile->fd);
 #else
       result = close (cfile->fd);
@@ -729,7 +729,7 @@ int ccp4_file_itemsize(const CCP4File *cfile)
  */
 const char *ccp4_file_name( CCP4File *cfile)
 {
-#if defined _MVS
+#if defined _MSC_VER
   return ( cfile == NULL ? NULL : _strdup(cfile->name));
 #else
   return ( cfile == NULL ? NULL : strdup(cfile->name));
@@ -799,7 +799,7 @@ int ccp4_file_byte(CCP4File *cfile)
 CCP4File *ccp4_file_open_file (const FILE *file, const int flag)
 {
   CCP4File *cfile;
-#if defined _MVS
+#if defined _MSC_VER
   struct _stat st;
 #else
   struct stat st;
@@ -821,7 +821,7 @@ CCP4File *ccp4_file_open_file (const FILE *file, const int flag)
   cfile->buffered = 1;
   cfile->open = 1;   
 
-#if defined _MVS
+#if defined _MSC_VER
   _fstat(_fileno(cfile->stream), &st);
   if ( !(st.st_mode & S_IFREG) || file == stdin) {
 #else
@@ -853,7 +853,7 @@ CCP4File *ccp4_file_open_file (const FILE *file, const int flag)
 CCP4File *ccp4_file_open_fd (const int fd, const int flag)
 {
   CCP4File * cfile;
-#if defined _MVS
+#if defined _MSC_VER
   struct _stat st;
 #else
   struct stat st;
@@ -869,7 +869,7 @@ CCP4File *ccp4_file_open_fd (const int fd, const int flag)
   cfile->open = 1;    
   cfile->buffered = 0;
 
-#if defined _MVS
+#if defined _MSC_VER
   _fstat(fd, &st);
   if ( !(st.st_mode & S_IFREG) || fd == 0) {
 #else
@@ -882,7 +882,7 @@ CCP4File *ccp4_file_open_fd (const int fd, const int flag)
   } else {
     cfile->length = st.st_size;
     cfile->direct = 1;
-#if defined _MVS
+#if defined _MSC_VER
     cfile->loc = _lseek(fd, 0L, SEEK_CUR);
 #else
     cfile->loc = lseek(fd, 0L, SEEK_CUR);
@@ -910,7 +910,7 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
   CCP4File *cfile; 
   int openflags = O_RDONLY;
   char fmode[5];
-#if defined _MVS
+#if defined _MSC_VER
   struct _stat st;
 #else
   struct stat st;
@@ -926,13 +926,13 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
     else if (cfile->write)  openflags = (O_WRONLY | O_CREAT); 
     if (cfile->append) openflags |= O_APPEND;
     if (flag & O_TRUNC) openflags |= O_TRUNC;
-#if defined _MVS
+#if defined _MSC_VER
     if (cfile->scratch) openflags |= O_TEMPORARY;
 #endif
-#if defined(__DECC) && defined(VMS) || defined (_MVS)
+#if defined(__DECC) && defined(VMS) || defined (_MSC_VER)
     openflags |= O_BINARY;
 #endif
-#if defined _MVS
+#if defined _MSC_VER
     cfile->fd = _open(filename, openflags);
 #else
     cfile->fd = open(filename, openflags);
@@ -942,7 +942,7 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
                   "ccp4_file_open1", NULL);
       return NULL; 
     } else {
-#if defined _MVS
+#if defined _MSC_VER
       _fstat(cfile->fd, &st); }
 #else
       fstat(cfile->fd, &st); }
@@ -976,7 +976,7 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
                              "mbc=16",        /* bigger blocksize */
                              "ctx=stm", "mrs=0", "rat=cr", "rfm=stmlf");
 #else
-# ifdef _MVS
+# ifdef _MSC_VER
     if (cfile->scratch) 
       cfile->stream = tmpfile();
     else 
@@ -998,20 +998,20 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
 #if defined (__alpha) && defined (vms)
 (void) fflush (cfile->stream);
 #endif
-#if defined _MVS
+#if defined _MSC_VER
   _fstat(_fileno(cfile->stream), &st);
 #else
   fstat(fileno(cfile->stream), &st);
 #endif
   }
-#if defined _MVS
+#if defined _MSC_VER
   cfile->name = _strdup(filename);
 #else
   cfile->name = strdup(filename);
 #endif
   cfile->open = 1;  
   cfile->own = 1;  
-#if defined _MVS
+#if defined _MSC_VER
   if ( !(st.st_mode & S_IFREG) ) {
 #else
   if ( !S_ISREG(st.st_mode) ) {
@@ -2057,7 +2057,7 @@ void ccp4_file_rewind (CCP4File *cfile)
  */
 long ccp4_file_length (CCP4File *cfile)
 {
-#if defined _MVS
+#if defined _MSC_VER
   struct _stat st;
 #else
   struct stat st;
@@ -2072,7 +2072,7 @@ long ccp4_file_length (CCP4File *cfile)
   
   if (cfile->buffered && cfile->stream)
       fflush (cfile->stream);
-#if defined _MVS
+#if defined _MSC_VER
     _fstat(cfile->stream ? _fileno(cfile->stream) : cfile->fd, &st);
 #else
     fstat(cfile->stream ? fileno(cfile->stream) : cfile->fd, &st);
@@ -2101,10 +2101,12 @@ long ccp4_file_tell (CCP4File *cfile)
   cfile->last_op = IRRELEVANT_OP;
 
   if (cfile->buffered && cfile->stream) {
-    fflush (cfile->stream); 
+#if !defined (_MSC_VER)
+    fflush (cfile->stream);
+#endif	
     result = (long) ftell(cfile->stream);
   } else
-#if defined _MVS
+#if defined _MSC_VER
     result = _lseek(cfile->fd, 0L, SEEK_CUR);
 #else
     result = lseek(cfile->fd, 0L, SEEK_CUR);
