@@ -1961,7 +1961,7 @@ int ccp4_lwsymm(MTZ *mtz, int nsymx, int nsympx, float rsymx[192][4][4],
   for (i = 0; i < nsymx; ++i) {
     for (j = 0; j < 4; ++j) {
       for (k = 0; k < 4; ++k) {
-        mtz->mtzsymm.sym[i][j][k] = rsymx[i][j][k];
+        mtz->mtzsymm.sym[i][j][k] = rsymx[i][k][j];
       }
     }
   }
