@@ -140,9 +140,12 @@ MTZ *MtzGet(const char *logname, int read_refs)
   /* Read architecture */
   istat = ccp4_file_rarch (filein);
   if (!istat) {
-   printf(" No architecture information in file -- assuming native. \n");
-   ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_NoArch),
-                        "MtzGet", NULL);
+    if (ccp4_liberr_verbosity(-1)) {
+      printf(" No architecture information in file -- assuming native. \n");
+    }
+    ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_NoArch),
+                         "MtzGet", NULL);
+    return NULL;
   }
 
   parser = ccp4_parse_start(20);
