@@ -1,0 +1,201 @@
+                           CCP4 Software Licence
+
+PREAMBLE
+
+The purpose of this document is to state the terms and conditions under which 
+the CCP4 Program Suite software and documentation as defined at Annex 1 ("the 
+CCP4 suite") may be used.
+
+
+NOTICE TO USER:
+
+BY USING THE SOFTWARE YOU ACCEPT THE FOLLOWING TERMS AND CONDITIONS WHICH APPLY 
+TO ITS USE.
+
+1.	The CCP4 Suite is compiled at Daresbury Laboratory with support from 
+the Biotechnology and Biological Sciences Research Council (BBSRC) of the UK 
+as part of the Collaborative Computational Project Number 4 (CCP4), on Protein 
+Crystallography, first set up in October 1979.
+
+2.	Any opinion, findings, conclusions or recommendations expressed in the 
+CCP4 program suite are those of the authors/contributors and do not necessarily 
+reflect the views of the BBSRC.
+
+3.	The CCP4 suite is in part the property of the Council for the Central 
+Laboratory of the Research Councils ("CCLRC"). Additionally extra modules may 
+be supplied which are not specifically owned by the Council. These may be the 
+copyright of a third party and are distributed under terms, which as far as 
+the Council is aware, permit them to be included within the terms of this 
+Licence. If this is so this notification or declaration that the information is
+in the public domain will be included in the files. The Council shall, in all 
+good faith, distribute these modules in compliance with the terms and 
+conditions as set down by the third party. The Council shall not be liable and 
+shall take no responsibility for any module that is not the property of the 
+Council.
+
+4.	The CCP4 suite is made available free of charge for use by non-profit 
+educational, academic and research institutions. However, as the distribution 
+of the CCP4 suite can prove to be an expensive commitment, non-profit 
+institutions requiring versions to be distributed on magnetic tape or disk may 
+be asked to pay for the time and media involved. No recipient of the CCP4 suite
+and or material shall offer magnetic tapes, microfiche, listings or any further
+CCP4 item for sale as a commercial item. 
+
+5.	For items of the CCP4 suite considered as being of Part (i) (Annex 1), 
+(and for items considered as Part (ii) (Annex 1) of the CCP4 distribution that 
+do not have an explicit statement of warranty then the following warranty 
+statement also applies) these are supplied under the following conditions:- 
+
+	i)	The CCP4 suite is provided to the user "as is" and neither CCLRC
+          nor the original authors/contributors make any warranty as to its use,
+          performance or results which the user may obtain by using the CCP4 
+          suite. CCLRC makes no warranties, express or implied, as to 
+          non-infringement of third party rights, merchantability, or fitness 
+          for any particular purpose. In no event will CCLRC or original 
+          authors/contributors be liable to the user for any consequential, 
+          incidental or special damages, including any lost profits or lost
+          savings, even if a CCLRC representative or original 
+          authors/contributors has been advised of such damages, or for any 
+          claim by any third party.
+
+
+6.	For items of the CCP4 suite considered as being Part (ii) and 
+Part (iii) (Annex 1), if the authors have given a statement of copyright and 
+warranties then those notices apply to those items of the CCP4 suite.
+
+7.	As part of CCP4's two goals of preserving the free status of all of 
+our free software (and derivatives), and of  promoting the sharing and reuse 
+of software generally, then for items of software considered as being of 
+part (i) (Annex 1), the CCP4 library routines, you are permitted and encouraged
+to use, copy, modify and distribute this software and its documentation for 
+any purpose and without fee. A notice to 'CCP4/Daresbury Laboratory' must 
+appear in all copies, and the User must do the following:
+
+(a)	cause the modified files to carry prominent notices stating that you 
+changed the files and the date of any change, and to provide those changes 
+back to the community;
+
+(b)	for the whole of any work that you distribute or publish, that in whole
+or in part contains the Part (i) (Annex 1) routines or any part thereof, 
+either with or without modifications, then any subsequent licence that you 
+charge to all third parties must exclude the CCP4 Part (i) (Annex 1) software 
+and such Part (i) (Annex 1) software can only be included under the terms of 
+this Conditions of Distribution (except that you may choose to grant warranty 
+protection to some or all third parties, at your option).	
+
+8.	For a single site that requires more than one implementation of the 
+CCP4 distribution the User may copy verbatim copies of the CCP4 distribution 
+as they receive it, in any medium at that site, provided that the User 
+conspicuously and appropriately publishes on each copy an appropriate copyright
+notice and disclaimer of warranty.
+
+9.	The User may not copy, modify, sublicence, distribute or transfer the 
+CCP4 suite except as expressly provided under either this agreement or as in 
+the case of the CCP4 suite considered as either Part (ii) or Part (iii) 
+(Annex 1) by the Copyright notices of the original authors. Any attempt 
+otherwise to copy, modify, sublicence, distribute or transfer the CCP4 suite 
+is void, and will automatically terminate your rights to use the CCP4 suite 
+under this Agreement.	
+
+10.     Neither the CCLRC nor the original authors are under any obligation to 
+maintain the CCP4 suite nor to respond to requests for information from the 
+User. 
+
+11.	The provision of any version of the CCP4 suite under the terms and 
+conditions specified herein does not imply that future versions will also be 
+made available under the same terms and conditions.
+
+12.	For any publication arising from use of the CCP4 program suite, a 
+reference to (Collaborative Computational Project, Number 4, 1994) should be 
+given as:
+
+COLLABORATIVE COMPUTATIONAL PROJECT, NUMBER 4, 1994.
+"The CCP4 Suite: Programs for Protein Crystallography". Acta Cryst. 
+   D50, 760-763.
+
+along with any additional references, required by the original authors, 
+pertaining to individual programs where the use of the programs contributed 
+to an investigation.
+
+13. The CCP4 suite (with respect to this license agreement) will be used 
+solely at the following address:
+
+Name 	  ___________________________________
+
+Address	  ___________________________________
+
+	  ___________________________________
+  
+	  ___________________________________
+
+	
+Telephone ___________________________________	
+
+Fax	  __________________________________________
+
+E-mail	  ___________________________________
+
+
+I have read the CCP4 Software Licence (including Annex 1) and I agree to 
+uphold the terms and conditions of this licence:
+
+
+Name      ____________________	Signed  ____________________
+
+Position  ____________________	Date     ____________________
+
+
+
+
+Under the terms of the UK's DATA PROTECTION ACT 1984, we are obliged to notify 
+you that you are on a CCP4 mailing list and that your name and address are held
+on computer. The Act requires your consent to your name and address being so 
+held. Our receipt of this completed form will indicate your acceptance.
+
+
+
+
+
+
+ ANNEX 1
+
+The CCP4 Program Suite consists of three parts:
+
+i)	The set of Library routines for the handling of MAP files, MTZ files 
+and PDB files and the general routines for DISKIO, CCPLIB, (parts of) MODLIB, 
+FFTLIB, PLOT84LIB, SYMLIB, CCIFLIB, HARVLIB, LIBHTML, should be regarded as 
+'Free-Software', with Copyright still remaining with the original authors 
+and/or their place of employment where that software was written as employees 
+in the course of their employment, and is freely available from CCP4 and the 
+BBSRC.
+	This software is held in the subdirectories src and ccif in:
+	CCP4_MASTER: [CCP4.LIB] (for the VMS distribution),
+	%CCP4_MASTER%\ccp4\lib (for DOS based systems),
+	and $CCP4_MASTER/ccp4/lib (for the Unix distribution).
+
+ii)	Contributed programs which use the part (i) library routines. For this 
+set of software all copyrights remain with the original authors of the code. If
+a Part (ii) program does not contain a Copyright notice then this Copyright 
+notice applies.
+	Examples of this software are held in directories:
+	VMS: CCP4_MASTER: [CCP4.SRC];
+	DOS: %CCP4_MASTER%\ccp4\src;
+	Unix: $CCP4_MASTER/ccp4/src
+
+iii)	Other independent works which have been merely aggregated to the CCP4 
+distribution media, where the Advisory Notices and/or Copyright Notices for 
+this other work allow for the free distribution of that code. This set of 
+software (or their derivatives) that are held on the CCP4 volume of storage 
+or distribution medium are not brought under the scope of the terms of the 
+CCP4 distribution conditions.
+	Examples of this software are held in the directories:
+	VMS					Unix
+	$CCP4_MASTER:[XTAL.WULFF]		$CCP4_MASTER/wulff
+	$CCP4_MASTER:[XTAL.LAUE]		$CCP4_MASTER/laue
+			
+
+The distribution tape and ftp area contains copies of all programs in the CCP4 
+suite (source code) plus documentation and shell files for running the programs
+interactively.
+
+
