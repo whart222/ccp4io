@@ -55,6 +55,7 @@
 #include "ccp4_parser.h"
 #include "ccp4_vars.h"
 #include "ccp4_errno.h"
+static char rcsid[] = "$Id$";
 
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
@@ -250,7 +251,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
     else if (ccp4_keymatch(key, "PROJ")) {
       ++iiset;
       if (iiset >= MSETS) {
-        printf("MtzGet: Maximum number of datasets exceeded! \n");
+        if (ccp4_liberr_verbosity(-1))
+          printf("MtzGet: Maximum number of datasets exceeded! \n");
         ccp4_parse_end(parser);
         ccp4_file_close(filein);
         free(filename);
@@ -271,7 +273,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
       if (jxtal == -1) {
         ++nxtal;
         if (nxtal > MXTALS) {
-          printf("MtzGet: Maximum number of crystals exceeded! \n");
+          if (ccp4_liberr_verbosity(-1))
+            printf("MtzGet: Maximum number of crystals exceeded! \n");
           ccp4_parse_end(parser);
           ccp4_file_close(filein);
           free(filename);
@@ -302,7 +305,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
         if (jxtal == -1) {
           ++nxtal;
           if (nxtal > MXTALS) {
-            printf("MtzGet: Maximum number of crystals exceeded! \n");
+            if (ccp4_liberr_verbosity(-1))
+              printf("MtzGet: Maximum number of crystals exceeded! \n");
             ccp4_parse_end(parser);
             ccp4_file_close(filein);
             free(filename);
@@ -342,7 +346,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
 	}
         ++nxtal;
         if (nxtal > MXTALS) {
-          printf("MtzGet: Maximum number of crystals exceeded! \n");
+          if (ccp4_liberr_verbosity(-1))
+            printf("MtzGet: Maximum number of crystals exceeded! \n");
           ccp4_parse_end(parser);
           ccp4_file_close(filein);
           free(filename);
@@ -436,6 +441,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
           ccp4_signal(CCP4_ERRLEVEL(3) | 
                       CMTZ_ERRNO(CMTZERR_NullDataset),"MtzGet",NULL);
           ccp4_parse_end(parser);
+          ccp4_file_close(filein);
           free(filename);
           return NULL;
 	}
@@ -490,15 +496,18 @@ MTZ *MtzGet(const char *logname, int read_refs)
 
     if (strncmp (mkey, "VERS",4) == 0) {
       if (atoi(hdrrec+10) != MTZ_MAJOR_VERSN) {
-         printf("Input MTZ file has major version %d and minor version %d \n",
+         if (ccp4_liberr_verbosity(-1))
+           printf("Input MTZ file has major version %d and minor version %d \n",
 	       atoi(hdrrec+10),atoi(hdrrec+12));
          ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadVersion),"MtzGet",NULL);
          ccp4_parse_end(parser);
+         ccp4_file_close(filein);
          free(filename);
          return(NULL);
          }  
       if (atoi(hdrrec+12) != MTZ_MINOR_VERSN) {
-         printf("Input MTZ file has major version %d and minor version %d \n",
+         if (ccp4_liberr_verbosity(-1))
+           printf("Input MTZ file has major version %d and minor version %d \n",
 	       atoi(hdrrec+10),atoi(hdrrec+12));
          ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_DifferentVersion),"MtzGet",NULL);
          }  
@@ -534,6 +543,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
 	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_SYMINFIncomplete),
                         "MtzGet", NULL);
         ccp4_parse_end(parser);
+        ccp4_file_close(filein);
         free(filename);
 	return(NULL);
       }
@@ -554,13 +564,16 @@ MTZ *MtzGet(const char *logname, int read_refs)
 	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_COLUMNIncomplete),
                         "MtzGet", NULL);
         ccp4_parse_end(parser);
+        ccp4_file_close(filein);
         free(filename);
 	return(NULL);
       }
       ++icolin;
       if (icolin >= MCOLUMNS) {
-        printf("MtzGet: Maximum number of columns exceeded! \n");
+        if (ccp4_liberr_verbosity(-1))
+          printf("MtzGet: Maximum number of columns exceeded! \n");
         ccp4_parse_end(parser);
+        ccp4_file_close(filein);
         free(filename);
         return NULL;
       }
@@ -575,7 +588,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
           if (ccp4_liberr_verbosity(-1)) {
             printf("Dataset id missing from COLUMN records in MTZ header. \n");
             printf("Making default assignments. \n");
-          }
+	  }
           ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_DatasetIncomplete),
                         "MtzGet", NULL);
           cset_warn = 1;
@@ -668,6 +681,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
           ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadBatchHeader),
                         "MtzGet", NULL);
           ccp4_parse_end(parser);
+          ccp4_file_close(filein);
           free(filename);
           return(NULL);
         }
@@ -1885,7 +1899,7 @@ int ccp4_lwtitl(MTZ *mtz, const char *ftitle, int flag) {
 
   if (flag == 0) {
 
-    strncpy(mtz->title,ftitle,71);
+    strncpy(mtz->title,ftitle,70);
 
   } else {
 
@@ -1893,9 +1907,10 @@ int ccp4_lwtitl(MTZ *mtz, const char *ftitle, int flag) {
     while ((--length >= 0) && mtz->title[length] == ' ');
     if (length >= 0)
       mtz->title[++length] = ' ';
-    strncpy(mtz->title+length+1,ftitle,70-length);
+    strncpy(mtz->title+length+1,ftitle,69-length);
 
   }
+  mtz->title[70] = '\0';
 
   return 1;
 }
@@ -2527,7 +2542,8 @@ int MtzPut(MTZ *mtz, const char *logname)
        /* Check that the column type is set
 	  If it is blank then the COLUMN record will be incomplete */
        if (mtz->xtal[i]->set[j]->col[k]->type[0] == '\0') {
-	 printf("From MtzPut: column type for %s is not set, assume type R\n",
+         if (ccp4_liberr_verbosity(-1))
+  	   printf("From MtzPut: column type for %s is not set, assume type R\n",
 		mtz->xtal[i]->set[j]->col[k]->label);
 	 strncpy(mtz->xtal[i]->set[j]->col[k]->type,"R",2);
        }
@@ -2707,9 +2723,8 @@ MTZBAT *sort_batches(MTZBAT *batch, int numbat)
  }
  if (!isort) return batch;
 
- if (ccp4_liberr_verbosity(-1)) {
+ if (ccp4_liberr_verbosity(-1))
    printf("\n Note: Sorting batch headers prior to writing to file... \n\n");
- }
 
  /* Sort */
  /* This is Simon Tatham's algorithm, implemented for batches. */
@@ -2991,22 +3006,24 @@ MTZ *MtzMalloc(int nxtal, int nset[])
   mtz->hist = NULL;
   mtz->histlines = 0;
   mtz->nxtal = nxtal;
+  mtz->ncol_read = 0;
   mtz->nref = 0;
-  mtz->resmax_out = 0.0f;
-  mtz->resmin_out = 999.0f;
+  mtz->nref_filein = 0;
   mtz->refs_in_memory = 1;
   mtz->n_orig_bat = 0;
+  mtz->resmax_out = 0.0f;
+  mtz->resmin_out = 999.0f;
   sprintf(mtz->mnf.amnf,"NAN");
-  mtz->batch = NULL;
-  for (i = 0; i < 5; ++i) {
-    mtz->order[i] = NULL;
-  }
   mtz->mtzsymm.spcgrp = 0;
   mtz->mtzsymm.spcgrpname[0] = '\0';
   mtz->mtzsymm.nsym = 0;
   mtz->mtzsymm.nsymp = 0;
   mtz->mtzsymm.symtyp = '\0';
   mtz->mtzsymm.pgname[0] = '\0';
+  mtz->batch = NULL;
+  for (i = 0; i < 5; ++i) {
+    mtz->order[i] = NULL;
+  }
 
   return(mtz);
 }
