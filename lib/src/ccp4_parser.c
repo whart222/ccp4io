@@ -1664,7 +1664,7 @@ char *mat4_to_symop(char *symchs_begin, char *symchs_end, const float rsm[4][4])
             *ich++ = '-';
           }
           else {
-            *ich++ = '+'; // because of "while (itr < 0) itr += 12;" below
+            *ich++ = '+'; /* because of "while (itr < 0) itr += 12;" below */
           }
           ist = 1;
 	}
