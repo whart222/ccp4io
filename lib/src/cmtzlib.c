@@ -2707,7 +2707,9 @@ MTZBAT *sort_batches(MTZBAT *batch, int numbat)
  }
  if (!isort) return batch;
 
- printf("\n Note: Sorting batch headers prior to writing to file... \n\n");
+ if (ccp4_liberr_verbosity(-1)) {
+   printf("\n Note: Sorting batch headers prior to writing to file... \n\n");
+ }
 
  /* Sort */
  /* This is Simon Tatham's algorithm, implemented for batches. */
