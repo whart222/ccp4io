@@ -79,6 +79,10 @@
 #define  CMTZERR_DatasetIncomplete   16
 #define  CMTZERR_NoArch              17
 #define  CMTZERR_NullDataset         18
+#define  CMTZERR_BadVersion          19
+#define  CMTZERR_SYMINFIncomplete    20
+#define  CMTZERR_COLUMNIncomplete    21
+#define  CMTZERR_BadBatchHeader    22
 
 MTZ *MtzGet(const char *logname, int read_refs)
 
@@ -140,12 +144,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
   /* Read architecture */
   istat = ccp4_file_rarch (filein);
   if (!istat) {
-    if (ccp4_liberr_verbosity(-1)) {
-      printf(" No architecture information in file -- assuming native. \n");
-    }
-    ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_NoArch),
-                         "MtzGet", NULL);
-    return NULL;
+   ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_NoArch),
+                        "MtzGet", NULL);
   }
 
   parser = ccp4_parse_start(20);
@@ -160,6 +160,11 @@ MTZ *MtzGet(const char *logname, int read_refs)
   ccp4_file_seek (filein, 0, SEEK_SET);
   ccp4_file_setmode(filein,0);
   istat = ccp4_file_readchar(filein, (uint8 *) hdrrec, 4);
+  /* We don't test all reads, but this one should trap for e.g. truncated files */
+  if (istat == EOF || strlen(hdrrec) == 0) {
+    ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    return NULL;
+  }
   hdrrec[4] = '\0';
   ntok = ccp4_parser(hdrrec, MTZRECORDLENGTH, parser, iprint);
 
@@ -180,7 +185,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
      Position at top of header */
   /* We don't test all seeks, but this one might trap duff files */
   if ( ccp4_file_seek(filein, hdrst-1, SEEK_SET) ) {
-    ccp4_signal(CCP4_ERRLEVEL(4) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
     return NULL;
   }
 
@@ -201,7 +206,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
   istat = ccp4_file_readchar(filein, (uint8 *) hdrrec, MTZRECORDLENGTH);
   /* We don't test all reads, but this one should trap for e.g. truncated files */
   if (istat == EOF) {
-    ccp4_signal(CCP4_ERRLEVEL(4) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
+    ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ReadFail),"MtzGet",NULL);
     return NULL;
   }
 
@@ -376,9 +381,11 @@ MTZ *MtzGet(const char *logname, int read_refs)
         iset = (int) token[1].value;
         ++nset[jxtalin[iiset]];
         /* Test that dataset exists (i.e. pointer is non-NULL) */
-        if (!mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]])
-          ccp4_signal(CCP4_ERRLEVEL(4) | 
+        if (!mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]) {
+          ccp4_signal(CCP4_ERRLEVEL(3) | 
                       CMTZ_ERRNO(CMTZERR_NullDataset),"MtzGet",NULL);
+          return NULL;
+	}
         mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]->setid = iset;
         strcpy(mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]->dname,"dummy");
         if (ntok > 2) strcpy(mtz->xtal[jxtalin[iiset]]->set[nset[jxtalin[iiset]]]->dname,
@@ -430,7 +437,7 @@ MTZ *MtzGet(const char *logname, int read_refs)
 
     if (strncmp (mkey, "VERS",4) == 0) {
       if (strncmp (hdrrec+5,"MTZ:V1.1",8) != 0) {
-         printf("Input MTZ file is not correct version !!\n");
+         ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadVersion),"MtzGet",NULL);
          return(NULL);
          }  
        }
@@ -462,7 +469,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
     else if (strncmp (mkey, "SYMI",4) == 0) {
       /* Check that there are enough tokens in the header record */
       if (ntok < 7) {
-	printf("MTZ header is corrupted: missing tokens in SYMINF record\n");
+	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_SYMINFIncomplete),
+                        "MtzGet", NULL);
 	return(NULL);
       }
       mtz->mtzsymm.nsym = (int) token[1].value;
@@ -479,7 +487,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
     else if (strncmp (mkey, "COLU",4) == 0) {
       /* Check that there are enough tokens in the header record */
       if (ntok < 5) {
-	printf("MTZ header is corrupted: missing tokens in COLUMN record\n");
+	ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_COLUMNIncomplete),
+                        "MtzGet", NULL);
 	return(NULL);
       }
       ++icolin;
@@ -582,7 +591,8 @@ MTZ *MtzGet(const char *logname, int read_refs)
         hdrrec[MTZRECORDLENGTH] = '\0';
         ntok = ccp4_parser(hdrrec, MTZRECORDLENGTH, parser, iprint);
         if (!ccp4_keymatch(key, "BH")) {
-          printf("Batch headers corrupted !!\n");
+          ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_BadBatchHeader),
+                        "MtzGet", NULL);
           return(NULL);
         }
 
