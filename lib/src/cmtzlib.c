@@ -530,8 +530,10 @@ MTZ *MtzGet(const char *logname, int read_refs)
 	 Very old MTZ files may not have this value */
       if (ntok < 6) {
         if (!cset_warn) {
-          printf("Dataset id missing from COLUMN records in MTZ header. \n");
-          printf("Making default assignments. \n");
+          if (ccp4_liberr_verbosity(-1)) {
+            printf("Dataset id missing from COLUMN records in MTZ header. \n");
+            printf("Making default assignments. \n");
+          }
           ccp4_signal(CCP4_ERRLEVEL(2) | CMTZ_ERRNO(CMTZERR_DatasetIncomplete),
                         "MtzGet", NULL);
           cset_warn = 1;
