@@ -2953,6 +2953,12 @@ MTZ *MtzMalloc(int nxtal, int nset[])
   for (i = 0; i < 5; ++i) {
     mtz->order[i] = NULL;
   }
+  mtz->mtzsymm.spcgrp = 0;
+  mtz->mtzsymm.spcgrpname[0] = '\0';
+  mtz->mtzsymm.nsym = 0;
+  mtz->mtzsymm.nsymp = 0;
+  mtz->mtzsymm.symtyp = '\0';
+  mtz->mtzsymm.pgname[0] = '\0';
 
   return(mtz);
 }
