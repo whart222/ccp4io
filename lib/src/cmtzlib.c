@@ -1643,7 +1643,7 @@ int ccp4_lhprt(const MTZ *mtz, int iprint) {
   }
 
   /* write overall cell - just for scripts which grep for this */
-  printf("\n\n * Cell Dimensions : (obsolete - use crystal cells)\n\n");
+  printf("\n\n * Cell Dimensions : (obsolete - refer to dataset cell dimensions above)\n\n");
   for (i = 0; i < mtz->nxtal; ++i) 
     if (mtz->xtal[i]->cell[0] > 0.001) {
       printf(" %9.4f %9.4f %9.4f %9.4f %9.4f %9.4f \n\n",
@@ -3000,6 +3000,7 @@ MTZ *MtzMalloc(int nxtal, int nset[])
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_AllocFail),"MtzMalloc",NULL);
     return NULL;
   }
+  memset(mtz,'\0',sizeof(MTZ));
 
   mtz->nxtal=0;
   ccp4array_new_size(mtz->xtal,5);
@@ -3079,8 +3080,10 @@ int MtzFree(MTZ *mtz)
   }
   ccp4array_free(mtz->xtal);
 
-  if (mtz->n_orig_bat > 0) 
+  if (mtz->batch) {
     MtzFreeBatch(mtz->batch);
+    mtz->batch = NULL;
+  }
 
   if (mtz->hist != NULL) 
     MtzFreeHist(mtz->hist);
@@ -3100,6 +3103,7 @@ MTZBAT *MtzMallocBatch()
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_AllocFail),"MtzMallocBatch",NULL);
     return NULL;
   }
+  memset(batch,'\0',sizeof(MTZBAT));
   batch->next = NULL;
 
   return(batch);
@@ -3112,6 +3116,7 @@ int MtzFreeBatch(MTZBAT *batch)
 {
   if (batch != NULL) {
     MtzFreeBatch(batch->next);
+    batch->next = NULL;
     free(batch);
   }
   return 1;
@@ -3126,6 +3131,7 @@ MTZCOL *MtzMallocCol(MTZ *mtz, int nref)
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_AllocFail),"MtzMallocCol",NULL);
     return NULL;
   }
+  memset(col,'\0',sizeof(MTZCOL));
 
   col->ref = NULL;
   if (mtz->refs_in_memory) {
@@ -3177,6 +3183,8 @@ MTZXTAL *MtzAddXtal(MTZ *mtz, const char *xname, const char *pname,
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_AllocFail),"MtzAddXtal",NULL);
     return NULL;
   }
+  memset(xtal,'\0',sizeof(MTZXTAL));
+
   /* fill out the data */
   strncpy( xtal->xname, xname, 64 );
   xtal->xname[64] = '\0';
@@ -3213,6 +3221,8 @@ MTZSET *MtzAddDataset(MTZ *mtz, MTZXTAL *xtl, const char *dname,
     ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_AllocFail),"MtzAddDataset",NULL);
     return NULL;
   }
+  memset(set,'\0',sizeof(MTZSET));
+
   /* fill out the data */
   strncpy( set->dname, dname, 64 );
   set->dname[64] = '\0';
