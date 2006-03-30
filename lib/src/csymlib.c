@@ -65,10 +65,12 @@ CCP4SPG *ccp4spg_load_spacegroup(const int numspg, const int ccp4numspg,
 
 { CCP4SPG *spacegroup;
   int i,j,k,l,debug=0,nsym2,symops_provided=0,ierr,ilaue;
-  float sg_chb[4][4],limits[2],rot1[4][4],rot2[4][4];
+  float sg_chb[4][4],limits[2],rot1[4][4],rot2[4][4],det;
   FILE *filein;
   char *symopfile, *ccp4dir, filerec[80];
   ccp4_symop *op2,*op3,opinv;
+
+  static int reported_syminfo = 0;       /* report location of SYMINFO first time only */
 
   /* spacegroup variables */
   int sg_num, sg_ccp4_num, sg_nsymp, sg_num_cent;
@@ -133,8 +135,11 @@ CCP4SPG *ccp4spg_load_spacegroup(const int numspg, const int ccp4numspg,
     symopfile[strlen(ccp4dir)+21] = '\0';
     printf(" SYMINFO file set to %s \n",symopfile);
   } else {
-    printf("\n Spacegroup information obtained from library file: \n");
-    printf(" Logical Name: SYMINFO   Filename: %s\n\n",symopfile);
+    if (!reported_syminfo) {
+      printf("\n Spacegroup information obtained from library file: \n");
+      printf(" Logical Name: SYMINFO   Filename: %s\n\n",symopfile);
+      reported_syminfo = 1;
+    }
   }
 
   filein = fopen(symopfile,"r");
@@ -321,7 +326,8 @@ CCP4SPG *ccp4spg_load_spacegroup(const int numspg, const int ccp4numspg,
      strncpy(filerec,sg_symop[j],80);   /* symop_to_mat4 overwrites later sg_symop */
      symop_to_mat4(filerec,filerec+strlen(filerec),rot2[0]);
      ccp4_4matmul(rot1,(const float (*)[4])cent_ops,(const float (*)[4])rot2);
-     invert4matrix((const float (*)[4])rot1,rot2);
+     det=invert4matrix((const float (*)[4])rot1,rot2);
+     if (debug) printf("symop determinant: %f\n",det);
      for (k = 0; k < 3; ++k) {
       for (l = 0; l < 3; ++l) {
         spacegroup->symop[i*sg_nsymp+j].rot[k][l]=rot1[k][l];
@@ -1547,6 +1553,11 @@ int ccp4spg_generate_origins(const char *namspg, const int nsym, const float rsy
 
 void ccp4spg_print_recip_spgrp(const CCP4SPG* sp)
 {
+  if (!sp) {  
+    ccp4_signal(CSYM_ERRNO(CSYMERR_NullSpacegroup),"ccp4spg_print_recip_spgrp",NULL); 
+    return;
+  }
+
     printf("Reciprocal space symmetry: \n");
     printf("Space group: \"%s\" Point group: \"%s\" Laue group: \"%s\" \n",
        sp->symbol_xHM,sp->point_group,sp->laue_name); 
