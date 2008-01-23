@@ -51,6 +51,7 @@
 #define  CMTZERR_COLUMNIncomplete    21
 #define  CMTZERR_BadBatchHeader    22
 #define  CMTZERR_DifferentVersion  23
+#define  CMTZERR_ColTypeMismatch   24
 
 MTZ *MtzGet(const char *logname, int read_refs)
 
@@ -1295,10 +1296,11 @@ MTZCOL **ccp4_lrassn(const MTZ *mtz, const char labels[][31], const int nlabels,
 
 	 /* check requested column type against file type. */
 	 } else if (strncmp(col->type,types[ilab],1)) {
-           printf("From ccp4_lrassn: expected type %s does not match file type %s for column %s\n", 
+           ccp4_signal(CCP4_ERRLEVEL(3) | CMTZ_ERRNO(CMTZERR_ColTypeMismatch),"ccp4_lrassn",NULL);
+           printf("   From ccp4_lrassn: expected type %s does not match file type %s for column %s\n", 
              types[ilab],col->type,col->label);
            if (!strcmp(types[ilab],"R") || !strcmp(types[ilab],"I"))
-             printf("(This may be intended for generic types R/I.) \n");
+             printf("   (This may be intended for generic types R/I.) \n");
 	 }
        }
 
@@ -1643,10 +1645,18 @@ int ccp4_lhprt(const MTZ *mtz, int iprint) {
       break;
     }
 
-  /* Calculate overall  resolution limits */
-  for (i = 0; i < mtz->nxtal; ++i) {
+  /* Calculate overall resolution limits. Two cases: If we have written some reflections
+     to file, we probably want to know the resolution limits for these. In this case,
+     mtz->resmax_out and mtz->resmin_out have been set and we use those. Otherwise, 
+     we use the resolution limits of the crystals in memory. */
+  if (mtz->resmax_out > 0.0001) {
+    maxres = mtz->resmax_out;
+    minres = mtz->resmin_out;
+  } else {
+    for (i = 0; i < mtz->nxtal; ++i) {
       if (mtz->xtal[i]->resmax > maxres) maxres = mtz->xtal[i]->resmax;
       if (mtz->xtal[i]->resmin < minres) minres = mtz->xtal[i]->resmin;
+    }
   }
   printf(" *  Resolution Range :\n\n");
   if (maxres > 0.0) {
