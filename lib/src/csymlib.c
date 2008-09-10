@@ -2,10 +2,19 @@
      csymlib.c: C-level library for symmetry information.
      Copyright (C) 2001  CCLRC, Martyn Winn
 
-     This code is distributed under the terms and conditions of the
-     CCP4 Program Suite Licence Agreement as a CCP4 Library.
-     A copy of the CCP4 licence can be obtained by writing to the
-     CCP4 Secretary, Daresbury Laboratory, Warrington WA4 4AD, UK.
+     This library is free software: you can redistribute it and/or
+     modify it under the terms of the GNU Lesser General Public License
+     version 3, modified in accordance with the provisions of the 
+     license to address the requirements of UK law.
+ 
+     You should have received a copy of the modified GNU Lesser General 
+     Public License along with this library.  If not, copies may be 
+     downloaded from http://www.ccp4.ac.uk/ccp4license.php
+ 
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU Lesser General Public License for more details.
 */
 
 /* DO NOT put Doxygen comments here - put in csymlib.h */
@@ -22,6 +31,7 @@
 #include "cvecmat.h"
 #include "ccp4_errno.h"
 #include "ccp4_unitcell.h"
+/* rcsid[] = "$Id$" */
 
 /* stuff for error reporting */
 #define CSYM_ERRNO(n) (CCP4_ERR_SYM | (n))
@@ -168,9 +178,11 @@ CCP4SPG *ccp4spg_load_spacegroup(const int numspg, const int ccp4numspg,
     /* If syminfo.lib comes from a DOS platform, and we are on
        unix, need to strip spurious \r character. Note this is
        necessary because we have removed \r as parser delimiter. */
-    if (filerec[strlen(filerec)-2]=='\r') {
-      filerec[strlen(filerec)-2]='\n';
-      filerec[strlen(filerec)-1]='\0';
+    if (strlen(filerec) > 1){
+      if (filerec[strlen(filerec)-2]=='\r') {
+        filerec[strlen(filerec)-2]='\n';
+        filerec[strlen(filerec)-1]='\0';
+      }
     }
 
     if (strlen(filerec) > 1) {

@@ -1,1 +1,17 @@
 * text=auto !eol
+lib/src/cmap_accessor.c svneol=native#text/plain
+lib/src/cmap_close.c svneol=native#text/plain
+lib/src/cmap_data.c svneol=native#text/plain
+lib/src/cmap_data.h svneol=native#text/plain
+lib/src/cmap_errno.h svneol=native#text/plain
+lib/src/cmap_header.c svneol=native#text/plain
+lib/src/cmap_header.h svneol=native#text/plain
+lib/src/cmap_labels.c svneol=native#text/plain
+lib/src/cmap_labels.h svneol=native#text/plain
+lib/src/cmap_open.c svneol=native#text/plain
+lib/src/cmap_skew.c svneol=native#text/plain
+lib/src/cmap_skew.h svneol=native#text/plain
+lib/src/cmap_stats.c svneol=native#text/plain
+lib/src/cmap_stats.h svneol=native#text/plain
+lib/src/cmap_symop.c svneol=native#text/plain
+lib/src/cmaplib.h svneol=native#text/plain

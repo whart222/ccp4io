@@ -1,5 +1,5 @@
 /*
-     ccp4_file_err.h: header file with file handling error codes
+     cmap_data.h: header for cmap_data.c
      Copyright (C) 2001  CCLRC, Charles Ballard
 
      This library is free software: you can redistribute it and/or
@@ -16,23 +16,17 @@
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
      GNU Lesser General Public License for more details.
 */
-#ifndef _GUARD_FILE_ERR
-#define _GUARD_FILE_ERR
+#ifndef __GUARD_MAPLIB_DATA
+#define __GUARD_MAPLIB_DATA
 
-#define CCP4_ERRNO(y) (CCP4_ERR_FILE | (y))
-#define CIO_Ok 0
-#define CIO_BadMode 1
-#define CIO_CantOpenFile 2
-#define CIO_MaxFile 3
-#define CIO_ReadFail 4
-#define CIO_WriteFail 5
-#define CIO_CloseFail 6
-#define CIO_SeekFail 7
-#define CIO_NullPtr 8
-#define CIO_EOF 9
-#define CIO_NoFile 10
-#define CIO_NotOpen 11
-#define CIO_UnlinkFail 12
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+int number_sections(CMMFile *mfile);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif    /* __GUARD_MAPLIB_DATA */

@@ -2,10 +2,19 @@
      cmtzlib.c: functions for handling MTZ files
      Copyright (C) 2001  CCLRC, Martyn Winn
 
-     This code is distributed under the terms and conditions of the
-     CCP4 Program Suite Licence Agreement as a CCP4 Library.
-     A copy of the CCP4 licence can be obtained by writing to the
-     CCP4 Secretary, Daresbury Laboratory, Warrington WA4 4AD, UK.
+     This library is free software: you can redistribute it and/or
+     modify it under the terms of the GNU Lesser General Public License
+     version 3, modified in accordance with the provisions of the 
+     license to address the requirements of UK law.
+ 
+     You should have received a copy of the modified GNU Lesser General 
+     Public License along with this library.  If not, copies may be 
+     downloaded from http://www.ccp4.ac.uk/ccp4license.php
+ 
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU Lesser General Public License for more details.
 */
 
 /* DO NOT put Doxygen comments here - put in cmtzlib.h */
@@ -22,6 +31,7 @@
 #include "ccp4_vars.h"
 #include "ccp4_errno.h"
 #include "ccp4_unitcell.h"
+/* "$Id$" */
 
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
@@ -2534,7 +2544,8 @@ int MtzPut(MTZ *mtz, const char *logname)
    }
   }
  }
- sprintf(hdrrec,"RESO %-20f %-20f",mtz->resmin_out,mtz->resmax_out);
+ /* print enough digits to retain precision. C. Flensburg 20080227 */
+ sprintf(hdrrec,"RESO %-20.16f %-20.16f",mtz->resmin_out,mtz->resmax_out);
  MtzWhdrLine(fileout,46,hdrrec);
 
  if (debug) 

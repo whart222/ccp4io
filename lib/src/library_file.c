@@ -2,10 +2,19 @@
      library_file.c: functions for file i/o
      Copyright (C) 2001  CCLRC, Charles Ballard
 
-     This code is distributed under the terms and conditions of the
-     CCP4 Program Suite Licence Agreement as a CCP4 Library.
-     A copy of the CCP4 licence can be obtained by writing to the
-     CCP4 Secretary, Daresbury Laboratory, Warrington WA4 4AD, UK.
+     This library is free software: you can redistribute it and/or
+     modify it under the terms of the GNU Lesser General Public License
+     version 3, modified in accordance with the provisions of the 
+     license to address the requirements of UK law.
+ 
+     You should have received a copy of the modified GNU Lesser General 
+     Public License along with this library.  If not, copies may be 
+     downloaded from http://www.ccp4.ac.uk/ccp4license.php
+ 
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU Lesser General Public License for more details.
 */
 
 /** @file library_file.c
@@ -22,6 +31,7 @@
 #include "library_file.h"
 #include "ccp4_errno.h"
 #include "ccp4_file_err.h"
+/* rcsid[] = "$Id$" */
                                                         
 static uint16 nativeIT = NATIVEIT; /* machine integer type */ 
 static uint16 nativeFT = NATIVEFT; /* machine float type */
@@ -2191,14 +2201,15 @@ char *ccp4_file_print(CCP4File *cfile, char *msg_start, char *msg_end)
       strcpy(msg_curr,cfile->name);
       msg_curr = strrchr(msg_curr,'\0'); }
 
-  if (cfile->open)
+  if (cfile->open) {
     if ((msg_end - msg_curr) > 6 ) {
       strcat(msg_start, " opened");
       msg_curr = strrchr(msg_curr,'\0'); }
-  else
+  } else {
     if ((msg_end - msg_curr) > 7 ) {
       strcat(msg_start, " closed");
       msg_curr = strrchr(msg_curr,'\0'); }
+  }
 
   if (cfile->append) {
     if ((msg_end - msg_curr) > 13 ) {
