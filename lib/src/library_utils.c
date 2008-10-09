@@ -464,13 +464,17 @@ void *ccp4_utils_calloc(size_t nelem , size_t elsize)
 #if ! defined (_MSC_VER)
 char *ccp4_utils_username(void)
 { 
+  static char userid_unknown[] = "unknown";
   struct passwd *passwd_struct=NULL;
   char *userid=NULL;
   if (!(userid = getlogin())) {
+    /*
     passwd_struct = getpwuid(getuid());
     if (passwd_struct) {
       userid = passwd_struct->pw_name;
     }
+    */
+    userid = userid_unknown;
   }
   return(userid); 
 }
