@@ -2003,11 +2003,11 @@ FORTRAN_SUBR ( LWCELL, lwcell,
  * @param iappnd If 0 then assign all columns, if 1 then assign appended columns.
  */
 FORTRAN_SUBR ( LWIDAS, lwidas,
-	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, int *iappnd,
+	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, const int *iappnd,
                       int pname_len, int dname_len),
-	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, int *iappnd),
+	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, const int *iappnd),
 	       (const int *mindx, int *nlprgo, fpstr pname, int pname_len, 
-                      fpstr dname, int dname_len, int *iappnd))
+                      fpstr dname, int dname_len, const int *iappnd))
 {int i,j,k,istart;
   char *project_name;
   char *crystal_name;
@@ -2410,11 +2410,11 @@ FORTRAN_SUBR ( LWASSN, lwassn,
 /* Fortran wrapper for ccp4_lwassn */
 /* As lwassn except doesn't check user_label_out */
 FORTRAN_SUBR ( LWCLAB, lwclab,
-	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, int *iappnd,
+	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, const int *iappnd,
                       int lsprgo_len, int ctprgo_len),
-	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, int *iappnd),
+	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, const int *iappnd),
 	       (const int *mindx, fpstr lsprgo, int lsprgo_len, const int *nlprgo, 
-                      fpstr ctprgo, int ctprgo_len, int *iappnd))
+                      fpstr ctprgo, int ctprgo_len, const int *iappnd))
 {int i,j,istart;
   char *label;
   char *type;
@@ -2920,9 +2920,9 @@ FORTRAN_SUBR ( LWREFL, lwrefl,
  * @param ifail (O) Returns 0 if successful, non-zero otherwise.
  */
 FORTRAN_SUBR ( LWCLOS_NOEXIT, lwclos_noexit,
-	       (const int *mindx, int *iprint, int *ifail),
-	       (const int *mindx, int *iprint, int *ifail),
-	       (const int *mindx, int *iprint, int *ifail))
+	       (const int *mindx, const int *iprint, int *ifail),
+	       (const int *mindx, const int *iprint, int *ifail),
+	       (const int *mindx, const int *iprint, int *ifail))
 
 {
   char *fullfilename;
@@ -2966,9 +2966,9 @@ FORTRAN_SUBR ( LWCLOS_NOEXIT, lwclos_noexit,
  * @param iprint (I) Specify whether to write output file header to log.
  */
 FORTRAN_SUBR ( LWCLOS, lwclos,
-	       (const int *mindx, int *iprint),
-	       (const int *mindx, int *iprint),
-	       (const int *mindx, int *iprint))
+	       (const int *mindx, const int *iprint),
+	       (const int *mindx, const int *iprint),
+	       (const int *mindx, const int *iprint))
 
 {
   int ifail;
