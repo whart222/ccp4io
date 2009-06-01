@@ -703,7 +703,7 @@ int ccp4_file_itemsize(const CCP4File *cfile)
  * strdup @cfile->name
  * @return name of file as const char *
  */
-const char *ccp4_file_name( CCP4File *cfile)
+char *ccp4_file_name( CCP4File *cfile)
 {
 #if defined _MSC_VER
   return ( cfile == NULL ? NULL : _strdup(cfile->name));

@@ -105,6 +105,11 @@ void CCP4H_INIT_LIB(int *ihtml, int *isumm);
 #endif
 #endif
 
+typedef char char_3[3];
+typedef char char_31[31];
+typedef char char_mtzrl[MTZRECORDLENGTH];
+typedef char char_2_31[2][31];
+
 void MtzMemTidy(void) {
 
   int i;
@@ -272,7 +277,7 @@ FORTRAN_SUBR ( LRHIST, lrhist,
 
  if (MtzCheckSubInput(*mindx,"LRHIST",1)) return;
 
- *nlines = ccp4_lrhist(mtzdata[*mindx-1], hstrng, *nlines);
+ *nlines = ccp4_lrhist(mtzdata[*mindx-1], (char_mtzrl*)hstrng, *nlines);
 
 }
 
@@ -599,7 +604,7 @@ FORTRAN_SUBR ( LKYIN, lkyin,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,label,*nlprgi,user_label_in[*mindx-1]) == -1) 
+  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgi,user_label_in[*mindx-1]) == -1) 
     ccperror(1,"Error in label assignments in LABIN");
 
   free(temp_name);
@@ -653,7 +658,7 @@ FORTRAN_SUBR ( LKYOUT, lkyout,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,label,*nlprgo,user_label_out[*mindx-1]) == -1) 
+  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgo,user_label_out[*mindx-1]) == -1) 
     ccperror(1,"Error in label assignments in LABOUT");
 
   free(temp_name);
@@ -698,7 +703,7 @@ FORTRAN_SUBR ( LKYSET, lkyset,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,label,*nlprgi,user_lab) == -1) 
+  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgi,(char_2_31*)user_lab) == -1) 
     ccperror(1,"Error in label assignments in LKYSET");
 
   for (i = 0; i < *nlprgi; ++i) {
@@ -797,7 +802,7 @@ FORTRAN_SUBR ( LRASSN, lrassn,
     type[i*3+j] = '\0';
   }
 
-  colarray = ccp4_lrassn(mtzdata[*mindx-1],label,*nlprgi,type);
+  colarray = ccp4_lrassn(mtzdata[*mindx-1],(char_31*)label,*nlprgi,(char_3*)type);
   for (l = 0; l < *nlprgi; ++l) {
     collookup[*mindx-1][l] = colarray[l];
   }
@@ -1774,7 +1779,7 @@ FORTRAN_SUBR ( LWHIST, lwhist,
 
  if (MtzCheckSubInput(*mindx,"LWHIST",2)) return;
 
- MtzAddHistory(mtzdata[*mindx-1], hstrng, *nlines);
+ MtzAddHistory(mtzdata[*mindx-1], (char_mtzrl*)hstrng, *nlines);
 
 }
 
@@ -1826,7 +1831,7 @@ FORTRAN_SUBR ( LWHSTL, lwhstl,
  strncpy(hline+len,temp_hstrng,Length);
  for (i = len+Length; i < MTZRECORDLENGTH; ++i) hline[i] = '\0';
 
- MtzAddHistory(mtzdata[*mindx-1], hline, 1);
+ MtzAddHistory(mtzdata[*mindx-1], (char_mtzrl*)hline, 1);
 
  free(temp_hstrng);
 }
@@ -2378,7 +2383,7 @@ FORTRAN_SUBR ( LWASSN, lwassn,
     if (*iappnd == 1) istart = MtzNumSourceCol(mtzdata[*mindx-1]);
     
     /* assign new columns for output */
-    colarray = ccp4_lwassn(mtzdata[*mindx-1],label,*nlprgo,type,*iappnd); 
+    colarray = ccp4_lwassn(mtzdata[*mindx-1],(char_31*)label,*nlprgo,(char_3*)type,*iappnd); 
 
     for (j = 0; j < 5; ++j)
         colsort[j] = NULL;
@@ -2456,7 +2461,7 @@ FORTRAN_SUBR ( LWCLAB, lwclab,
   if (*iappnd == 1) istart = MtzNumSourceCol(mtzdata[*mindx-1]);
 
   /* assign new columns for output */
-  colarray = ccp4_lwassn(mtzdata[*mindx-1],label,*nlprgo,type,*iappnd); 
+  colarray = ccp4_lwassn(mtzdata[*mindx-1],(char_31*)label,*nlprgo,(char_3*)type,*iappnd); 
 
   for (j = 0; j < 5; ++j)
     colsort[j] = NULL;

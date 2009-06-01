@@ -92,7 +92,7 @@
    error for ierr=1 (or -1).
 
 */
-int ccperror(int ierr, const char *message)
+int ccperror(int ierr, char *message)
 {
   /* Execute user-defined function callback */
   ccp4InvokeCallback(ierr,message);

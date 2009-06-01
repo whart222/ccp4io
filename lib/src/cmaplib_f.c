@@ -78,7 +78,7 @@ static int GetChannel(int iunit)
 
 static int ioArrayPrint(IOConvMap *ioMap)
 {
-  const char *filename = ccp4_file_name((*ioMap->mapfile).stream);
+  char *filename = ccp4_file_name((*ioMap->mapfile).stream);
   long length = ccp4_file_length((*ioMap->mapfile).stream);
   unsigned rw_mode = ccp4_file_is_read((*ioMap->mapfile).stream);
 
@@ -215,6 +215,7 @@ static int HeaderPrint(const CMMFile *mfile)
       fprintf(stdout,"  %s\n",ccp4_cmap_get_label(mfile,i));
   }
   fprintf(stdout,"\n\n");
+  return 0;
 } 
 
 /* belongs to fortran interface , also provide translators for others?

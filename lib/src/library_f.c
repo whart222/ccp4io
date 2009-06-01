@@ -552,7 +552,7 @@ float __stdcall ERFC(float *value)
 int isatty_ (int *lunit)
 {
   lunit = 0 ;
-  return lunit;
+  return *lunit;
 }
 
 float erfc_ (float *value)
