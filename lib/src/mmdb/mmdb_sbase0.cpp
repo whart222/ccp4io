@@ -1320,7 +1320,11 @@ PPCSBIndex Index1;
     dirpath = new char[i+10];
     strcpy ( dirpath,path );
     if (i>0)  {
+#if defined(_MSC_VER) || defined (WIN32)
+      if (dirpath[i-1]!='\\')  strcat ( dirpath,"\\" );
+#else
       if (dirpath[i-1]!='/')  strcat ( dirpath,"/" );
+#endif
     }
   }
 

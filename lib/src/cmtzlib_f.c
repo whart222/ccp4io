@@ -105,11 +105,6 @@ void CCP4H_INIT_LIB(int *ihtml, int *isumm);
 #endif
 #endif
 
-typedef char char_3[3];
-typedef char char_31[31];
-typedef char char_mtzrl[MTZRECORDLENGTH];
-typedef char char_2_31[2][31];
-
 void MtzMemTidy(void) {
 
   int i;
@@ -277,7 +272,7 @@ FORTRAN_SUBR ( LRHIST, lrhist,
 
  if (MtzCheckSubInput(*mindx,"LRHIST",1)) return;
 
- *nlines = ccp4_lrhist(mtzdata[*mindx-1], (char_mtzrl*)hstrng, *nlines);
+ *nlines = ccp4_lrhist(mtzdata[*mindx-1], hstrng, *nlines);
 
 }
 
@@ -604,7 +599,7 @@ FORTRAN_SUBR ( LKYIN, lkyin,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgi,user_label_in[*mindx-1]) == -1) 
+  if (MtzParseLabin(temp_name,label,*nlprgi,user_label_in[*mindx-1]) == -1) 
     ccperror(1,"Error in label assignments in LABIN");
 
   free(temp_name);
@@ -658,7 +653,7 @@ FORTRAN_SUBR ( LKYOUT, lkyout,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgo,user_label_out[*mindx-1]) == -1) 
+  if (MtzParseLabin(temp_name,label,*nlprgo,user_label_out[*mindx-1]) == -1) 
     ccperror(1,"Error in label assignments in LABOUT");
 
   free(temp_name);
@@ -703,7 +698,7 @@ FORTRAN_SUBR ( LKYSET, lkyset,
     label[i*31+j] = '\0';
   }
  
-  if (MtzParseLabin(temp_name,(char_31*)label,*nlprgi,(char_2_31*)user_lab) == -1) 
+  if (MtzParseLabin(temp_name,label,*nlprgi,user_lab) == -1) 
     ccperror(1,"Error in label assignments in LKYSET");
 
   for (i = 0; i < *nlprgi; ++i) {
@@ -802,7 +797,7 @@ FORTRAN_SUBR ( LRASSN, lrassn,
     type[i*3+j] = '\0';
   }
 
-  colarray = ccp4_lrassn(mtzdata[*mindx-1],(char_31*)label,*nlprgi,(char_3*)type);
+  colarray = ccp4_lrassn(mtzdata[*mindx-1],label,*nlprgi,type);
   for (l = 0; l < *nlprgi; ++l) {
     collookup[*mindx-1][l] = colarray[l];
   }
@@ -1779,7 +1774,7 @@ FORTRAN_SUBR ( LWHIST, lwhist,
 
  if (MtzCheckSubInput(*mindx,"LWHIST",2)) return;
 
- MtzAddHistory(mtzdata[*mindx-1], (char_mtzrl*)hstrng, *nlines);
+ MtzAddHistory(mtzdata[*mindx-1], hstrng, *nlines);
 
 }
 
@@ -1831,7 +1826,7 @@ FORTRAN_SUBR ( LWHSTL, lwhstl,
  strncpy(hline+len,temp_hstrng,Length);
  for (i = len+Length; i < MTZRECORDLENGTH; ++i) hline[i] = '\0';
 
- MtzAddHistory(mtzdata[*mindx-1], (char_mtzrl*)hline, 1);
+ MtzAddHistory(mtzdata[*mindx-1], hline, 1);
 
  free(temp_hstrng);
 }
@@ -2003,11 +1998,11 @@ FORTRAN_SUBR ( LWCELL, lwcell,
  * @param iappnd If 0 then assign all columns, if 1 then assign appended columns.
  */
 FORTRAN_SUBR ( LWIDAS, lwidas,
-	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, const int *iappnd,
+	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, int *iappnd,
                       int pname_len, int dname_len),
-	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, const int *iappnd),
+	       (const int *mindx, int *nlprgo, fpstr pname, fpstr dname, int *iappnd),
 	       (const int *mindx, int *nlprgo, fpstr pname, int pname_len, 
-                      fpstr dname, int dname_len, const int *iappnd))
+                      fpstr dname, int dname_len, int *iappnd))
 {int i,j,k,istart;
   char *project_name;
   char *crystal_name;
@@ -2383,7 +2378,7 @@ FORTRAN_SUBR ( LWASSN, lwassn,
     if (*iappnd == 1) istart = MtzNumSourceCol(mtzdata[*mindx-1]);
     
     /* assign new columns for output */
-    colarray = ccp4_lwassn(mtzdata[*mindx-1],(char_31*)label,*nlprgo,(char_3*)type,*iappnd); 
+    colarray = ccp4_lwassn(mtzdata[*mindx-1],label,*nlprgo,type,*iappnd); 
 
     for (j = 0; j < 5; ++j)
         colsort[j] = NULL;
@@ -2410,11 +2405,11 @@ FORTRAN_SUBR ( LWASSN, lwassn,
 /* Fortran wrapper for ccp4_lwassn */
 /* As lwassn except doesn't check user_label_out */
 FORTRAN_SUBR ( LWCLAB, lwclab,
-	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, const int *iappnd,
+	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, int *iappnd,
                       int lsprgo_len, int ctprgo_len),
-	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, const int *iappnd),
+	       (const int *mindx, fpstr lsprgo, const int *nlprgo, fpstr ctprgo, int *iappnd),
 	       (const int *mindx, fpstr lsprgo, int lsprgo_len, const int *nlprgo, 
-                      fpstr ctprgo, int ctprgo_len, const int *iappnd))
+                      fpstr ctprgo, int ctprgo_len, int *iappnd))
 {int i,j,istart;
   char *label;
   char *type;
@@ -2461,7 +2456,7 @@ FORTRAN_SUBR ( LWCLAB, lwclab,
   if (*iappnd == 1) istart = MtzNumSourceCol(mtzdata[*mindx-1]);
 
   /* assign new columns for output */
-  colarray = ccp4_lwassn(mtzdata[*mindx-1],(char_31*)label,*nlprgo,(char_3*)type,*iappnd); 
+  colarray = ccp4_lwassn(mtzdata[*mindx-1],label,*nlprgo,type,*iappnd); 
 
   for (j = 0; j < 5; ++j)
     colsort[j] = NULL;
@@ -2920,9 +2915,9 @@ FORTRAN_SUBR ( LWREFL, lwrefl,
  * @param ifail (O) Returns 0 if successful, non-zero otherwise.
  */
 FORTRAN_SUBR ( LWCLOS_NOEXIT, lwclos_noexit,
-	       (const int *mindx, const int *iprint, int *ifail),
-	       (const int *mindx, const int *iprint, int *ifail),
-	       (const int *mindx, const int *iprint, int *ifail))
+	       (const int *mindx, int *iprint, int *ifail),
+	       (const int *mindx, int *iprint, int *ifail),
+	       (const int *mindx, int *iprint, int *ifail))
 
 {
   char *fullfilename;
@@ -2966,9 +2961,9 @@ FORTRAN_SUBR ( LWCLOS_NOEXIT, lwclos_noexit,
  * @param iprint (I) Specify whether to write output file header to log.
  */
 FORTRAN_SUBR ( LWCLOS, lwclos,
-	       (const int *mindx, const int *iprint),
-	       (const int *mindx, const int *iprint),
-	       (const int *mindx, const int *iprint))
+	       (const int *mindx, int *iprint),
+	       (const int *mindx, int *iprint),
+	       (const int *mindx, int *iprint))
 
 {
   int ifail;

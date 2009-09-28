@@ -49,7 +49,7 @@
 /* \newcommand{\fixme}[1]{\index{Fixme!}[{\bf Fixme!:} #1\@.]}              */
 /*                                                                          */
 /* \title{FORTRAN wrapper library routines}                                 */
-/* \date{$ $Date: 2008/06/18 16:55:57 $ $}                                  */
+/* \date{$ $Date: 2009/06/17 10:37:14 $ $}                                  */
 /* \author{This version: Martyn Winn, Charles Ballard @ Daresbury}          */
 /*                                                                          */
 /* \makeindex                                                               */
@@ -538,7 +538,7 @@ FORTRAN_SUBR ( CCHMOD, cchmod,
 int __stdcall ISATTY (int *lunit)
 {
   lunit = 0 ;
-  return lunit;
+  return *lunit;
 }
 
 /* erfc doesnt seem to be in Mircrosoft Visual Studdio so this is a fudge */

@@ -672,7 +672,8 @@ int  i,k,sN;
     i  = 0;
     sN = 1;
     while (i<numRes)  {
-      PutInteger ( &(S[8]),sN,2 );
+      //PutInteger ( &(S[8]),sN,2 );
+      PutInteger ( &(S[7]),sN,3 );
       k = 19;
       while ((i<numRes) && (k<70))  {
         if (resName[i][0])

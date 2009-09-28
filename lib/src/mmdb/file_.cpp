@@ -347,10 +347,10 @@ int  i;
           if (i>0)  sleep ( 1 );
 #endif
           if (TextMode)  {
-            if (ReadOnly)  hFile = fopen ( FName,"r"   );
+            if (ReadOnly)  hFile = fopen ( FName,"rt"   );
                      else  hFile = fopen ( FName,"r+t" );
           } else  {
-            if (ReadOnly)  hFile = fopen ( FName,"r"   );
+            if (ReadOnly)  hFile = fopen ( FName,"rb"   );
                      else  hFile = fopen ( FName,"r+b" );
           }
 #ifndef _MVS

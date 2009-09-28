@@ -1669,12 +1669,9 @@ int ccp4_lhprt(const MTZ *mtz, int iprint) {
     }
   }
   printf(" *  Resolution Range :\n\n");
-  if (maxres > 0.0 && minres > 0.0) {
+  if (maxres > 0.0) {
     printf(" %10.5f %10.5f     ( %10.3f - %10.3f A )\n\n",
        minres,maxres,1.0/sqrt(minres),1.0/sqrt(maxres));
-  } else if (maxres > 0.0)  {
-    printf(" %10.5f %10.5f     ( inf  - %10.3f A )\n\n",
-       minres,maxres,1.0/sqrt(maxres));
   } else {
     printf("   Not set - no crystals or reflections? \n\n");
   }

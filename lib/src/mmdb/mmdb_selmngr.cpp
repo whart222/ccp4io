@@ -1158,7 +1158,7 @@ void  CMMDBSelManager::Select (
              int   selKey    // selection key
                     )  {
 int       i,j,k,n,m1,m2,c, sk,nsel;
-Boolean   noRes,modelSel,chainSel,resSel,selAND;
+Boolean   noRes,modelSel(False),chainSel,resSel,selAND;
 PCModel   model;
 PCChain   chain;
 PCResidue res;
