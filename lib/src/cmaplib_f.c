@@ -78,7 +78,7 @@ static int GetChannel(int iunit)
 
 static int ioArrayPrint(IOConvMap *ioMap)
 {
-  char *filename = ccp4_file_name((*ioMap->mapfile).stream);
+  const char *filename = ccp4_file_name((*ioMap->mapfile).stream);
   long length = ccp4_file_length((*ioMap->mapfile).stream);
   unsigned rw_mode = ccp4_file_is_read((*ioMap->mapfile).stream);
 
@@ -88,7 +88,7 @@ static int ioArrayPrint(IOConvMap *ioMap)
   if (rw_mode == 1) {
     fprintf(stdout,"\nFile name for input map file on unit %3d : %s\n",
       ioMap->ipc,filename);
-    fprintf(stdout,"file size %d ; logical name %s\n\n",length,ioMap->logname);
+    fprintf(stdout,"file size %ld ; logical name %s\n\n",length,ioMap->logname);
   } else {
     fprintf(stdout,"\nFile name for output map file on unit %3d : %s\n",
       ioMap->ipc,filename);
@@ -163,7 +163,7 @@ static int HeaderReturn(const CMMFile *mfile, char *title, int *mode,
   return (1);
 }
 
-static void HeaderPrint(const CMMFile *mfile)
+static int HeaderPrint(const CMMFile *mfile)
 {
   static const char axes[]={' ','X','Y','Z'};
 
@@ -215,6 +215,7 @@ static void HeaderPrint(const CMMFile *mfile)
       fprintf(stdout,"  %s\n",ccp4_cmap_get_label(mfile,i));
   }
   fprintf(stdout,"\n\n");
+  return (0);
 } 
 
 /* belongs to fortran interface , also provide translators for others?
