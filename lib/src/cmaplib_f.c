@@ -78,7 +78,7 @@ static int GetChannel(int iunit)
 
 static int ioArrayPrint(IOConvMap *ioMap)
 {
-  const char *filename = ccp4_file_name((*ioMap->mapfile).stream);
+  char *filename = ccp4_file_name((*ioMap->mapfile).stream);
   long length = ccp4_file_length((*ioMap->mapfile).stream);
   unsigned rw_mode = ccp4_file_is_read((*ioMap->mapfile).stream);
 
@@ -163,7 +163,7 @@ static int HeaderReturn(const CMMFile *mfile, char *title, int *mode,
   return (1);
 }
 
-static int HeaderPrint(const CMMFile *mfile)
+static void HeaderPrint(const CMMFile *mfile)
 {
   static const char axes[]={' ','X','Y','Z'};
 
