@@ -940,5 +940,11 @@ extern int SuperposeAtoms ( mat44 & T, PPCAtom A1, int nA, PPCAtom A2,
 extern void  SortContacts ( PSContact contact, int ncontacts,
                             int sortmode );
 
+
+#define  NO_TORSION  (-MaxReal)
+
+extern realtype getPhi ( PPCAtom A );  // A[0] - A[3] used
+extern realtype getPsi ( PPCAtom A );  // A[0] - A[2] used
+
 #endif
 

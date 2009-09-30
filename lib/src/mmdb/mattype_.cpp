@@ -1549,7 +1549,7 @@ realtype Q,L;
   fUB[0] = byte(k2);
   for (k=sizeof(realUniBin)-1;k>0;k--)  {
     L = floor(Q/_rfbase);
-    if (k<sizeof(floatUniBin))
+    if (k<=sizeof(floatUniBin))
       fUB[k] = byte(int(Q-L*_rfbase));
     Q = L;
   }

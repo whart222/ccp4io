@@ -123,14 +123,14 @@ typedef   byte floatUniBin[5];
 #define   False             Boolean(0)
 
 #define   MaxInt            32767
-#define   MinInt            -32768
+#define   MinInt            (-32768)
 #define   MaxWord           65535L
 #define   MaxInt4           2147483647
 
 //    MinInt4 would have to be defined as  -2147483648,
 // however some compilers do not like that. To be on safe,
 // we define it as -2147483647:
-#define   MinInt4           -2147483647
+#define   MinInt4           (-2147483647)
 #define   MaxWord4          4294967295
 
 #define   Pi                3.141592653589793238462643

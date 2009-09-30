@@ -1393,6 +1393,8 @@ void getRemarkKey ( RPCRemark rem, int & lkey )  {
                strcasestr(rem->Remark,"BIOMT2") ||
                strcasestr(rem->Remark,"BIOMT3"))
         lkey = R350_BIOMT;
+      else
+        lkey = R350_NONE;
     }
   }
 }
@@ -1456,25 +1458,33 @@ int      l,lkey,nAdd,j;
 
   while ((i<l) && (lkey==R350_NONE))  {
 
-    p = strchr ( rem->Remark,':' );
-    if (p)  p++;
-      else  p = rem->Remark;
+    p = strcasestr ( rem->Remark,"CHAINS:" );
+    if (p)  p += 7;
+    else  {
+      p = rem->Remark;
+      while (*p==' ')  p++;
+      if ((p[1]!=',') && (p[1]!=' '))  p = NULL;
+    }
  
+    if (p)  {
+      nAdd  = strlen(p)/2 + 3;
+      ch1   = chain;
+      chain = new ChainID[nChains+nAdd];
+      for (j=0;j<nChains;j++)
+        strcpy ( chain[j],ch1[j] );
+      if (ch1)  delete[] ch1;
 
-    nAdd  = strlen(p)/2 + 3;
-    ch1   = chain;
-    chain = new ChainID[nChains+nAdd];
-    for (j=0;j<nChains;j++)
-      strcpy ( chain[j],ch1[j] );
-    if (ch1)  delete[] ch1;
-
-    while (*p)  {
-      while ((*p==' ') || (*p==','))  p++;
-      if (*p)  {
-        chain[nChains][0] = *p;
-        chain[nChains][1] = char(0);
-        nChains++;
-        p++;
+      while (*p)  {
+        while ((*p==' ') || (*p==','))  p++;
+        if (*p)  {
+          if ((p[1]==',') || (p[1]==' ') || (p[1]==char(0)))  {
+            chain[nChains][0] = *p;
+            chain[nChains][1] = char(0);
+            nChains++;
+            p++;
+          } else
+            break;
+        }
       }
     }
 
@@ -1538,7 +1548,7 @@ int  l,j,lkey;
       }
     } else
       lkey = R350_END;
-  } while ((!rem) && (lkey==R350_BIOMT));
+  } while ((lkey==R350_NONE) || ((!rem) && (lkey==R350_BIOMT)));
 
   return lkey;
 

@@ -273,6 +273,53 @@ PCBiomolecule CMMDBManager::GetBiomolecule ( int bmNo )  {
   return Title.GetBiomolecule ( bmNo );
 }
 
+PCMMDBManager CMMDBManager::MakeBiomolecule ( int bmNo, int modelNo ) {
+PCMMDBManager M;
+PPCChain      ch;
+PCChain       chain;
+PCModel       model;
+PCBiomolecule BM;
+int           i,j,k,n,n0,nChains;
+
+  BM = Title.GetBiomolecule ( bmNo );
+  if (!BM)  return NULL;
+
+  GetChainTable ( modelNo,ch,nChains );
+  if ((!ch) || (nChains<=0))  return NULL;
+
+  n0    = 0;
+  model = new CModel();
+
+  for (i=0;(i<BM->nBMAs) && (n0>=0);i++)
+    if (BM->BMApply[i])  {
+      for (j=0;(j<BM->BMApply[i]->nMatrices) && (n0>=0);j++)
+        for (k=0;(k<BM->BMApply[i]->nChains) && (n0>=0);k++)  {
+          n0 = -1;
+          for (n=0;(n<nChains) && (n0<0);n++)
+            if (!strcmp(ch[n]->GetChainID(),BM->BMApply[i]->chain[k]))
+              n0 = n;
+          if (n0>=0)  {
+            chain = new CChain();
+            chain->Copy ( ch[n0] );
+            chain->ApplyTransform ( BM->BMApply[i]->tm[j] );
+            model->AddChain ( chain );
+          }
+        }
+    }
+
+  if (n0>=0)  {
+    M = new CMMDBManager();
+    M->AddModel ( model );
+    M->PDBCleanup ( PDBCLEAN_SERIAL | PDBCLEAN_INDEX );
+  } else  {
+    delete model;
+    M = NULL;
+  }
+
+  return M;
+
+}
+
 
 //  -------------------  Stream functions  ----------------------
 

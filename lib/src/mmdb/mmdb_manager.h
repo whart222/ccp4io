@@ -105,6 +105,7 @@ class CMMDBManager : public CMMDBBondManager  {
 
     PCBiomolecule GetBiomolecule ( int bmNo ); // bmno=0,1,..
                                // returns NULL if bmNo is incorrect
+    PCMMDBManager MakeBiomolecule ( int bmNo, int modelNo=1 );
 
   protected :
 
