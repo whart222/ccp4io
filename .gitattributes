@@ -3,7 +3,6 @@
 /lgpl-3.0.txt svneol=native#text/plain
 lib/src/binsort.h svneol=native#text/plain
 lib/src/binsortint.c svneol=native#text/plain
-lib/src/cci_extra.c svneol=native#text/plain
 lib/src/ccp4_diskio_f.c svneol=native#text/plain
 lib/src/ccp4_fortran.h svneol=native#text/plain
 lib/src/ccp4_general.c svneol=native#text/plain
@@ -115,6 +114,3 @@ lib/src/pack_c.h svneol=native#text/plain
 lib/src/parser.f -text
 lib/src/rwbrook.f -text
 lib/src/unix.m4 -text
-lib/src/unix_g77.f -text
-lib/src/unix_gfort.f -text
-lib/src/unix_ifc.f -text
