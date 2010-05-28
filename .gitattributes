@@ -12,7 +12,6 @@ lib/src/ccp4_parser_f.c svneol=native#text/plain
 lib/src/ccp4_program.c svneol=native#text/plain
 lib/src/ccp4_program.h svneol=native#text/plain
 lib/src/ccp4_unitcell_f.c svneol=native#text/plain
-lib/src/ccplib.f -text
 lib/src/cmap_accessor.c svneol=native#text/plain
 lib/src/cmap_close.c svneol=native#text/plain
 lib/src/cmap_data.c svneol=native#text/plain
@@ -34,13 +33,9 @@ lib/src/cmaplib_f.h svneol=native#text/plain
 lib/src/cmtzlib_f.c svneol=native#text/plain
 lib/src/csymlib_f.c svneol=native#text/plain
 lib/src/fftlib.f -text
-lib/src/keyparse.f -text
-lib/src/libhtml.f -text
 lib/src/library_f.c svneol=native#text/plain
 lib/src/library_f.h svneol=native#text/plain
-lib/src/modlib.f -text
 lib/src/overview.h svneol=native#text/plain
 lib/src/pack_c.c svneol=native#text/plain
 lib/src/pack_c.h svneol=native#text/plain
-lib/src/parser.f -text
 lib/src/unix.m4 -text
