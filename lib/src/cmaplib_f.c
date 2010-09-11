@@ -187,7 +187,7 @@ static int HeaderPrint(const CMMFile *mfile)
           mfile->origin[2]+mfile->map_dim[2] - 1);
   fprintf(stdout,"           Grid sampling on x, y, z ........................%5d%5d%5d\n",
           mfile->cell_grid[0], mfile->cell_grid[1], mfile->cell_grid[2]);
-  fprintf(stdout,"           Cell dimensions .................................%10.5f%10.5f%10.5f%10.5f%10.5f%10.5f\n",
+  fprintf(stdout,"           Cell dimensions .................................%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n",
           mfile->cell[0], mfile->cell[1], mfile->cell[2],
           mfile->cell[3], mfile->cell[4], mfile->cell[5]);
   fprintf(stdout,"           Fast, medium, slow axes .........................    %c    %c    %c\n",
