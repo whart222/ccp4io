@@ -41,3 +41,4 @@ lib/src/pack_c.h svneol=native#text/plain
 lib/src/unix.m4 -text
 x-windows/Mosflm/mosflm/fileaccess.c -text
 x-windows/Mosflm/mosflm/pck.c -text
+x-windows/Mosflm/mosflm/pilatus_c.c -text
