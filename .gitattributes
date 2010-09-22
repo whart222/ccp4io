@@ -43,3 +43,4 @@ x-windows/Mosflm/mosflm/cbfwrap.c -text
 x-windows/Mosflm/mosflm/fileaccess.c -text
 x-windows/Mosflm/mosflm/pck.c -text
 x-windows/Mosflm/mosflm/pilatus_c.c -text
+x-windows/Mosflm/mosflm/write_socket.c svneol=native#text/plain
