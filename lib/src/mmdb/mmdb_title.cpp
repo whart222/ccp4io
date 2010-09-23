@@ -1381,6 +1381,10 @@ MakeStreamFunctions(CRemark)
 #define  R350_CHAINS         2
 #define  R350_BIOMT          3
 
+#ifdef _WIN32
+#define  strcasestr(s, t) strstr(strupr(s), t)
+#endif
+
 void getRemarkKey ( RPCRemark rem, int & lkey )  {
   if (rem)  {
     if (rem->remarkNum!=350)  lkey = R350_END;
