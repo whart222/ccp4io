@@ -2694,7 +2694,7 @@ int   i,j,i1,i2,AD_alloc;
 
   if (SDist)  {
     for (i=0;i<SDistAlloc;i++)
-      if (SDist[i])  delete[] SDist[i];
+      if (SDist[i])  delete SDist[i];
     delete[] SDist;
     SDist = NULL;
   }
