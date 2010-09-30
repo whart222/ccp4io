@@ -106,3 +106,4 @@ lib/src/overview.h svneol=native#text/plain
 lib/src/pack_c.c svneol=native#text/plain
 lib/src/pack_c.h svneol=native#text/plain
 lib/src/unix.m4 -text
+lib/ssm/ssm_superpose.cpp -text
