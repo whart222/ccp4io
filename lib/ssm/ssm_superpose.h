@@ -115,6 +115,8 @@ struct SSuperposeData  {
 #define  UNMAP_YES  (-2)
 #define  UNMAP_NO   (-1)
 
+#undef FF1 // sys/ioctl_compat.h, sys/termios.h under Mac OS (e.g. 10.6)
+
 DefineClass(CSuperpose)
 
 class CSuperpose  {
