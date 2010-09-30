@@ -106,4 +106,13 @@ lib/src/overview.h svneol=native#text/plain
 lib/src/pack_c.c svneol=native#text/plain
 lib/src/pack_c.h svneol=native#text/plain
 lib/src/unix.m4 -text
+lib/ssm/ss_csia.cpp svneol=native#text/plain
+lib/ssm/ss_csia.h svneol=native#text/plain
+lib/ssm/ss_graph.cpp svneol=native#text/plain
+lib/ssm/ss_graph.h svneol=native#text/plain
+lib/ssm/ss_vxedge.cpp svneol=native#text/plain
+lib/ssm/ss_vxedge.h svneol=native#text/plain
+lib/ssm/ssm_align.cpp svneol=native#text/plain
+lib/ssm/ssm_align.h svneol=native#text/plain
 lib/ssm/ssm_superpose.cpp -text
+lib/ssm/ssm_superpose.h svneol=native#text/plain
