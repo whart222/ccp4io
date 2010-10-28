@@ -1,6 +1,7 @@
 * text=auto !eol
 /GPLV3_S15_16_STFCamendment14V1_Jan2008.doc -text svneol=unset#application/msword
 /lgpl-3.0.txt svneol=native#text/plain
+lib/data/syminfo.lib -text
 lib/src/binsort.h svneol=native#text/plain
 lib/src/binsortint.c svneol=native#text/plain
 lib/src/ccp4_diskio_f.c svneol=native#text/plain
