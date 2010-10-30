@@ -130,13 +130,14 @@ class CSSGraph : public CStream  {
     void  LeaveVertices ( pstr select, PCMMDBManager M );
 
     //    LeaveVertices ( selHnd,MMDB ) leaves only vertices that are
-    // covered by the given selection. selHnd may refer to the selection
-    // of atoms, residues or chains.
+    // covered by the given selection. selHnd may refer to the
+    // selection of atoms, residues or chains.
     void  LeaveVertices ( int selHnd, PCMMDBManager M );
 
     void  RemoveVertex          ( int vertex_no );  // 1..nVertices
 
-    Boolean    inRange          ( pstr chainID, int initPos, int endPos );
+    Boolean    inRange          ( pstr chainID, int initPos,
+                                                int endPos );
     pstr       GetGraphName     () { return name;        }
     pstr       GetDevChain      () { return devChain;    }
     pstr       GetChainList     ( pstr S );

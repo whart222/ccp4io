@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.12.00   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -31,7 +31,7 @@
 //  **** Classes :  CStream ( Basic Stream Class )
 //       ~~~~~~~~~
 //
-//   (C) E. Krissinel 1995-2008
+//   (C) E. Krissinel 1995-2010
 //
 //  =================================================================
 //
@@ -173,11 +173,11 @@ DefineStreamFunctions(CStream)
 
 class CStream  {
   public :
-    CStream            ()                   {}
-    CStream            ( RPCStream Object ) {}
-    virtual ~CStream   ()                   {}
-    virtual void read  ( RCFile f )         {}
-    virtual void write ( RCFile f )         {}
+    CStream            ()            {}
+    CStream            ( RPCStream ) {}
+    virtual ~CStream   ()            {}
+    virtual void read  ( RCFile )    {}
+    virtual void write ( RCFile )    {}
 };
 
 

@@ -66,6 +66,7 @@ void CSSMAlign::InitSSMAlign()  {
   
   cnCheck     = CSSC_Flexible;
   rmsd        = 0.0;  // core rmsd achieved
+  Qscore      = 0.0;  // core Q achieved
   nres1       = 0;    // number of residues in query  structure
   nres2       = 0;    // number of residues in target structure
   nsel1       = 0;    // number of residues in query  selection
@@ -98,8 +99,8 @@ void CSSMAlign::MapSelections ( int & selHndCa, PCMMDBManager M,
                                 ivector & newID )  {
 PPCAtom a;
 int     nr,i,k;
+  G->SelectCalphas ( M,selHndCa,NULL );
   if (selHnd>0)  {
-    G->SelectCalphas ( M,selHndCa,NULL );
     M->GetSelIndex   ( selHndCa,a,nr   );
     GetVectorMemory  ( newID,nr,0      );
     k = 0;
@@ -194,7 +195,7 @@ int CSSMAlign::Align ( PCMMDBManager M1, PCMMDBManager M2,
                        int selHnd1,   int selHnd2 )  {
 PPCSSMatch Match;
 ivector    F1,F2;
-realtype   Q,Q1;
+realtype   Q1;
 int        i,nMatches,nm;
 
   FreeMemory();
@@ -217,22 +218,22 @@ int        i,nMatches,nm;
   U.GetMatches ( Match,nMatches );
   if (nMatches<=0)  return SSM_noHits;
 
-  Q = -0.5;
+  Qscore = -0.5;
   for (i=0;i<nMatches;i++)
     if (Match[i])  {
       Match[i]->GetMatch ( F1,F2,nm );
       Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
                                    selHnd1,selHnd2 );
       Q1 = Superpose.GetCalphaQ();
-      if ((Q1>0.0) && (Q1>Q))  {
-        Q = Q1;
+      if ((Q1>0.0) && (Q1>Qscore))  {
+        Qscore = Q1;
         Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
                                      rmsd,nalgn,ngaps,seqIdentity,
                                      nmd,ncombs );
       }
     }
 
-  if (Q>0.0)  {
+  if (Qscore>0.0)  {
     MakeSelections ( M1,selHnd1, M2,selHnd2 );
     return SSM_Ok;
   }
@@ -616,6 +617,14 @@ void CXAlign::makeRow ( PCAtom A1, int sseType1,
                         PCAtom A2, int sseType2,
                         realtype dist, int rowNo,
                         int icol, Boolean aligned )  {
+UNUSED_ARGUMENT(A1);
+UNUSED_ARGUMENT(sseType1);
+UNUSED_ARGUMENT(A2);
+UNUSED_ARGUMENT(sseType2);
+UNUSED_ARGUMENT(dist);
+UNUSED_ARGUMENT(rowNo);
+UNUSED_ARGUMENT(icol);
+UNUSED_ARGUMENT(aligned);
 }
 
 
@@ -823,7 +832,6 @@ int         nat1,nat2,nr,j;
   CXA.XAlign ( SSMAlign->G1,Calpha1,SSMAlign->Ca1,nat1,
                SSMAlign->G2,Calpha2,SSMAlign->Ca2,nat2,
                SSMAlign->dist1,nr );
-
   f.LF();
   if (SSMAlign->cnCheck!=CSSC_None)  {
     f.WriteLine ( ".-------------.------------.-------------." );
@@ -855,14 +863,6 @@ int         nat1,nat2,nr,j;
   f.WriteLine ( " --    similarity 2" );
   f.WriteLine ( " ::    similarity 1" );
   f.WriteLine ( " ..    dissimilar residues: similarity 0" );
-
-  f.WriteLine ( " " );
-  f.WriteLine ( " Sequence alignment from SSM:" );
-  f.WriteLine ( " " );
-  pstr algn1=NULL, algn2=NULL;
-  CXA.GetAlignments ( algn1, algn2 );
-  f.WriteLine ( algn1 );
-  f.WriteLine ( algn2 );
 
 }
 

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -47,7 +47,7 @@
 //                   GetReal    ( reads real from a string            )
 //                   GetIntIns  ( reads integer and insert code       )
 //                   PutInteger ( writes integer into a string        )
-//                   PutRealF   ( writes real in F-foram into a string)
+//                   PutRealF   ( writes real in F-form into a string )
 //                   PutIntIns  ( writes integer and insert code      )
 //                   CIFGetInteger ( reads and deletes int from CIF   )
 //                   CIFGetReal    ( reads and deletes real from CIF  )
@@ -60,7 +60,7 @@
 //                   ParseResID     ( parses residue ID line          )
 //                   ParseAtomPath  ( parses full atom path           )
 //
-//   (C) E. Krissinel  2000-2008
+//   (C) E. Krissinel  2000-2010
 //
 //  =================================================================
 //
@@ -242,10 +242,10 @@ class CContainerClass : public CStream  {
 
     //    ConvertPDBASCII(..) will return one of the Error_XXXXX
     // constants, see <mmdb_defs.h>
-    virtual int     ConvertPDBASCII ( cpstr S  ) { return 0;     }
-    virtual void    PDBASCIIDump    ( pstr S, int N ) {}
-    virtual Boolean PDBASCIIDump1   ( RCFile f )      { return False; }
-    virtual void    MakeCIF         ( PCMMCIFData CIF, int N ) {}
+    virtual int     ConvertPDBASCII ( cpstr     ) { return 0;     }
+    virtual void    PDBASCIIDump    ( pstr, int ) {}
+    virtual Boolean PDBASCIIDump1   ( RCFile    ) { return False; }
+    virtual void    MakeCIF         ( PCMMCIFData, int ) {}
 
     //   Append(..) should return True if CC is appended to this class.
     // If this is not the case, CC is merely put on the top of
@@ -274,14 +274,14 @@ class CContainerClass : public CStream  {
     //                  in <mmdb_defs.h>. This instance of container
     //                  class should be deleted and the whole input
     //                  should be stopped.
-    virtual void GetCIF ( PCMMCIFData CIF, int & Signal )
+    virtual void GetCIF ( PCMMCIFData, int & Signal )
                                { Signal = -1;  }
     virtual int  GetClassID () { return ClassID_Template; }
 
-    virtual void Copy ( PCContainerClass CClass ) {}
+    virtual void Copy ( PCContainerClass ) {}
 
-    void write ( RCFile f ) {}
-    void read  ( RCFile f ) {}
+    void write ( RCFile ) {}
+    void read  ( RCFile ) {}
 
   protected :
     int  ContinuationNo;

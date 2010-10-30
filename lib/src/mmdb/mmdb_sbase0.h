@@ -457,12 +457,12 @@ class CSBase0  {
     //   GetPath() will work only after loading the database index.
     pstr GetPath ( pstr & S, cpstr FName );
 
-    //   GetStructFile() creates and open the database structure
+    //   GetStructFile() creates and opens the database structure
     // file and returns its pointer. In the case of errors returns
     // NULL. Application is responsible for deleting this file.
     PCFile GetStructFile();
 
-    //   GetGraphFile() creates and open the database graph
+    //   GetGraphFile() creates and opens the database graph
     // file and returns its pointer. In the case of errors returns
     // NULL. Application is responsible for deleting this file.
     PCFile GetGraphFile();

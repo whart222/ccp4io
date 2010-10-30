@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    04.02.09   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -40,7 +40,7 @@
 //                   RName1 ( 1-characters amino acid names         )
 //
 //
-//  (C) E. Krissinel  2000-2009
+//  (C) E. Krissinel  2000-2010
 //
 //  =================================================================
 //
@@ -450,6 +450,16 @@ int const AASimilarity[nAminoacidNames][nAminoacidNames] = {
   { 2,0,0,0,0,0,0,0,0,1,1,1,4,4,0,4,4,0,0,0,4,4,5 },  /* VAL */
 };
 
+int  GetAAPIndex ( cpstr resName )  {
+// 0..nAminoacidNames-1
+int i,k;
+  k = -1;
+  for (i=0;(i<nAminoacidNames) && (k<0);i++)
+    if (!strcasecmp(resName,AAProperty[i].name))
+      k = i;
+  return k;
+}
+
 
 int  GetAASimilarity ( cpstr resName1, cpstr resName2 )  {
 int  i1,i2,j;
@@ -615,6 +625,7 @@ int     i;
 }
 
 Boolean isSugar ( cpstr resName )  {
+UNUSED_ARGUMENT(resName);
   return False;
 }
 

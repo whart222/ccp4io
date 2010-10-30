@@ -245,6 +245,8 @@ class CAtom : public CUDData  {
 
     int GetCIF           ( int ix, PCMMCIFLoop Loop,
                            PCMMCIFLoop LoopAnis );
+
+    Boolean RestoreElementName();
     Boolean MakePDBAtomName();
 
     void  SetAtomName    ( int            ix,      // index
@@ -276,6 +278,7 @@ class CAtom : public CUDData  {
     realtype GetOccupancy   ();
     int   GetSeqNum  ();
     pstr  GetInsCode ();
+    int   GetSSEType ();  // works only after SSE calculations
     pstr  GetAtomName   () { return name;    }
     pstr  GetElementName() { return element; }
     pstr  GetAtomCharge ( pstr chrg );
@@ -290,7 +293,7 @@ class CAtom : public CUDData  {
     void  CalcAtomStatistics ( RSAtomStat AS );
     realtype GetDist2 ( PCAtom a );
     realtype GetDist2 ( PCAtom a, mat44 & tm );  // tm applies to A
-    realtype GetDist2 ( PCAtom a, mat33 & r, vect3 & t );  // tm applies to A
+    realtype GetDist2 ( PCAtom a, mat33 & r, vect3 & t );// tm applies to A
     realtype GetDist2 ( realtype ax, realtype ay, realtype az );
 
     // GetCosine(a1,a2) calculates cosine of angle a1-this-a2,

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //                  CMMCIFData     ( mmCIF data block  )
 //                  CMMCIFFile     ( mmCIF file        )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -100,7 +100,7 @@ void  SortTags ( psvector tag, int len, ivector index )  {
 //   The idea is, the tags are created already sorted and
 // SortTags(..) should serve only in special cases, occasionally.
 // The bubble sorting should perform best in this situation
-// becouse of its N-complexity for sorted arrays.
+// because of its N-complexity for sorted arrays.
 //   Note: index must contain valid indices on input.
 int     i,i1,i2;
 Boolean Done;
@@ -1840,7 +1840,7 @@ int           RC,i;
 
   i = 0;
   while ((*p) && (*p!=' ') && (*p!=char(9)) && (*p!='.'))  {
-    if (i<sizeof(T)-1)  T[i++] = *p;
+    if (i<(int)sizeof(T)-1)  T[i++] = *p;
     p++;
   }
   T[i] = char(0);
@@ -1943,7 +1943,7 @@ int         RC,i,nC;
       // get category name
       i = 0;
       while ((*p) && (*p!=' ') && (*p!=char(9)) && (*p!='.'))  {
-        if (i<sizeof(T)-1)  T[i++] = *p;
+        if (i<(int)sizeof(T)-1)  T[i++] = *p;
         p++;
       }
       T[i] = char(0);

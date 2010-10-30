@@ -758,7 +758,8 @@ class CMMDBCoorManager : public CMMDBFile  {
     //  Simplified optimized for speed version:
     //    - no NULL pointers and Ters in AIndex1 and AIndex2
     //    - no checks for identity atoms in AIndex1 and AIndex2
-    //    - contact must be pre-allocated with at least ilen1*ilen2 elements
+    //    - contact must be pre-allocated with at least ilen1*ilen2
+    //      elements
     //    - contact returns square distances
     //    - ncontacts is always reset
     void  SeekContacts (

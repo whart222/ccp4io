@@ -52,6 +52,7 @@ class CSSMAlign : public CStream  {
   public :
     mat44    TMatrix; // superposition matrix to be applied to 1st structure
     realtype rmsd;         // core rmsd achieved
+    realtype Qscore;       // core Q achieved
     int      cnCheck;      // connectivity option used
     int      nres1,nres2;  // number of residues in structures
     int      nsel1,nsel2;  // number of residues in aligned selections

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CXMLObject
 //       ~~~~~~~~~
 //
-//   (C) E. Krissinel 2000-2008
+//   (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -526,7 +526,7 @@ Boolean sngline;
       rm = 72;               // right margin
       lm = IMin ( pos1,36 ); // left margin
       tl = strlen(objTag);
-      if ((pos+tl+2+strlen(objData)<rm-tl-2) &&
+      if ((pos+tl+2+(int)strlen(objData)<rm-tl-2) &&
           (nObjects<=0))  {
         // single-line output
         sngline = True;

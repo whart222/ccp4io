@@ -22,14 +22,14 @@
 //
 //  =================================================================
 //
-//    28.07.06   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
 //  **** Module  :  MatType_ <implementation>
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -41,10 +41,6 @@
 
 #ifndef __STRING_H
 #include <string.h>
-#endif
-
-#ifndef __MATH_H
-#include <math.h>
 #endif
 
 #ifndef __CTYPE_H
@@ -79,6 +75,7 @@ static Boolean MatTypeInit = InitMatType();
 
 // -------------------------------------------------------
 
+/*
 int  mround ( realtype X )  {
   return  (int)floor(X+0.5);
 }
@@ -90,8 +87,29 @@ int  ifloor ( realtype X )  {
 int  Abs ( int x )  {
   return ( x >= 0 ? x : -x );
 }
+*/
+
+#ifdef _WIN32
+pstr strcasestr ( pstr s1, cpstr s2 )  {
+pstr l1,l2,l;
+  l1 = NULL;
+  l2 = NULL;
+  CreateCopy ( l1,s1 );
+  CreateCopy ( l2,s2 );
+  LowerCase  ( l1 );
+  LowerCase  ( l2 );
+  l = strstr ( l1,l2 );
+  if (l)
+    l = s1 + (l-l1);
+  delete[] l1;
+  delete[] l2;
+  return l;
+}
+#endif
 
 // -------------------------------------------------------
+
+/*
 void  ISwap ( int & x, int & y )  {
 int  b;
  b = x;  x = y;  y = b;
@@ -112,8 +130,10 @@ void  RSwap ( realtype & x, realtype & y )  {
 realtype  b;
   b = x;  x = y;  y = b;
 }
+*/
 
 // -------------------------------------------------------
+/*
 realtype  RMax ( const realtype x1, const realtype x2 )
 {  return ( x1 > x2 ? x1 : x2 );  }
 
@@ -137,14 +157,17 @@ word      WMin ( const word x1, const word x2 )
 
 int       IMin ( const int x1,  const int x2  )
 {  return ( x1 < x2 ? x1 : x2 );  }
+*/
 
 // -------------------------------------------------------
+/*
 realtype  fsign ( const realtype x1,  const realtype x2 )  {
 realtype  ax;
   if (x1>=0.0)  ax = x1;
           else  ax = -x1;
   return ( x2 >= 0.0 ? ax : -ax );
 }
+*/
 
 // -------------------------------------------------------
 Boolean  GetVectorMemory  ( rvector & V, word N, word Shift )  {
@@ -711,7 +734,7 @@ pstr  BinValS ( long L, pstr S )  {
 int   i;
 long  z;
   z = long(1) << (8*sizeof(long)-1);
-  for (i=0;i<8*sizeof(long);i++)  {
+  for (i=0;i<8*(int)sizeof(long);i++)  {
     if (L & z)  S[i] = '1';
           else  S[i] = '0';
     z >>= 1;
@@ -1381,14 +1404,17 @@ int i,k;
 # define _nfPowers  255
 # define _nfPower0  127
 # define _nfPower8  135
+# define _nfPower4  131
 #else
 # define _nfPowers  31
 # define _nfPower0  15
 # define _nfPower8  19
+# define _nfPower4  19
 #endif
 
 static realtype _fpower[_nfPowers+1];
 static realtype _fpower8;
+static realtype _fpower4;
 
 Boolean InitFPowers()  {
 int i;
@@ -1399,70 +1425,13 @@ int i;
   }
   _fpower[_nfPowers] = fMaxReal;
   _fpower8 = _fpower[_nfPower8];
+  _fpower4 = _fpower[_nfPower4];
   return True;
 }
 
 
-/*
-
-void  int2UniBin ( int I, intUniBin iUB )  {
-int j,n;
-int k=I;
-  if (I<0) k = -k;
-  for (j=sizeof(intUniBin)-1;j>=0;j--)  {
-    n = k/_fbase;
-    n = k-n*_fbase;
-    iUB[j] = byte(n);
-    k = (k-n)/_fbase;
-  }
-  if (I<0) iUB[0] |= _fsign;
-}
-
-void  short2UniBin ( short S, shortUniBin sUB )  {
-int j,n;
-int k=S;
-  if (S<0) k = -k;
-  for (j=sizeof(shortUniBin)-1;j>=0;j--)  {
-    n = k/_fbase;
-    n = k-n*_fbase;
-    sUB[j] = byte(n);
-    k = (k-n)/_fbase;
-  }
-  if (S<0) sUB[0] |= _fsign;
-}
-
-
-void  long2UniBin ( long L, longUniBin lUB )  {
-int  j,jn;
-long n;
-long k=L;
-  if (L<0) k = -k;
-  for (j=sizeof(longUniBin)-1;j>=0;j--)  {
-    n  = k/_fbase;
-    jn = k-n*_fbase;
-    lUB[j] = byte(jn);
-    k = (k-jn)/_fbase;
-  }
-  if (L<0) lUB[0] |= _fsign;
-}
-
-void  word2UniBin ( word W, wordUniBin wUB )  {
-int  j;
-word n;
-word k=W;
-  for (j=sizeof(wordUniBin)-1;j>=0;j--)  {
-    n = k/word(_fbase);
-    n = k-n*_fbase;
-    wUB[j] = byte(n);
-    k      = (k-n)/word(_fbase);
-  }
-}
-
-*/
-
 void  int2UniBin ( int I, intUniBin iUB )  {
 int j,n,sh;
-//  sh = 8*(sizeof(I)-1);
   sh = 8*(sizeof(intUniBin)-1);
   for (j=sizeof(intUniBin)-1;j>=0;j--)  {
     n = (I >> sh) & 0xFF;
@@ -1474,7 +1443,6 @@ int j,n,sh;
 void  short2UniBin ( short S, shortUniBin sUB )  {
 int   j,sh;
 short n;
-//  sh = 8*(sizeof(S)-1);
   sh = 8*(sizeof(shortUniBin)-1);
   for (j=sizeof(shortUniBin)-1;j>=0;j--)  {
     n = (S >> sh) & 0xFF;
@@ -1486,7 +1454,6 @@ short n;
 void  long2UniBin ( long L, longUniBin lUB )  {
 int  j,sh;
 long n;
-//  sh = 8*(sizeof(L)-1);
   sh = 8*(sizeof(longUniBin)-1);
   for (j=sizeof(longUniBin)-1;j>=0;j--)  {
     n = (L >> sh) & 0xFF;
@@ -1498,7 +1465,6 @@ long n;
 void  word2UniBin ( word W, wordUniBin wUB )  {
 int  j,sh;
 word n;
-//  sh = 8*(sizeof(W)-1);
   sh = 8*(sizeof(wordUniBin)-1);
   for (j=sizeof(wordUniBin)-1;j>=0;j--)  {
     n = (W >> sh) & 0xFF;
@@ -1532,9 +1498,88 @@ realtype Q,L;
 
 }
 
+void  shortreal2UniBin ( shortreal R, shortrealUniBin srUB )  {
+int      k1,k2,k;
+realtype Q,L;
+
+  if (R>=0)  Q = R;
+       else  Q = -R;
+  k1 = 0;
+  k2 = _nfPowers;
+  do {
+    k = (k1+k2)/2;
+    if (Q>=_fpower[k])  k1 = k;
+                  else  k2 = k;
+  } while (k2>k1+1);
+  if (Q<=_fpower[0])  k2 = 0;
+  Q = (Q/_fpower[k2])*_fpower4;
+  srUB[0] = byte(k2);
+  for (k=sizeof(shortrealUniBin)-1;k>0;k--)  {
+    L = floor(Q/_rfbase);
+    srUB[k] = byte(int(Q-L*_rfbase));
+    Q = L;
+  }
+  if (R<0)  srUB[1] |= _fsign;
+
+}
+
+
 void  float2UniBin ( realtype R, floatUniBin fUB )  {
 int      k1,k2,k;
 realtype Q,L;
+
+  if (R>=0)  Q = R;
+       else  Q = -R;
+  k1 = 0;
+  k2 = _nfPowers;
+  do {
+    k = (k1+k2)/2;
+    if (Q>=_fpower[k])  k1 = k;
+                  else  k2 = k;
+  } while (k2>k1+1);
+  if (Q<=_fpower[0])  k2 = 0;
+  Q = (Q/_fpower[k2])*_fpower4;
+  fUB[0] = byte(k2);
+  for (k=sizeof(floatUniBin)-1;k>0;k--)  {
+    L = floor(Q/_rfbase);
+      fUB[k] = byte(int(Q-L*_rfbase));
+    Q = L;
+  }
+  if (R<0)  fUB[1] |= _fsign;
+
+}
+
+/*
+void  shortreal2UniBin ( shortreal R, shortrealUniBin srUB )  {
+int      k1,k2,k;
+realtype Q,L;
+
+  if (R>=0)  Q = R;
+       else  Q = -R;
+  k1 = 0;
+  k2 = _nfPowers;
+  do {
+    k = (k1+k2)/2;
+    if (Q>=_fpower[k])  k1 = k;
+                  else  k2 = k;
+  } while (k2>k1+1);
+  if (Q<=_fpower[0])  k2 = 0;
+  Q = (Q/_fpower[k2])*_fpower8;
+  srUB[0] = byte(k2);
+  for (k=sizeof(realUniBin)-1;k>0;k--)  {
+    L = floor(Q/_rfbase);
+    if (k<=(int)sizeof(shortrealUniBin))
+      srUB[k] = byte(int(Q-L*_rfbase));
+    Q = L;
+  }
+  if (R<0)  srUB[1] |= _fsign;
+
+}
+
+void  float2UniBin ( realtype R, floatUniBin fUB )  {
+int      k1,k2,k;
+realtype Q,L;
+
   if (R>=0)  Q = R;
        else  Q = -R;
   k1 = 0;
@@ -1549,59 +1594,18 @@ realtype Q,L;
   fUB[0] = byte(k2);
   for (k=sizeof(realUniBin)-1;k>0;k--)  {
     L = floor(Q/_rfbase);
-    if (k<=sizeof(floatUniBin))
+    if (k<=(int)sizeof(floatUniBin))
       fUB[k] = byte(int(Q-L*_rfbase));
     Q = L;
   }
   if (R<0)  fUB[1] |= _fsign;
 
 }
-
-/*
-void  UniBin2int ( intUniBin iUB, int & I )  {
-int j;
-  I = int(iUB[0] & _fsign1);
-  for (j=1;j<sizeof(intUniBin);j++)
-    I = I*_fbase + byte(iUB[j]);
-  if (iUB[0] & _fsign)  {
-    I = -I;
-    if (I==0)  I = MinInt4;
-  }
-}
-
-void  UniBin2short ( shortUniBin sUB, short & S )  {
-int j;
-  S = short(sUB[0] & _fsign1);
-  for (j=1;j<sizeof(shortUniBin);j++)
-    S = S*_fbase + byte(sUB[j]);
-  if (sUB[0] & _fsign)  {
-    S = -S;
-    if (S==0)  S = MinInt;
-  }
-}
-
-void  UniBin2long ( longUniBin lUB, long & L )  {
-int j;
-  L = long(lUB[0] & _fsign1);
-  for (j=1;j<sizeof(longUniBin);j++)
-    L = L*long(_fbase) + long(lUB[j]);
-  if (lUB[0] & _fsign)  {
-    L = -L;
-    if (L==0)  L = MinInt4;
-  }
-}
-
-void  UniBin2word ( wordUniBin wUB, word & W )  {
-int j;
-  W = word(wUB[0]);
-  for (j=1;j<sizeof(word);j++)  
-    W = W*word(_fbase) + byte(wUB[j]);
-}
 */
+
 
 void  UniBin2int ( intUniBin iUB, int & I )  {
 int j,n,sh;
-//  sh = 8*sizeof(I);
   sh = 8*sizeof(intUniBin);
   I  = 0x00;
   for (j=sizeof(intUniBin)-1;j>=0;j--)  {
@@ -1614,7 +1618,6 @@ int j,n,sh;
 void  UniBin2short ( shortUniBin sUB, short & S )  {
 int   j,sh;
 short n;
-//  sh = 8*sizeof(S);
   sh = 8*sizeof(shortUniBin);
   S  = 0x00;
   for (j=sizeof(shortUniBin)-1;j>=0;j--)  {
@@ -1627,7 +1630,6 @@ short n;
 void  UniBin2long ( longUniBin lUB, long & L )  {
 int  j,sh;
 long n;
-//  sh = 8*sizeof(L);
   sh = 8*sizeof(longUniBin);
   L  = 0x00;
   for (j=sizeof(longUniBin)-1;j>=0;j--)  {
@@ -1640,7 +1642,6 @@ long n;
 void  UniBin2word ( wordUniBin wUB, word & W )  {
 int  j,sh;
 word n;
-//  sh = 8*sizeof(W);
   sh = 8*sizeof(wordUniBin);
   W  = 0x00;
   for (j=sizeof(wordUniBin)-1;j>=0;j--)  {
@@ -1658,9 +1659,23 @@ int j,s;
   } else
     s = 0;
   R = int(rUB[1]);
-  for (j=2;j<sizeof(realUniBin);j++)  
+  for (j=2;j<(int)sizeof(realUniBin);j++)
     R = R*_rfbase + int(rUB[j]);
   R = (R/_fpower8)*_fpower[int(rUB[0])];
+  if (s)  R = -R;
+}
+
+void  UniBin2shortreal ( shortrealUniBin srUB, shortreal & R )  {
+int j,s;
+  if (srUB[1] & _fsign)  {
+    s = 1;
+    srUB[1] &= _fsign1;
+  } else
+    s = 0;
+  R = int(srUB[1]);
+  for (j=2;j<(int)sizeof(shortrealUniBin);j++)
+    R = R*_rfbase + int(srUB[j]);
+  R = (R/_fpower4)*_fpower[int(srUB[0])];
   if (s)  R = -R;
 }
 
@@ -1672,13 +1687,45 @@ int j,s;
   } else
     s = 0;
   R = int(fUB[1]);
-  for (j=2;j<sizeof(floatUniBin);j++)  
+  for (j=2;j<(int)sizeof(floatUniBin);j++)
     R = R*_rfbase + int(fUB[j]);
-  for (j=sizeof(floatUniBin);j<sizeof(realUniBin);j++)
+  R = (R/_fpower4)*_fpower[int(fUB[0])];
+  if (s)  R = -R;
+}
+
+/*
+void  UniBin2shortreal ( shortrealUniBin srUB, shortreal & R )  {
+int j,s;
+  if (srUB[1] & _fsign)  {
+    s = 1;
+    srUB[1] &= _fsign1;
+  } else
+    s = 0;
+  R = int(srUB[1]);
+  for (j=2;j<(int)sizeof(shortrealUniBin);j++)
+    R = R*_rfbase + int(srUB[j]);
+  for (j=sizeof(shortrealUniBin);j<(int)sizeof(realUniBin);j++)
+    R *= _rfbase;
+  R = (R/_fpower8)*_fpower[int(srUB[0])];
+  if (s)  R = -R;
+}
+
+void  UniBin2float ( floatUniBin fUB, realtype & R )  {
+int j,s;
+  if (fUB[1] & _fsign)  {
+    s = 1;
+    fUB[1] &= _fsign1;
+  } else
+    s = 0;
+  R = int(fUB[1]);
+  for (j=2;j<(int)sizeof(floatUniBin);j++)
+    R = R*_rfbase + int(fUB[j]);
+  for (j=sizeof(floatUniBin);j<(int)sizeof(realUniBin);j++)
     R *= _rfbase;
   R = (R/_fpower8)*_fpower[int(fUB[0])];
   if (s)  R = -R;
 }
+*/
 
 
 void mem_write ( int I, pstr S, int & l )  {
@@ -1718,6 +1765,14 @@ realUniBin rUB;
   real2UniBin ( R,rUB );
   memcpy ( &(S[l]),rUB,sizeof(realUniBin) );
   l += sizeof(realUniBin);
+  S[l] = char(0);
+}
+
+void mem_write ( shortreal R, pstr S, int & l )  {
+shortrealUniBin srUB;
+  shortreal2UniBin ( R,srUB );
+  memcpy ( &(S[l]),srUB,sizeof(shortrealUniBin) );
+  l += sizeof(shortrealUniBin);
   S[l] = char(0);
 }
 
@@ -1779,6 +1834,13 @@ realUniBin rUB;
   memcpy ( rUB,&(S[l]),sizeof(realUniBin) );
   l += sizeof(realUniBin);
   UniBin2real ( rUB,R );
+}
+
+void mem_read ( shortreal & R, cpstr S, int & l )  {
+shortrealUniBin srUB;
+  memcpy ( srUB,&(S[l]),sizeof(shortrealUniBin) );
+  l += sizeof(shortrealUniBin);
+  UniBin2shortreal ( srUB,R );
 }
 
 void mem_read ( pstr L, int len, cpstr S, int & l )  {

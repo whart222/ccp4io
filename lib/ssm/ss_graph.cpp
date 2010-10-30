@@ -357,7 +357,8 @@ int        rc,nresidues,i,j,k,vtype;
     if (i<nresidues)  {
       j = i;
       while ((i<nresidues) && (res[i]->SSE==res[j]->SSE) &&
-             (!strcmp(res[i]->GetChainID(),res[j]->GetChainID())))  i++;
+             (!strcmp(res[i]->GetChainID(),res[j]->GetChainID())))
+        i++;
       if (res[j]->SSE==SSE_Strand)  vtype = V_STRAND;
                               else  vtype = V_HELIX;
       k++;
@@ -727,7 +728,7 @@ int  stype,selHnd1;
 
 
 void  CSSGraph::_leaveVertices ( PCMMDBManager M, int selHnd1 )  {
-int  selHnd2, i,j,n;
+int  selHnd2, i,n;
 
   selHnd2 = M->NewSelection();
 

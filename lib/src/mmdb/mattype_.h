@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    28.07.06   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -37,7 +37,7 @@
 //               strcpy_n0  ( like strcpy_n and adds terminating 0  )
 //               PadSpaces  ( pads a string with spaces             )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -45,6 +45,10 @@
 
 #ifndef  __MatType__
 #define  __MatType__
+
+#ifndef __MATH_H
+#include <math.h>
+#endif
 
 #define  UseDoubleFloat
 
@@ -70,6 +74,7 @@
 
 #endif
 
+#define UNUSED_ARGUMENT(x) (void)x
 
 // -----------------------------------------------------
 
@@ -91,16 +96,14 @@
 
 #endif
 
+typedef   float     shortreal;
+#define   MinShortReal  1.1755e-38
+#define   MaxShortReal  3.4020e+38
+
 #define   strrchr   LastOccurence
 #define   fstrrchr  LastOccurence
 #define   strchr    FirstOccurence
 #define   fstrchr   FirstOccurence
-
-#ifdef _MVS
-#define   strncasecmp _strnicmp
-#define   strcasecmp  _stricmp
-#define   strlen      (int)strlen
-#endif
 
 typedef   char     *         pstr;
 typedef   const char *       cpstr;
@@ -113,11 +116,19 @@ typedef   byte *             byteptr;
 typedef   unsigned long      lword;
 
 typedef   byte intUniBin  [4];
-typedef   byte shortUniBin[2];
+typedef   byte shortUniBin    [2];
 typedef   byte longUniBin [4];
 typedef   byte wordUniBin [4];
 typedef   byte realUniBin [10];
-typedef   byte floatUniBin[5];
+typedef   byte floatUniBin    [5];
+typedef   byte shortrealUniBin[5];
+
+#ifdef _WIN32
+#define   strncasecmp _strnicmp
+#define   strcasecmp  _stricmp
+#define   strlen      (int)strlen
+pstr strcasestr ( pstr s1, cpstr s2 );
+#endif
 
 #define   True              Boolean(1)
 #define   False             Boolean(0)
@@ -177,6 +188,8 @@ typedef   psmatrix * psmatrix3;
 extern Boolean InitMatType();
 
 // ------------------------------------------------------------
+
+/*
 extern  int       mround ( realtype X );
 extern  int       ifloor ( realtype X );
 extern  int       Abs    ( int x      );
@@ -196,6 +209,58 @@ extern  long      LMin   ( const long     x1, const long     x2 );
 extern  word      WMin   ( const word     x1, const word     x2 );
 extern  int       IMin   ( const int      x1, const int      x2 );
 extern  realtype  fsign  ( const realtype x1, const realtype x2 );
+*/
+
+inline int mround ( realtype X )  { return  (int)floor(X+0.5);   }
+inline int ifloor ( realtype X )  { return  (int)floor(X);       }
+inline int Abs    ( int x )       { return ( x >= 0 ? x : -x );  }
+
+inline void ISwap ( int & x, int & y )
+{ int  b = x;  x = y;  y = b; }
+
+inline void WSwap ( word & x, word & y )
+{ word  b = x;  x = y;  y = b; }
+
+inline void BSwap ( byte & x, byte & y )
+{ byte b = x;  x = y;  y = b; }
+
+inline void LSwap ( long & x, long & y )
+{ long b = x;  x = y;  y = b; }
+
+inline void RSwap ( realtype & x, realtype & y )
+{ realtype b = x;  x = y;  y = b; }
+
+inline realtype RMax ( const realtype x1, const realtype x2 )
+{ return ( x1 > x2 ? x1 : x2 );  }
+
+inline long LMax ( const long x1, const long x2 )
+{ return ( x1 > x2 ? x1 : x2 );  }
+
+inline word WMax ( const word x1, const word x2 )
+{ return ( x1 > x2 ? x1 : x2 );  }
+
+inline int IMax ( const int x1,  const int x2  )
+{ return ( x1 > x2 ? x1 : x2 );  }
+
+inline realtype RMin ( const realtype x1, const realtype x2 )
+{ return ( x1 < x2 ? x1 : x2 );  }
+
+inline long LMin ( const long x1, const long x2 )
+{ return ( x1 < x2 ? x1 : x2 );  }
+
+inline word WMin ( const word x1, const word x2 )
+{ return ( x1 < x2 ? x1 : x2 );  }
+
+inline int  IMin ( const int x1,  const int x2  )
+{ return ( x1 < x2 ? x1 : x2 );  }
+
+inline realtype fsign ( const realtype x1,  const realtype x2 )  {
+realtype  ax;
+  if (x1>=0.0)  ax = x1;
+          else  ax = -x1;
+  return ( x2 >= 0.0 ? ax : -ax );
+}
+
 
 // ------------------------------------------------------------
 
@@ -543,11 +608,13 @@ extern void long2UniBin  ( long     L,  longUniBin  lUB  );
 extern void word2UniBin  ( word     W,  wordUniBin  wUB  );
 extern void real2UniBin  ( realtype R,  realUniBin  rUB  );
 extern void float2UniBin ( realtype R,  floatUniBin fUB  );
+extern void shortreal2UniBin ( shortreal R,  shortrealUniBin  srUB );
 extern void UniBin2int   ( intUniBin   iUB, int      & I );
 extern void UniBin2short ( shortUniBin sUB, short    & S );
 extern void UniBin2long  ( longUniBin  lUB, long     & L );
 extern void UniBin2word  ( wordUniBin  wUB, word     & W );
 extern void UniBin2real  ( realUniBin  rUB, realtype & R );
+extern void UniBin2shortreal ( shortrealUniBin srUB, shortreal & R );
 extern void UniBin2float ( floatUniBin fUB, realtype & R );
 
 extern void mem_write ( int      I, pstr S, int & l );
@@ -555,6 +622,7 @@ extern void mem_write ( short    I, pstr S, int & l );
 extern void mem_write ( long     I, pstr S, int & l );
 extern void mem_write ( word     W, pstr S, int & l );
 extern void mem_write ( realtype R, pstr S, int & l );
+extern void mem_write ( shortreal R, pstr S, int & l );
 extern void mem_write ( pstr     L, int len, pstr S, int & l );
 extern void mem_write ( pstr     L, pstr S, int & l );
 extern void mem_write ( Boolean  B, pstr S, int & l );
@@ -564,6 +632,7 @@ extern void mem_read  ( short    & I, cpstr S, int & l );
 extern void mem_read  ( long     & I, cpstr S, int & l );
 extern void mem_read  ( word     & W, cpstr S, int & l );
 extern void mem_read  ( realtype & R, cpstr S, int & l );
+extern void mem_read  ( shortreal & R, cpstr S, int & l );
 extern void mem_read  ( pstr     L, int len, cpstr S, int & l );
 extern void mem_read  ( pstr     & L, cpstr S, int & l );
 extern void mem_read  ( Boolean  & B, cpstr S, int & l );

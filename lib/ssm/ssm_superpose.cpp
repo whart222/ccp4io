@@ -1,4 +1,4 @@
-// $Id: ssm_superpose.cpp,v 1.3 2006/07/12 09:39:10 mdw Exp $
+// $Id: ssm_superpose.cpp,v 1.5 2010/10/15 15:21:23 ccb Exp $
 // =================================================================
 //
 //    26.06.06   <--  Date of Last Modification.
@@ -564,6 +564,7 @@ void SMinTFunc::Dispose()  {
 }
 
 void  MinTFunc ( void * Data, int N, rvector X, realtype & F )  {
+UNUSED_ARGUMENT(N);
 PSMinTFunc MTFD;
 mat33      erm;
 vect3      r1,v1;
@@ -959,7 +960,7 @@ void  CSuperpose::CalcDistance ( int SSE1, int SSE2,
 //  other parameters needed for 3D alignment of the SSEs.
 realtype d,d1;
 int      minAlign, pos1,pos2, len1,len2, i,j,k,l, i1,i2;
-int      p1,p2,e1,e2;
+int      p1,p2;
 
 
   //  1. Initial preparations
@@ -1297,7 +1298,7 @@ PSContact contact;
 ivector   ip,im;
 vect3     v1,v2;
 realtype  l1,l2,cosine;
-int       ncontacts,i,j,k,m1,m2,n1,n2,i1,i2;
+int       ncontacts,i,j,m1,m2,n1,n2,i1,i2;
 
   //  1. Find all contacts in the range og 0.0 - Rmsd
   contact   = NULL;
@@ -1542,7 +1543,7 @@ void  CSuperpose::CleanShortSections ( PSSpAtom at1, int nat1,
 //  follow the same direction (along protein section) and are
 //  long enough to be significant. If sections are too short
 //  then they are unmapped.
-int  i,j,j2,k,shortSect,nmisdr1;
+int  i,j,j2,k,shortSect;
 
   if (nmisdr<2)  shortSect = shortSect1;
            else  shortSect = shortSect2;
@@ -1634,6 +1635,7 @@ int  i,k,m;
 
 realtype CSuperpose::CalcNCombs ( PCSSGraph G, PSSSEDesc SSED,
                                   int nSSEs, PSSpAtom  a, int nres ) {
+UNUSED_ARGUMENT(nres);
 ivector  F;
 realtype nc;
 int      i,j,k,n;
@@ -2115,8 +2117,8 @@ Boolean      Done;
     for (i=0;i<nSSEs2;i++)  SSED2[i].m = -1;
 
     //   1.3 Correspond atoms of matched SSEs first
-    for (i=1;i<=FFlen;i++)  {
-      CalcDistance ( FF1[i],FF2[i],D );
+    for (i=1;i<=copyFlen;i++)  {
+      CalcDistance ( copyF1[i],copyF2[i],D );
       AlignSSEs    ( D,UNMAP_NO );
     }
 
@@ -2393,11 +2395,11 @@ int  selHnd1,selHnd2;
       (!F1) || (!F2) || (mlen<=0) ||
       (!M1) || (!M2))  return SPOSE_BadData;
 
-  FF1   = F1;
-  FF2   = F2;
-  FFlen = mlen;
-  MMDB1 = M1;
-  MMDB2 = M2;
+  copyF1   = F1;
+  copyF2   = F2;
+  copyFlen = mlen;
+  MMDB1    = M1;
+  MMDB2    = M2;
 
   //  1. Select Calphas from both structures
 
@@ -2524,11 +2526,11 @@ int  i,j, rc;
       (!F1) || (!F2) || (mlen<=0))
     return SPOSE_BadData;
 
-  FF1   = F1;
-  FF2   = F2;
-  FFlen = mlen;
-  MMDB1 = SD1->M;
-  MMDB2 = SD2->M;
+  copyF1   = F1;
+  copyF2   = F2;
+  copyFlen = mlen;
+  MMDB1    = SD1->M;
+  MMDB2    = SD2->M;
 
   //  1. Select Calphas from both structures
 
@@ -2597,8 +2599,8 @@ void  CSuperpose::_superpose ( PCSSGraph G1, PCSSGraph G2,
 mat44 TMx0;
 int   i,j,i1,i2,AD_alloc;
 
-  IdentifyUnmatchedSSEs ( FH1,nFH1,FS1,nFS1,FF1,FFlen,G1 );
-  IdentifyUnmatchedSSEs ( FH2,nFH2,FS2,nFS2,FF2,FFlen,G2 );
+  IdentifyUnmatchedSSEs ( FH1,nFH1,FS1,nFS1,copyF1,copyFlen,G1 );
+  IdentifyUnmatchedSSEs ( FH2,nFH2,FS2,nFS2,copyF2,copyFlen,G2 );
 
   //  3. Allocate memory for corresponding atoms and shortest contacts
 
@@ -2634,11 +2636,11 @@ int   i,j,i1,i2,AD_alloc;
 
   //  4. Superpose secondary structures; TMx will be the initial guess
 
-  if (FFlen==1)  {
-    FirstGuess ( FF1,FF2,FFlen );
-    ChooseFirstRotation ( FF1[1],FF2[1] );
+  if (copyFlen==1)  {
+    FirstGuess ( copyF1,copyF2,copyFlen );
+    ChooseFirstRotation ( copyF1[1],copyF2[1] );
   } else
-    SuperposeSSGraphs ( G1,FF1,G2,FF2,FFlen );
+    SuperposeSSGraphs ( G1,copyF1,G2,copyF2,copyFlen );
   for (i=0;i<4;i++)
     for (j=0;j<4;j++)  {
       TMx0[i][j] = TMatrix[i][j];

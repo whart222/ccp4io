@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    24.03.09   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CMMDBFile  ( macromolecular data file class )
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2009
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -1221,7 +1221,7 @@ int  i,k;
 }
 
 
-void  CMMDBFile::FinishStructEdit()  {
+int  CMMDBFile::FinishStructEdit()  {
 // Makes a new atom index after insertion or deletion of atoms.
 // This function may change atoms' positions in the index and
 // correspondingly the CAtom::index field.
@@ -1278,10 +1278,11 @@ int       i,j,k,l,n,index,nAtoms1;
     }
   }
 
-  if (n!=nAtoms1)  {
-    printf ( " ***** PROGRAM ERROR IN CMMDBFile::FinishStructEdit\n" );
-    exit ( 1 );
-  }
+//  if (n!=nAtoms1)  {
+//    printf ( " **** PROGRAM ERROR IN CMMDBFile::FinishStructEdit\n" );
+//    exit ( 1 );
+//  }
+
 
   // check if there are dead atoms in the old index
   for (i=0;i<AtmLen;i++)
@@ -1291,8 +1292,11 @@ int       i,j,k,l,n,index,nAtoms1;
   if (Atom)  delete[] Atom;
 
   Atom   = Atom1;
-  AtmLen = nAtoms1;
-  nAtoms = nAtoms1;
+  AtmLen = n;
+  nAtoms = n;
+
+  if (n==nAtoms1)  return 0;  // Ok
+             else  return 1;  // not Ok; should never happen
 
 }
 
@@ -1721,6 +1725,9 @@ int i,kndex,RC;
   }
 
   if (kndex==0)  kndex = nAtoms+1;
+
+  if (!crModel)  SwitchModel ( 1 );
+
 
   RC = AllocateAtom ( kndex,chainID,resName,seqNum,insCode,True );
   if (!RC)
@@ -2592,6 +2599,7 @@ Boolean CMMDBFile::GetNewChainID ( int modelNo, ChainID chID,
 //  -------------------------------------------------------------
 
 PCMask CMMDBFile::GetSelMask ( int selHnd )  {
+UNUSED_ARGUMENT(selHnd);
   return NULL;
 }
 

@@ -102,7 +102,9 @@ struct SAAProperty  {
 };
 
 extern SAAProperty const AAProperty[nAminoacidNames];
+extern int const AASimilarity[nAminoacidNames][nAminoacidNames];
 
+extern int      GetAAPIndex     ( cpstr resName );  // 0..nAminoacidNames-1
 extern realtype GetAAHydropathy ( cpstr resName );  // -4.5...+4.5
 extern realtype GetAACharge     ( cpstr resName );
 extern realtype GetAASolvationEnergy ( cpstr resName );

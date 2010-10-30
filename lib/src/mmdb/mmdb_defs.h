@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    10.09.07   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //
 //      Definition of types, constants and important classes.
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -44,6 +44,10 @@
 #ifndef  __MatType__
 #include "mattype_.h"
 #endif
+
+#define MMDB_MAJOR_VERSION    (1)
+#define MMDB_MINOR_VERSION    (23)
+#define MMDB_MICRO_VERSION    (1)
 
 
 //  =======================  types  =================================
@@ -69,6 +73,7 @@ typedef  char         HelixID [20];   // helix ID
 typedef  char         StrandID[20];   // strand ID
 typedef  char         SheetID [20];   // sheet ID
 typedef  char         TurnID  [20];   // turn ID
+typedef  char         LinkRID [20];   // Refmac link ID
 
 typedef  char         SymGroup[100];  // group of space symmetry
 typedef  realtype     vect3   [3];    // vector of 3 real numbers
@@ -234,7 +239,8 @@ typedef  char     maxMMDBName[MaxMMDBNameLength];
 #define  ClassID_Helix             19
 #define  ClassID_Turn              20
 #define  ClassID_Link              21
-#define  ClassID_CisPep            22
+#define  ClassID_LinkR             22
+#define  ClassID_CisPep            23
 
 
 //  =====================  classes  ===============================

@@ -100,6 +100,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFCAT_STRUCT_ASYM                 pstr("_struct_asym")
 #define CIFCAT_STRUCT_CONF                 pstr("_struct_conf")
 #define CIFCAT_STRUCT_CONN                 pstr("_struct_conn")
+#define CIFCAT_STRUCT_LINKR                cpstr("_struct_linkr")
 #define CIFCAT_STRUCT_KEYWORDS             pstr("_struct_keywords")
 #define CIFCAT_STRUCT_NCS_OPER             pstr("_struct_ncs_oper")
 #define CIFCAT_STRUCT_REF                  pstr("_struct_ref")
@@ -309,6 +310,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_CONN_PTNR1_AUTH_ASYM_ID        pstr("ptnr1_auth_asym_id")
 #define CIFTAG_CONN_PTNR1_AUTH_SEQ_ID         pstr("ptnr1_auth_seq_id")
 #define CIFTAG_CONN_PDBX_PTNR1_PDB_INS_CODE   pstr("pdbx_ptnr1_PDB_ins_code")
+#define CIFTAG_CONN_DIST                      pstr("link_dist")
 #define CIFTAG_CONN_PTNR2_AUTH_ATOM_ID        pstr("ptnr2_auth_atom_id")
 #define CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID    pstr("pdbx_ptnr2_auth_alt_id")
 #define CIFTAG_CONN_PTNR2_AUTH_COMP_ID        pstr("ptnr2_auth_comp_id")
@@ -317,6 +319,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE   pstr("pdbx_ptnr2_PDB_ins_code")
 #define CIFTAG_CONN_PTNR1_SYMMETRY            pstr("ptnr1_symmetry")
 #define CIFTAG_CONN_PTNR2_SYMMETRY            pstr("ptnr2_symmetry")
+#define CIFTAG_CONN_NAME                      pstr("link_name")
 
 
 #endif

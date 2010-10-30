@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    30.04.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -40,6 +40,8 @@
 //                  CTurn         ( turn info                       )
 //                  CLinkContainer   ( container for link data      )
 //                  CLink            ( link data                    )
+//                  CLinkRContainer  ( container for refmac link    )
+//                  CLinkR           ( link data                    )
 //                  CCisPepContainer ( container for CisPep data    )
 //                  CCisPep          ( CisPep data                  )
 //                  CModel        ( PDB model                       )
@@ -404,6 +406,7 @@ byte Version;
   f.CreateRead ( Formula        );
 }
 
+MakeStreamFunctions(CHetCompound)
 
 
 //  ====================  CHetCompounds  =======================
@@ -459,8 +462,6 @@ int     l,i;
 void  CHetCompounds::ConvertHETSYN ( cpstr S )  {
 ResName hetID;
 char    L[100];
-//pstr    p1,p2;
-char    c;
 int     l,i,j,k;
   l = strlen(S);
   if (l>12)  {
@@ -759,6 +760,7 @@ void  CHelix::InitHelix()  {
 }
 
 void  CHelix::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB OBSLTE line number N
 //  from the class' data
   strcpy     ( S,"HELIX" );
@@ -797,6 +799,7 @@ void AddStructConfTags ( PCMMCIFLoop Loop )  {
 #define  HelixTypeID  "HELX_P"
 
 void  CHelix::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
   RC = CIF->AddLoop ( CIFCAT_STRUCT_CONF,Loop );
@@ -1887,6 +1890,7 @@ void  CTurn::InitTurn()  {
 }
 
 void  CTurn::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB OBSLTE line number N
 //  from the class' data
   strcpy     ( S,"TURN" );
@@ -1907,6 +1911,7 @@ void  CTurn::PDBASCIIDump ( pstr S, int N )  {
 #define  TurnTypeID  "TURN_P"
 
 void  CTurn::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
   RC = CIF->AddLoop ( CIFCAT_STRUCT_CONF,Loop );
@@ -2112,6 +2117,7 @@ void  CLink::InitLink()  {
 
 
 void  CLink::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB OBSLTE line number N
 //  from the class' data
 
@@ -2171,6 +2177,7 @@ void AddStructConnTags ( PCMMCIFLoop Loop )  {
 
 
 void  CLink::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 char        S[100];
 int         RC;
@@ -2410,6 +2417,319 @@ byte Version;
 MakeStreamFunctions(CLink)
 
 
+//  ===================  CLinkRContainer  =======================
+
+PCContainerClass CLinkRContainer::MakeContainerClass ( int ClassID )  {
+  switch (ClassID)  {
+    default :
+    case ClassID_Template : return
+                         CClassContainer::MakeContainerClass(ClassID);
+    case ClassID_LinkR    : return new CLinkR();
+  }
+}
+
+MakeStreamFunctions(CLinkRContainer)
+
+
+//  ========================  CLinkR  ===========================
+
+CLinkR::CLinkR() : CContainerClass()  {
+  InitLinkR();
+}
+
+CLinkR::CLinkR ( cpstr S ) : CContainerClass()  {
+  InitLinkR();
+  ConvertPDBASCII ( S );
+}
+
+CLinkR::CLinkR ( RPCStream Object ) : CContainerClass(Object)  {
+  InitLinkR();
+}
+
+CLinkR::~CLinkR() {}
+
+void  CLinkR::InitLinkR()  {
+  strcpy ( linkRID ,"----" );  // link name
+  strcpy ( atName1 ,"----" );  // name of 1st linked atom
+  strcpy ( aloc1   ," "    );  // alternative location of 1st atom
+  strcpy ( resName1,"---"  );  // residue name of 1st linked atom
+  strcpy ( chainID1," "    );  // chain ID of 1st linked atom
+  seqNum1 = 0;                 // sequence number of 1st linked atom
+  strcpy ( insCode1," "    );  // insertion code of 1st linked atom
+  strcpy ( atName2 ,"----" );  // name of 2nd linked atom
+  strcpy ( aloc2   ," "    );  // alternative location of 2nd atom
+  strcpy ( resName2,"---"  );  // residue name of 2nd linked atom
+  strcpy ( chainID2," "    );  // chain ID of 2nd linked atom
+  seqNum2 = 0;                 // sequence number of 2nd linked atom
+  strcpy ( insCode2," "    );  // insertion code of 2nd linked atom
+  dist    = 0.0;               // link distance
+}
+
+/*
+LINK             LYS A  27                     PLP A 255                PLPLYS
+LINK             MAN S   3                     MAN S   4                BETA1-4
+LINK        C6  BBEN B   1                O1  BMAF S   2                BEN-MAF
+LINK        OE2 AGLU A 320                C1  AMAF S   2                GLU-MAF
+LINK        OE2  GLU A  67        1.895   ZN   ZN  R   5                GLU-ZN
+LINK        NE2  HIS A  71        2.055   ZN   ZN  R   5                HIS-ZN
+LINK        O    ARG A  69        2.240   NA   NA  R   9                ARG-NA
+012345678901234567890123456789012345678901234567890123456789012345678901234567890
+          1         2         3         4         5         6         7
+*/
+
+void  CLinkR::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
+//  makes the ASCII PDB OBSLTE line number N
+//  from the class' data
+
+  strcpy     ( S,"LINKR" );
+  PadSpaces  ( S,80 );
+
+  strcpy_n1  ( &(S[11]),atName1 ,4 );
+  strcpy_n1  ( &(S[16]),aloc1   ,1 );
+  strcpy_n1  ( &(S[17]),resName1,3 );
+  strcpy_n1  ( &(S[21]),chainID1,1 );
+  PutIntIns  ( &(S[22]),seqNum1 ,4,insCode1 );
+
+  if (dist>0.0)
+    PutRealF ( &(S[32]),dist,7,3 );
+
+  strcpy_n1  ( &(S[41]),atName2 ,4 );
+  strcpy_n1  ( &(S[46]),aloc2   ,1 );
+  strcpy_n1  ( &(S[47]),resName2,3 );
+  strcpy_n1  ( &(S[51]),chainID2,1 );
+  PutIntIns  ( &(S[52]),seqNum2 ,4,insCode2 );
+
+  strcpy_ns  ( &(S[72]),linkRID,8 );
+
+}
+
+
+#define  LinkRTypeID  "LINKR"
+
+void AddStructConnLinkRTags ( PCMMCIFLoop Loop )  {
+
+  Loop->AddLoopTag ( CIFTAG_ID                           );
+  Loop->AddLoopTag ( CIFTAG_CONN_TYPE_ID                 );
+
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR1_AUTH_ATOM_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID  );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR1_AUTH_COMP_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR1_AUTH_ASYM_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR1_AUTH_SEQ_ID       );
+  Loop->AddLoopTag ( CIFTAG_CONN_PDBX_PTNR1_PDB_INS_CODE );
+
+  Loop->AddLoopTag ( CIFTAG_CONN_DIST );
+
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR2_AUTH_ATOM_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID  );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR2_AUTH_COMP_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR2_AUTH_ASYM_ID      );
+  Loop->AddLoopTag ( CIFTAG_CONN_PTNR2_AUTH_SEQ_ID       );
+  Loop->AddLoopTag ( CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE );
+
+  Loop->AddLoopTag ( CIFTAG_CONN_NAME );
+
+}
+
+void  CLinkR::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
+PCMMCIFLoop Loop;
+int         RC;
+
+  RC = CIF->AddLoop ( CIFCAT_STRUCT_LINKR,Loop );
+  if (RC!=CIFRC_Ok) // the category was (re)created, provide tags
+    AddStructConnLinkRTags ( Loop );
+
+  Loop->AddString  ( "1"      );  // should be a counter
+  Loop->AddString  ( pstr(LinkTypeID) );
+
+  Loop->AddString  ( atName1  );
+  Loop->AddString  ( aloc1    );
+  Loop->AddString  ( resName1 );
+  Loop->AddString  ( chainID1 );
+  Loop->AddInteger ( seqNum1  );
+  Loop->AddString  ( insCode1 );
+
+  Loop->AddReal    ( dist     );
+
+  Loop->AddString  ( atName2  );
+  Loop->AddString  ( aloc2    );
+  Loop->AddString  ( resName2 );
+  Loop->AddString  ( chainID2 );
+  Loop->AddInteger ( seqNum2  );
+  Loop->AddString  ( insCode2 );
+
+  Loop->AddString  ( linkRID  );
+
+}
+
+int CLinkR::ConvertPDBASCII ( cpstr S )  {
+
+  GetString    ( atName1 ,&(S[11]),4 );
+  strcpy_ncss  ( aloc1   ,&(S[16]),1 );
+  strcpy_ncss  ( resName1,&(S[17]),3 );
+  strcpy_ncss  ( chainID1,&(S[21]),1 );
+  GetIntIns    ( seqNum1,insCode1,&(S[22]),4 );
+
+  if (!GetReal(dist,&(S[32]),7)) dist = 0.0;
+
+  GetString    ( atName2 ,&(S[41]),4 );
+  strcpy_ncss  ( aloc2   ,&(S[46]),1 );
+  strcpy_ncss  ( resName2,&(S[47]),3 );
+  strcpy_ncss  ( chainID2,&(S[51]),1 );
+  GetIntIns    ( seqNum2,insCode2,&(S[52]),4 );
+
+  strcpy_ncss  ( linkRID,&(S[72]),8 );
+
+  return 0;
+
+}
+
+void  CLinkR::GetCIF ( PCMMCIFData CIF, int & Signal )  {
+PCMMCIFLoop Loop;
+pstr        F;
+int         RC,l;
+Boolean     Done;
+
+  Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONN );
+  if (!Loop)  {
+    Signal = -1;  // signal to finish processing of this structure
+    return;
+  }
+
+  l    = Loop->GetLoopLength();
+  Done = (Signal>=l);
+  while (!Done) {
+    F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,Signal,RC );
+    if ((!RC) && F)  Done = (strcmp(F,LinkTypeID)==0);
+               else  Done = False;
+    if (!Done)  {
+      Signal++;
+      Done = (Signal>=l);
+    }
+  }
+
+  if (Signal>=l)  {
+    Signal = -1;  // finish processing of Turn
+    return;
+  }
+
+  Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,Signal );
+
+  //  CIFGetInteger ( l,Loop,CIFTAG_ID,Signal );
+
+  CIFGetString ( atName1,Loop,CIFTAG_CONN_PTNR1_AUTH_ATOM_ID,Signal,
+                 sizeof(atName1),pstr("    ") );
+  CIFGetString ( aloc1,Loop,CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID,Signal,
+                 sizeof(aloc1),pstr(" ") );
+  CIFGetString ( resName1,Loop,CIFTAG_CONN_PTNR1_AUTH_COMP_ID,Signal,
+                 sizeof(resName1),pstr("   ") );
+  CIFGetString ( chainID1,Loop,CIFTAG_CONN_PTNR1_AUTH_ASYM_ID,Signal,
+                 sizeof(chainID1),pstr(" ") );
+  if (CIFGetInteger(seqNum1,Loop,CIFTAG_CONN_PTNR1_AUTH_SEQ_ID,Signal))
+    return;
+  CIFGetString ( insCode1,Loop,CIFTAG_CONN_PDBX_PTNR1_PDB_INS_CODE,
+                 Signal,sizeof(insCode1),pstr(" ") );
+
+  if (CIFGetReal(dist,Loop,CIFTAG_CONN_DIST,Signal))
+    return;
+
+  CIFGetString ( atName2,Loop,CIFTAG_CONN_PTNR2_AUTH_ATOM_ID,Signal,
+                 sizeof(atName2),pstr("    ") );
+  CIFGetString ( aloc2,Loop,CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID,Signal,
+                 sizeof(aloc2),pstr(" ") );
+  CIFGetString ( resName2,Loop,CIFTAG_CONN_PTNR2_AUTH_COMP_ID,Signal,
+                 sizeof(resName2),pstr("   ") );
+  CIFGetString ( chainID2,Loop,CIFTAG_CONN_PTNR2_AUTH_ASYM_ID,Signal,
+                 sizeof(chainID2),pstr(" ") );
+  if (CIFGetInteger(seqNum2,Loop,CIFTAG_CONN_PTNR2_AUTH_SEQ_ID,Signal))
+    return;
+  CIFGetString ( insCode2,Loop,CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE,
+                 Signal,sizeof(insCode2),pstr(" ") );
+
+  CIFGetString ( linkRID,Loop,CIFTAG_CONN_NAME,Signal,
+                 sizeof(linkRID),pstr(" ") );
+
+  Signal++;
+
+}
+
+void  CLinkR::Copy ( PCContainerClass LinkR )  {
+
+  strcpy ( atName1 ,PCLinkR(LinkR)->atName1  );
+  strcpy ( aloc1   ,PCLinkR(LinkR)->aloc1    );
+  strcpy ( resName1,PCLinkR(LinkR)->resName1 );
+  strcpy ( chainID1,PCLinkR(LinkR)->chainID1 );
+  seqNum1 = PCLinkR(LinkR)->seqNum1;
+  strcpy ( insCode1,PCLinkR(LinkR)->insCode1 );
+
+  dist = PCLinkR(LinkR)->dist;
+
+  strcpy ( atName2 ,PCLinkR(LinkR)->atName2  );
+  strcpy ( aloc2   ,PCLinkR(LinkR)->aloc2    );
+  strcpy ( resName2,PCLinkR(LinkR)->resName2 );
+  strcpy ( chainID2,PCLinkR(LinkR)->chainID2 );
+  seqNum2 = PCLinkR(LinkR)->seqNum2;
+  strcpy ( insCode2,PCLinkR(LinkR)->insCode2 );
+
+  strcpy ( linkRID,PCLinkR(LinkR)->linkRID );
+
+}
+
+void  CLinkR::write ( RCFile f )  {
+byte Version=1;
+
+  f.WriteByte ( &Version    );
+
+  f.WriteTerLine ( atName1 ,False );
+  f.WriteTerLine ( aloc1   ,False );
+  f.WriteTerLine ( resName1,False );
+  f.WriteTerLine ( chainID1,False );
+  f.WriteInt     ( &seqNum1 );
+  f.WriteTerLine ( insCode1,False );
+
+  f.WriteReal    ( &dist );
+
+  f.WriteTerLine ( atName2 ,False );
+  f.WriteTerLine ( aloc2   ,False );
+  f.WriteTerLine ( resName2,False );
+  f.WriteTerLine ( chainID2,False );
+  f.WriteInt     ( &seqNum2 );
+  f.WriteTerLine ( insCode2,False );
+
+  f.WriteTerLine ( linkRID,False );
+
+}
+
+void  CLinkR::read ( RCFile f )  {
+byte Version;
+
+  f.ReadByte ( &Version    );
+
+  f.ReadTerLine ( atName1 ,False );
+  f.ReadTerLine ( aloc1   ,False );
+  f.ReadTerLine ( resName1,False );
+  f.ReadTerLine ( chainID1,False );
+  f.ReadInt     ( &seqNum1 );
+  f.ReadTerLine ( insCode1,False );
+
+  f.ReadReal    ( &dist );
+
+  f.ReadTerLine ( atName2 ,False );
+  f.ReadTerLine ( aloc2   ,False );
+  f.ReadTerLine ( resName2,False );
+  f.ReadTerLine ( chainID2,False );
+  f.ReadInt     ( &seqNum2 );
+  f.ReadTerLine ( insCode2,False );
+
+  f.ReadTerLine ( linkRID,False );
+
+}
+
+MakeStreamFunctions(CLinkR)
+
+
 //  ===================  CCisPepContainer  ======================
 
 PCContainerClass CCisPepContainer::MakeContainerClass ( int ClassID ) {
@@ -2456,6 +2776,7 @@ void CCisPep::InitCisPep()  {
 }
 
 void  CCisPep::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 
   strcpy     ( S,"CISPEP" );
   PadSpaces  ( S,80 );
@@ -2604,6 +2925,7 @@ void CModel::FreeMemory()  {
   RemoveSecStructure();
   RemoveHetInfo     ();
   RemoveLinks       ();
+  RemoveLinkRs      ();
   RemoveCisPeps     ();
 
 }
@@ -3149,6 +3471,52 @@ int  i,k;
 }
 
 
+//  --------------------  Sort chains  ----------------------------
+
+DefineClass(CSortChains)
+
+class CSortChains : public CQuickSort  {
+  public :
+    CSortChains() : CQuickSort() { sKey = 0; }
+    int  Compare ( int i, int j );
+    void Swap    ( int i, int j );
+    void Sort    ( PPCChain chain, int nChains, int sortKey );
+  private :
+    int sKey;
+};
+
+int CSortChains::Compare ( int i, int j )  {
+int diff;
+
+  diff = strcmp ( (PPCChain(data))[i]->GetChainID(),
+                  (PPCChain(data))[j]->GetChainID() );
+  if (diff>0)  diff =  1;
+  if (diff<0)  diff = -1;
+
+  if (sKey==SORT_CHAIN_ChainID_Desc) return -diff;
+
+  return diff;
+
+}
+
+void CSortChains::Swap ( int i, int j )  {
+PCChain chn;
+  chn = ((PPCChain)data)[i];
+  ((PPCChain)data)[i] = ((PPCChain)data)[j];
+  ((PPCChain)data)[j] = chn;
+}
+
+void CSortChains::Sort ( PPCChain chain, int nChains, int sortKey )  {
+  sKey = sortKey;
+  CQuickSort::Sort ( &(chain[0]),nChains );
+}
+
+void CModel::SortChains ( int sortKey )  {
+CSortChains SC;
+  TrimChainTable();
+  SC.Sort ( Chain,nChains,sortKey );
+}
+
 
 // --------------------  Extracting atoms  -----------------------
 
@@ -3665,6 +4033,7 @@ PCChain  chain;
 PCHelix  helix;
 PCTurn   turn;
 PCLink   link;
+PCLinkR  linkR;
 PCCisPep cispep;
 int      RC;
 
@@ -3747,6 +4116,15 @@ int      RC;
           else  delete link;
     return RC;
 
+
+  } else if (!strncmp(PDBString,"LINKR ",6))  {
+
+    linkR = new CLinkR();
+    RC   = linkR->ConvertPDBASCII(PDBString);
+    if (RC==0)  LinkRs.AddData ( linkR );
+          else  delete linkR;
+    return RC;
+
   } else if (!strncmp(PDBString,"CISPEP",6))  {
 
     cispep = new CCisPep();
@@ -3789,6 +4167,7 @@ int i;
   Sheets      .PDBASCIIDump ( f );
   Turns       .PDBASCIIDump ( f );
   Links       .PDBASCIIDump ( f );
+  LinkRs      .PDBASCIIDump ( f );
 
 }
 
@@ -3860,6 +4239,7 @@ int  i;
   Sheets      .MakeCIF ( CIF );
   Turns       .MakeCIF ( CIF );
   Links       .MakeCIF ( CIF );
+  LinkRs      .MakeCIF ( CIF );
 
 }
 
@@ -3867,7 +4247,7 @@ int  CModel::GetCIFPSClass ( PCMMCIFData CIF, int ClassID )  {
 CChainContainer  PSClass;
 PCChainContainer Dest;
 int              RC;
-pstr             chainID;
+cpstr            chainID;
 PCChain          chain;
   PSClass.SetChain ( NULL );
   RC = PSClass.GetCIF ( CIF,ClassID );
@@ -3922,12 +4302,13 @@ PCChain  chain;
   Sheets      .GetCIF ( CIF );
   Turns       .GetCIF ( CIF,ClassID_Turn  );
   Links       .GetCIF ( CIF,ClassID_Link  );
+  LinkRs      .GetCIF ( CIF,ClassID_LinkR );
 
   return RC;
 
 }
 
-pstr  CModel::GetEntryID()  {
+cpstr  CModel::GetEntryID()  {
   if (manager)  return manager->Title.idCode;
           else  return pstr("");
 }
@@ -3952,7 +4333,7 @@ PCAtom * CModel::GetAllAtoms()  {
 }
 
 
-pstr  CModel::GetModelID ( pstr modelID )  {
+cpstr  CModel::GetModelID ( pstr modelID )  {
   modelID[0] = char(0);
   sprintf ( modelID,"/%i",serNum );
   return modelID;
@@ -3992,9 +4373,35 @@ int i;
     Sheets      .Copy ( &(Model->Sheets)       );
     Turns       .Copy ( &(Model->Turns)        );
     Links       .Copy ( &(Model->Links)        );
+    LinkRs      .Copy ( &(Model->LinkRs)       );
+    CisPeps     .Copy ( &(Model->CisPeps)      );
 
   }
 
+}
+
+void  CModel::CopyHets ( PCModel Model )  {
+  if (Model)  HetCompounds.Copy ( &(Model->HetCompounds) );
+}
+
+void  CModel::CopySecStructure ( PCModel Model )  {
+  if (Model)  {
+    Helices.Copy ( &(Model->Helices) );
+    Sheets .Copy ( &(Model->Sheets)  );
+    Turns  .Copy ( &(Model->Turns)   );
+  }
+}
+
+void  CModel::CopyLinks ( PCModel Model )  {
+  if (Model)  Links.Copy ( &(Model->Links) );
+}
+
+void  CModel::CopyLinkRs ( PCModel Model )  {
+  if (Model)  LinkRs.Copy ( &(Model->LinkRs) );
+}
+
+void  CModel::CopyCisPeps ( PCModel Model )  {
+  if (Model)  CisPeps.Copy ( &(Model->CisPeps) );
 }
 
 void  CModel::_copy ( PCModel Model )  {
@@ -4025,6 +4432,8 @@ int i;
     Sheets      .Copy ( &(Model->Sheets)       );
     Turns       .Copy ( &(Model->Turns)        );
     Links       .Copy ( &(Model->Links)        );
+    LinkRs      .Copy ( &(Model->LinkRs)       );
+    CisPeps     .Copy ( &(Model->CisPeps)      );
 
   }
 
@@ -4064,6 +4473,7 @@ int i;
     Sheets      .Copy ( &(Model->Sheets)       );
     Turns       .Copy ( &(Model->Turns)        );
     Links       .Copy ( &(Model->Links)        );
+    LinkRs      .Copy ( &(Model->LinkRs)       );
 
   }
 
@@ -4398,6 +4808,23 @@ void  CModel::RemoveLinks()  {
 
 void  CModel::AddLink ( PCLink Link )  {
   Links.AddData ( Link );
+}
+
+
+int  CModel::GetNumberOfLinkRs()  {
+  return  LinkRs.Length();
+}
+
+PCLinkR  CModel::GetLinkR ( int serialNum )  {
+  return (PCLinkR)LinkRs.GetContainerClass ( serialNum-1 );
+}
+
+void  CModel::RemoveLinkRs()  {
+  LinkRs.FreeContainer();
+}
+
+void  CModel::AddLinkR ( PCLinkR LinkR )  {
+  LinkRs.AddData ( LinkR );
 }
 
 
@@ -4794,7 +5221,7 @@ int        i,j,k,l;
 
 void  CModel::write ( RCFile f )  {
 int  i,k;
-byte Version=2;
+byte Version=3;
 
   f.WriteByte ( &Version );
 
@@ -4815,6 +5242,7 @@ byte Version=2;
   Sheets      .write ( f );
   Turns       .write ( f );
   Links       .write ( f );
+  LinkRs      .write ( f );
 
 }
 
@@ -4847,8 +5275,8 @@ byte Version;
   Helices     .read ( f );
   Sheets      .read ( f );
   Turns       .read ( f );
-  if (Version>1)
-    Links     .read ( f );
+  if (Version>1)  Links .read ( f );
+  if (Version>2)  LinkRs.read ( f );
 
 }
 

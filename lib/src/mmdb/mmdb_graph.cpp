@@ -104,9 +104,10 @@ CVertex::~CVertex() {
 void  CVertex::InitVertex()  {
   name     = NULL;
   type     = 0;
+  type_ext = 0;
   property = 0;
   id       = 0;
-  userid   = 0;
+  user_id  = 0;
 }
 
 
@@ -162,6 +163,10 @@ void  CVertex::SetType ( int vtype )  {
   type = vtype;
 }
 
+void  CVertex::SetTypeExt  ( int typeExt )  {
+  type_ext = typeExt;
+}
+
 void  CVertex::SetVertex ( int vtype, cpstr vname )  {
   type = vtype;
   CreateCopy ( name,vname );
@@ -207,11 +212,11 @@ int vtype;
 }
 
 void  CVertex::SaveType()  {
-  userid = type;
+  user_id = type;
 }
 
 void  CVertex::RestoreType()  {
-  type = userid;
+  type = user_id;
 }
 
 void  CVertex::CopyType ( PCVertex V )  {
@@ -228,19 +233,21 @@ void  CVertex::Print ( int PKey )  {
 void  CVertex::Copy ( PCVertex V )  {
   CreateCopy ( name,V->name );
   type     = V->type;
+  type_ext = V->type_ext;
   property = V->property;
   id       = V->id;
-  userid   = V->userid;
+  user_id  = V->user_id;
 }
 
 void  CVertex::write ( RCFile f )  {
-int Version=1;
+int Version=2;
   f.WriteInt    ( &Version  );
   f.CreateWrite ( name      );
   f.WriteInt    ( &type     );
   f.WriteInt    ( &property );
   f.WriteInt    ( &id       );
-  f.WriteInt    ( &userid   );
+  f.WriteInt    ( &user_id  );
+  f.WriteInt    ( &type_ext );
 }
 
 void  CVertex::read  ( RCFile f )  {
@@ -250,7 +257,9 @@ int Version;
   f.ReadInt    ( &type     );
   f.ReadInt    ( &property );
   f.ReadInt    ( &id       );
-  f.ReadInt    ( &userid   );
+  f.ReadInt    ( &user_id  );
+  if (Version>1)  f.ReadInt ( &type_ext );
+            else  type_ext = 0;
 }
 
 void  CVertex::mem_write ( pstr S, int & l )  {
@@ -258,7 +267,8 @@ void  CVertex::mem_write ( pstr S, int & l )  {
   ::mem_write ( type    ,S,l );
   ::mem_write ( property,S,l );
   ::mem_write ( id      ,S,l );
-  ::mem_write ( userid  ,S,l );
+  ::mem_write ( user_id ,S,l );
+  ::mem_write ( type_ext,S,l );
 }
 
 void  CVertex::mem_read ( cpstr S, int & l )  {
@@ -266,7 +276,8 @@ void  CVertex::mem_read ( cpstr S, int & l )  {
   ::mem_read ( type    ,S,l );
   ::mem_read ( property,S,l );
   ::mem_read ( id      ,S,l );
-  ::mem_read ( userid  ,S,l );
+  ::mem_read ( user_id ,S,l );
+  ::mem_read ( type_ext,S,l );
 }
 
 MakeStreamFunctions(CVertex)
@@ -555,6 +566,16 @@ PCVertex CGraph::GetVertex ( int vertexNo )  {
   else  return NULL;
 }
 
+int  CGraph::GetVertexNo ( cpstr vname )  {
+int  i,k;
+  k = 0;
+  if (vname)
+    for (i=0;(i<nAllVertices) && (!k);i++)
+      if (!strcmp(vname,Vertex[i]->name))
+        k = i+1;
+  return k;
+}
+
 PCEdge CGraph::GetEdge ( int edgeNo )  {
   if ((edgeNo>0) && (edgeNo<=nAllEdges))
         return Edge[edgeNo-1];
@@ -683,8 +704,8 @@ PCEdge   G;
         if (B)  {
           Vertex[nVertices] = new CVertex ( R->atom[i]->element,
                                             R->atom[i]->name );
-          Vertex[nVertices]->id     = nVertices;
-          Vertex[nVertices]->userid = i;
+          Vertex[nVertices]->id      = nVertices;
+          Vertex[nVertices]->user_id = i;
           nVertices++;
         }
       }
@@ -703,12 +724,12 @@ PCEdge   G;
     Edge[i] = NULL;
 
   for (i=0;i<nVertices;i++)  {
-    a1 = Vertex[i]->id;
+    a1 = Vertex[i]->user_id;
     e1 = Vertex[i]->type;
     if (e1>nElementNames)  e1 = 6;
     e1--;
     for (j=i+1;j<nVertices;j++)  {
-      a2 = Vertex[j]->id;
+      a2 = Vertex[j]->user_id;
       e2 = Vertex[j]->type;
       if (e2>nElementNames)  e2 = 6;
       e2--;
@@ -727,6 +748,75 @@ PCEdge   G;
       
   if (aL)  delete[] aL;
   FreeVectorMemory ( occupancy,0 );
+
+  nAllVertices = nVertices;
+  nAllEdges    = nEdges;
+
+  return rc;
+
+}
+
+int  CGraph::MakeGraph ( PPCAtom atom, int nAtoms )  {
+PCEdge   G;
+char     atomID[100];
+realtype dx,dy,dz, sr;
+int      i,j, a1,a2,e1,e2, rc;
+
+  rc = MKGRAPH_Ok;
+  //  reset graph
+  FreeMemory();
+
+  nVAlloc = nAtoms;  // upper estimate for vertices to allocate
+  if (nVAlloc<=0)  return MKGRAPH_NoAtoms;
+
+  //  allocate vertex array
+  Vertex = new PCVertex[nVAlloc];
+  for (i=0;i<nVAlloc;i++)
+    Vertex[i] = NULL;
+
+  //  make vertices
+  for (i=0;i<nAtoms;i++)
+    if (atom[i])  {
+      if (!atom[i]->Ter)  {
+        Vertex[nVertices] = new CVertex ( atom[i]->element,
+                                 atom[i]->GetAtomIDfmt(atomID) );
+        Vertex[nVertices]->user_id = i;
+        nVertices++;
+      }
+    }
+
+  if (nVertices<=0)  {
+    FreeMemory();
+    return MKGRAPH_NoAtoms;
+  }
+
+  //  make edges
+  nEAlloc = 3*nVertices;  // just an inital guess
+  Edge    = new PCEdge[nEAlloc];
+  for (i=0;i<nEAlloc;i++)
+    Edge[i] = NULL;
+
+  for (i=0;i<nVertices;i++)  {
+    a1 = Vertex[i]->user_id;
+    e1 = Vertex[i]->type;
+    if (e1>nElementNames)  e1 = 6;
+    e1--;
+    for (j=i+1;j<nVertices;j++)  {
+      a2 = Vertex[j]->user_id;
+      e2 = Vertex[j]->type;
+      if (e2>nElementNames)  e2 = 6;
+      e2--;
+      dx = atom[a2]->x - atom[a1]->x;
+      dy = atom[a2]->y - atom[a1]->y;
+      dz = atom[a2]->z - atom[a1]->z;
+      sr = CovalentRadius[e1] + CovalentRadius[e2] + 0.25;
+      if (dx*dx+dy*dy+dz*dz<sr*sr)  {  // it's a bond
+        G = new CEdge(i+1,j+1,1); // don't guess on bond order here
+        AddEdge ( G );
+      }
+    }
+    Vertex[i]->id = i+1;
+  }
 
   nAllVertices = nVertices;
   nAllEdges    = nEdges;
@@ -989,6 +1079,68 @@ int i,j, rc;
   }
 
   return rc;
+
+}
+
+
+const int ring_mask[] = {
+  0x00000000,
+  0x00000000,
+  0x00000000,
+  0x00000001,
+  0x00000002,
+  0x00000004,
+  0x00000008,
+  0x00000010,
+  0x00000020,
+  0x00000040,
+  0x00000080
+};
+
+void CGraph::IdentifyRings()  {
+CGraphMatch GM;
+CGraph      ring;
+ivector     F1,F2;
+AtomName    aname;
+realtype    p1,p2;
+int         i,j,n,nrings,nv;
+
+  Build ( False );
+
+  for (i=0;i<nVertices;i++)
+    Vertex[i]->type_ext = 0;
+
+  GM.SetFlag ( GMF_UniqueMatch );
+
+  for (n=3;n<=10;n++)  {
+
+    ring.Reset();
+
+    for (i=1;i<=n;i++)  {
+      sprintf ( aname,"C%i",i );
+      ring.AddVertex ( new CVertex("C",aname) );
+    }
+
+    ring.MakeVertexIDs();
+
+    for (i=1;i<=n;i++)  {
+      j = i+1;
+      if (j>n) j = 1;
+      ring.AddEdge ( new CEdge(i,j,1) );
+    }
+
+    ring.Build ( False );
+
+    GM.MatchGraphs ( this,&ring,n,False,EXTTYPE_Ignore );
+
+    nrings = GM.GetNofMatches();
+    for (i=0;i<nrings;i++)  {
+      GM.GetMatch ( i,F1,F2,nv,p1,p2 );
+      for (j=1;j<nv;j++)
+        Vertex[F1[j]-1]->type_ext |= ring_mask[n];
+    }
+
+  }
 
 }
 
@@ -1441,6 +1593,10 @@ void  CGraphMatch::SetTimeLimit ( int maxTimeToRun )  {
   timeLimit = maxTimeToRun;
 }
 
+void  CGraphMatch::Reset()  {
+  FreeMemory();
+}
+
 void  CGraphMatch::FreeMemory()  {
 int i;
 
@@ -1521,9 +1677,19 @@ int i,j;
   }
 }
 
+
 void  CGraphMatch::MatchGraphs ( PCGraph Gh1, PCGraph Gh2,
                                  int     minMatch,
-                                 Boolean vertexType )  {
+                                 Boolean vertexType,
+                                 int     vertexExt )  {
+//  MatchGraphs looks for maximal common subgraphs of size
+//  not less than minMatch. The number of found subgraphs
+//  is returned by GetNofMatches(), the subgraph vertices
+//  are returned by GetMatch(..). Control parameters:
+//      vertexType   True if vertex type should be taken
+//                   into account and False otherwise
+//      vertexExt    key to use extended vertex types (defined
+//                   as type_ext in CVertex).
 int  n1;
 
   if (Gh1->nVertices<=Gh2->nVertices)  {
@@ -1549,7 +1715,7 @@ int  n1;
   if ((n>nAlloc) || (m>mAlloc))  GetMemory();
                            else  FreeRecHeap();
 
-  n1 = Initialize ( vertexType );
+  n1 = Initialize ( vertexType,vertexExt );
   if (n1<=0)  return;
 
   GetRecHeap();
@@ -1578,9 +1744,9 @@ int  n1;
 }
 
 
-int  CGraphMatch::Initialize ( Boolean vertexType )  {
+int  CGraphMatch::Initialize ( Boolean vertexType, int vertexExt )  {
 ivector jF1;
-int     i,j,v1type,almask,iW,pl;
+int     i,j,v1type,v1type_ext,v2type_ext,almask,iW,pl;
 
   wasFullMatch = False;
 
@@ -1621,24 +1787,65 @@ int v2type,v1type_sr,srmask;
  */
 
   for (i=1;i<=n;i++)  {
-    if (vertexType) {
-      ix[i]  = 0;
-      v1type = V1[i-1]->type & almask;
-      pl     = 0;
-      for (j=1;j<=m;j++)
-        if (v1type==(V2[j-1]->type & almask))
+    ix[i]      = 0;
+    v1type     = V1[i-1]->type & almask;
+    v1type_ext = V1[i-1]->type_ext;
+    pl         = 0;
+    for (j=1;j<=m;j++)
+      if ((v1type==(V2[j-1]->type & almask)) || (!vertexType))  {
+        if (vertexExt==EXTTYPE_Ignore)
           P[1][i][++pl] = j;
-      P[1][i][0] = pl;
-      if (pl)  ix[i] = i;
-    } else {
+        else  {
+          v2type_ext = V2[j-1]->type_ext;
+          if ((!v1type_ext) && (!v2type_ext))
+            P[1][i][++pl] = j;
+          else
+            switch (vertexExt)  {
+              default :
+              case EXTTYPE_Ignore   : P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_Equal    : if (v1type_ext==v2type_ext)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_AND      : if (v1type_ext & v2type_ext)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_OR       : if (v1type_ext | v2type_ext)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_XOR      : if (v1type_ext ^ v2type_ext)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_NotEqual : if (v1type_ext!=v2type_ext)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_NotAND   : if ((v1type_ext & v2type_ext)
+                                              ==0)
+                                        P[1][i][++pl] = j;
+                                  break;
+              case EXTTYPE_NotOR    : if ((v1type_ext | v2type_ext)
+                                              ==0)
+                                        P[1][i][++pl] = j;
+            }
+        }
+      }
+    P[1][i][0] = pl;
+    if (pl)  ix[i] = i;
+    F1[i] = 0;
+    F2[i] = 0;
+  }
+  /*
+  } else  {
+    for (i=1;i<=n;i++)  {
       ix[i] = i;
       for (j=1;j<=m;j++)
         P[1][i][j] = j;
       P[1][i][0] = m;
+      F1[i] = 0;
+      F2[i] = 0;
     }
-    F1[i] = 0;
-    F2[i] = 0;
   }
+  */
 
   i = 1;
   j = n;

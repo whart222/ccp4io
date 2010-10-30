@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -31,7 +31,7 @@
 //  **** Classes :  CFile  - file I/O Support.
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #endif
 
-#ifdef __WIN32__
+#ifdef  _WIN32
 # include <windows.h>
 # define sleep Sleep
 # endif
@@ -54,28 +54,29 @@
 #include <string.h>
 #endif
 
-#ifndef _MVS
+#ifndef  _WIN32
 #ifndef  __UNISTD_H
 #include <unistd.h>
 #endif
 #endif
-
 
 #ifndef  __File__
 #include "file_.h"
 #endif
 
 
+#ifdef  _WIN32
+//  for DOS/WINDOWS machines:
+#define  NEWLINE  "\r\n"
+#else
 //  for UNIX machines:
 #define  NEWLINE  "\n"
-
-//  for DOS/WINDOWS machines:
-//#define  NEWLINE  "\r\n"
+#endif
 
 
 // ===================  Auxilary Functions  =========================
 
-pstr GetFPath ( pstr FilePath, int syskey )  {
+cpstr GetFPath ( pstr FilePath, int syskey )  {
 pstr P;
   if (syskey==syskey_unix)     
     P = strrchr(FilePath,'/');
@@ -114,7 +115,7 @@ pstr P;
      else return P;
 }
 
-pstr ChangeExt ( pstr FilePath, cpstr newExt, int syskey )  {
+cpstr ChangeExt ( pstr FilePath, cpstr newExt, int syskey )  {
 int i;
   i = strlen(FilePath)-1;
   if (syskey==syskey_unix)
@@ -191,9 +192,7 @@ void  CFile::FreeBuffer ()  {
 
 void  CFile::assign ( cpstr FileName, Boolean Text, Boolean UniB,
                       byte gzMode )  {
-#ifndef _MVS
 pstr p;
-#endif
 
   shut();
 
@@ -209,8 +208,6 @@ pstr p;
 
   UniBin = UniB;
 
-#ifndef _MVS
-
   gzipMode = gzMode;
   gzipIO   = ARCH_NONE;
   if ((gzipMode==GZM_ENFORCE) || (gzipMode==GZM_ENFORCE_GZIP))
@@ -225,16 +222,10 @@ pstr p;
     }
   }
 
-#else
-
-  gzipMode = GZM_NONE;
-  gzipIO   = ARCH_NONE;
-
-#endif
-
   memIO = False;
 
 }
+
 
 void  CFile::assign ( word poolSize, word sizeInc, pstr filePool )  {
 
@@ -286,8 +277,9 @@ void  SetCompressPath ( pstr compressPath, pstr uncompressPath )  {
                   else  uncompress_path = uncompressPath;
 }
 
+
 Boolean  CFile::reset ( Boolean ReadOnly, int retry )  {
-#ifndef _MVS
+#ifndef _MSC_VER
 pstr p;
 int  i;
 #endif
@@ -319,7 +311,7 @@ int  i;
 
       StdIO = False;
       if (gzipIO==ARCH_GZIP)  {
-#ifndef _MVS
+#ifndef _MSC_VER
         p = NULL;
         CreateConcat  ( p,ungzip_path,FName );
         for (i=0;(i<=retry) && (!hFile);i++)  {
@@ -330,7 +322,7 @@ int  i;
 #endif
 
       } else if (gzipIO==ARCH_COMPRESS)  {
-#ifndef _MVS
+#ifndef _MSC_VER
         p = NULL;
         CreateConcat  ( p,uncompress_path,FName );
         for (i=0;(i<=retry) && (!hFile);i++)  {
@@ -342,18 +334,18 @@ int  i;
 
       } else  {
 
-#ifndef _MVS
+#ifndef _MSC_VER
         for (i=0;(i<=retry) && (!hFile);i++)  {
           if (i>0)  sleep ( 1 );
 #endif
           if (TextMode)  {
-            if (ReadOnly)  hFile = fopen ( FName,"rt"   );
+            if (ReadOnly)  hFile = fopen ( FName,"rt"  );
                      else  hFile = fopen ( FName,"r+t" );
           } else  {
-            if (ReadOnly)  hFile = fopen ( FName,"rb"   );
+            if (ReadOnly)  hFile = fopen ( FName,"rb"  );
                      else  hFile = fopen ( FName,"r+b" );
           }
-#ifndef _MVS
+#ifndef _MSC_VER
         }
 #endif
 
@@ -384,7 +376,7 @@ int  i;
 }
 
 Boolean  CFile::rewrite()  {
-#ifndef _MVS
+#ifndef _MSC_VER
 pstr p;
 #endif
 
@@ -405,13 +397,9 @@ pstr p;
     BufCnt = 0;
 
     if (gzipIO==ARCH_GZIP)  {
-#ifndef _MVS
+#ifndef _MSC_VER
       p = NULL;
-#ifdef __WIN32__
-      CreateConcat  ( p,gzip_path,pstr(" | cat > "),FName );
-#else
       CreateConcat  ( p,gzip_path,pstr(" > "),FName );
-#endif
       hFile = popen ( p,"w" );
       if (p)  delete[] p;
 #else
@@ -419,7 +407,7 @@ pstr p;
 #endif
       StdIO = False;
     } else if (gzipIO==ARCH_COMPRESS)  {
-#ifndef _MVS
+#ifndef _MSC_VER
       p = NULL;
       CreateConcat  ( p,compress_path,pstr(" > "),FName );
       hFile = popen ( p,"w" );
@@ -451,8 +439,9 @@ pstr p;
 
 }
 
+
 Boolean  CFile::append()  {
-#ifndef _MVS
+#ifndef _MSC_VER
 pstr p;
 #endif
 
@@ -473,7 +462,7 @@ pstr p;
     BufLen  = 0;
     BufCnt  = 0;
     if (gzipIO==ARCH_GZIP)  {
-#ifndef _MVS
+#ifndef _MSC_VER
       p = NULL;
       CreateConcat  ( p,gzip_path,pstr(" >> "),FName );
       hFile = popen ( p,"w" );
@@ -483,7 +472,7 @@ pstr p;
 #endif
       StdIO = False;
     } else if (gzipIO==ARCH_COMPRESS)  {
-#ifndef _MVS
+#ifndef _MSC_VER
       p = NULL;
       CreateConcat  ( p,compress_path,pstr(" >> "),FName );
       hFile = popen ( p,"w" );
@@ -556,6 +545,7 @@ Boolean  CFile::exists()  {
 }
 
 Boolean  CFile::parse ( cpstr FileName )  {
+UNUSED_ARGUMENT(FileName);
   return True;
 }
 
@@ -579,7 +569,7 @@ long  CFile::Position()  {
 
 Boolean  CFile::seek ( long Position )  {
   if (memIO)  {
-    if (Position<=BufLen)  {
+    if (Position<=(long)BufLen)  {
       BufCnt    = Position;
       IOSuccess = True;
     } else 
@@ -596,7 +586,7 @@ Boolean  CFile::seek ( long Position )  {
 
 Boolean  CFile::FileEnd()  {
 
-  if (memIO)  return (BufCnt>=FLength);
+  if (memIO)  return ((long)BufCnt>=FLength);
 
   if (TextMode)  {
     if (EofFile || ((!hFile) && (!StdIO)))
@@ -614,7 +604,7 @@ void  CFile::shut ()  {
 
   if (hFile!=NULL)  {
     if (!StdIO)  {
-#ifndef _MVS
+#ifndef _MSC_VER
       if (gzipIO!=ARCH_NONE)  pclose ( hFile );
                         else  fclose ( hFile );
 #else
@@ -639,27 +629,27 @@ Boolean  HSuccess = IOSuccess;
   if (memIO)  {
 
     LCnt = 0;
-    while ((BufCnt<FLength)       &&
-           (LCnt<MaxLen-1)       &&
-           (IOBuf[BufCnt]!='\r') &&
+    while (((long)BufCnt<FLength) &&
+           (LCnt<MaxLen-1)        &&
+           (IOBuf[BufCnt]!='\r')  &&
            (IOBuf[BufCnt]!='\n') )
       Line[LCnt++] = IOBuf[BufCnt++];
     Line[LCnt] = char(0);
 
-    while ((BufCnt<FLength)       &&
-           (IOBuf[BufCnt]!='\r') &&
+    while (((long)BufCnt<FLength) &&
+           (IOBuf[BufCnt]!='\r')  &&
            (IOBuf[BufCnt]!='\n') )
       BufCnt++;
 
-    if (BufCnt<FLength)  {
+    if ((long)BufCnt<FLength)  {
       if (IOBuf[BufCnt]=='\r')  {
         BufCnt++;
-        if (BufCnt<FLength)  {
+        if ((long)BufCnt<FLength)  {
           if (IOBuf[BufCnt]=='\n')  BufCnt++;
         }
       } else if (IOBuf[BufCnt]=='\n')  {
         BufCnt++;
-        if (BufCnt<FLength)  {
+        if ((long)BufCnt<FLength)  {
           if (IOBuf[BufCnt]=='\r')  BufCnt++;
         }
       }
@@ -678,14 +668,16 @@ Boolean  HSuccess = IOSuccess;
     }
     if (TextMode)  {
       Line[0] = char(0);
-      fgets ( Line,MaxLen,hFile );
-      LCnt = strlen(Line);
-      while (LCnt>0)  {
-        if ((Line[LCnt-1]!='\n') &&
-            (Line[LCnt-1]!='\r'))  break;
-        Line[LCnt-1] = char(0);
-        LCnt--;
-      }
+      if (fgets(Line,MaxLen,hFile))  {
+        LCnt = strlen(Line);
+        while (LCnt>0)  {
+          if ((Line[LCnt-1]!='\n') &&
+              (Line[LCnt-1]!='\r'))  break;
+          Line[LCnt-1] = char(0);
+          LCnt--;
+        }
+      } else
+        LCnt = 0;
       return LCnt;
     } else  {
       if (IOBuf==NULL)  {
@@ -849,7 +841,7 @@ int  l=strlen(S);
 Boolean  CFile::ReadParameter  ( pstr S, realtype & X,
                                  int ParColumn )  {
   ReadLine ( S );
-  if (strlen(S)>ParColumn)  {
+  if ((int)strlen(S)>ParColumn)  {
 //    X = atof ( &(S[ParColumn]) );
     X = GetNumber ( &(S[ParColumn]) );
     return True;
@@ -863,7 +855,7 @@ Boolean  CFile::ReadParameters ( pstr S, int & n_X, rvector X,
                                  int MaxLen, int ParColumn )  {
 pstr S1,S2;
   ReadLine ( S,MaxLen );
-  if (strlen(S)>ParColumn)  {
+  if ((int)strlen(S)>ParColumn)  {
     n_X = 0;
     S2 = &(S[ParColumn]);
     S1 = S2;
@@ -970,7 +962,6 @@ word  CFile::ReadTerLine ( pstr Line, Boolean longLine )  {
 wordUniBin wUB;
 word       ll;
 byte       sl;
-Boolean    B;
   if (!longLine)  {
     ReadFile ( &sl,sizeof(sl) );
     ll = sl;
@@ -993,7 +984,7 @@ word  Cnt;
       BufCnt += Cnt;
     }
     IOSuccess = (Cnt==Count);
-    EofFile   = ((Cnt<Count) || (BufCnt>=FLength));
+    EofFile   = ((Cnt<Count) || ((long)BufCnt>=FLength));
     return  Cnt;
   } else if (hFile)  {
     Cnt       = (word)fread ( Buffer,1,Count,hFile );

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.01.01   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CMMDBBondManager ( MMDB bonds maker )
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -64,6 +64,7 @@ CMMDBBondManager::CMMDBBondManager ( RPCStream Object )
 CMMDBBondManager::~CMMDBBondManager()  {}
 
 void  CMMDBBondManager::MakeBonds ( Boolean calc_only )  {
+UNUSED_ARGUMENT(calc_only);
 PCModel   model;
 PCChain   chain;
 PCResidue res;

@@ -298,7 +298,7 @@ char N[10];
 //  S[21] = residue->chain->chainID[0];
 //  if (!S[21])  S[21] = ' ';
   if (residue->seqNum>MinInt4)  {
-    if (-999<=residue->seqNum<=9999)
+    if ((-999<=residue->seqNum) && (residue->seqNum<=9999))
       PutIntIns  ( &(S[22]),residue->seqNum,4,residue->insCode );
     else  {
       hy36encode ( 4,residue->seqNum,N );
@@ -810,6 +810,12 @@ pstr  CAtom::GetInsCode()  {
           else  return pstr("");
 }
 
+int   CAtom::GetSSEType()  {
+// works only after SSE calculations
+  if (residue)  return residue->SSE;
+          else  return SSE_None;
+}
+
 pstr  CAtom::GetAtomCharge ( pstr chrg )  {
   if (WhatIsSet & ASET_Charge)  sprintf ( chrg,"%+2i",mround(charge) );
                           else  strcpy  ( chrg,"  " );
@@ -1110,7 +1116,7 @@ pstr p;
     //   Here we forgive cards with unreadable serial numbers
     // as we always have index (ix) for the card. For the sake
     // of strict PDB syntax we would have to return
-    // Error_UnrecognizedInteger .
+    // Error_UnrecognizedInteger here.
     if (!(GetInteger(serNum,&(S[6]),5)))  serNum = -1;
   } else
     hy36decode ( 5,&(S[6]),5,&serNum );
@@ -1126,6 +1132,8 @@ pstr p;
   charge = strtod ( &(S[78]),&p );
   if ((charge!=0.0) && (p!=&(S[78])))
     WhatIsSet |= ASET_Charge;
+
+  RestoreElementName();
 
 }
 
@@ -1250,6 +1258,8 @@ int  RC;
   if (RC)
     CIFGetString ( element,Loop,CIFTAG_ATOM_TYPE_SYMBOL,k,
                         sizeof(element),pstr("  ") );
+
+  RestoreElementName();
   //  MakePDBAtomName();
 
   RC = CIFGetReal1 ( sigX,Loop,CIFTAG_CARTN_X_ESD,k );
@@ -1294,6 +1304,28 @@ int  RC;
 
   return 0;
 
+}
+
+Boolean CAtom::RestoreElementName()  {
+//  This function works only if element name is not given.
+  if (Ter)  {
+    name[0]    = char(0);
+    element[0] = char(0);
+    return False;
+  }
+  if ((!element[0]) ||
+      ((element[0]==' ') && ((!element[1]) || (element[1]==' '))))  {
+    if ((name[0]>='A') && (name[0]<='Z'))  {
+      element[0] = name[0];
+      element[1] = name[1];
+    } else  {
+      element[0] = ' ';
+      element[1] = name[1];
+    }
+    element[2] = char(0);
+    return False;
+  }
+  return True;
 }
 
 Boolean CAtom::MakePDBAtomName()  {

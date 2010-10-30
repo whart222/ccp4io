@@ -374,8 +374,7 @@ PCSSGraph  CSSGraphMatch::GetGraph2()  {
 
 void  CSSGraphMatch::MatchGraphs ( PCSSGraph Gh1, PCSSGraph Gh2,
                                    int minMatch )  {
-realtype s1,s2;
-int      i,j;
+int  i,j;
 
   nMatches = 0;
   maxCollectedMatch = 0;

@@ -60,7 +60,11 @@ CMMDBManager::CMMDBManager ( RPCStream Object )
 CMMDBManager::~CMMDBManager()  {}
 
 void  CMMDBManager::Copy ( PCMMDBManager MMDB, word CopyMask )  {
-int i;
+PCModel  model;
+PPCChain chain;
+PCChain  ch;
+ChainID  chID;
+int      i,j, nchains;
 
   if (CopyMask & MMDBFCM_Flags)  Flags = MMDB->Flags;
 
@@ -162,8 +166,49 @@ int i;
     }
     */
 
+  } else if (CopyMask & (MMDBFCM_HetInfo | MMDBFCM_SecStruct |
+                          MMDBFCM_Links | MMDBFCM_CisPeps |
+                          MMDBFCM_ChainAnnot))  {
+
+    for (i=0;i<MMDB->nModels;i++)
+      if (MMDB->Model[i])  {
+
+        model = GetModel ( i+1 );
+        if (!model)  {
+          model = new CModel( NULL,i+1 );
+          AddModel ( model );
+        }
+
+        if (CopyMask & MMDBFCM_HetInfo)
+          model->CopyHets ( MMDB->Model[i] );
+        if (CopyMask & MMDBFCM_SecStruct)
+          model->CopySecStructure ( MMDB->Model[i] );
+        if (CopyMask & MMDBFCM_Links)  {
+          model->CopyLinks ( MMDB->Model[i] );
+          model->CopyLinkRs ( MMDB->Model[i] );
+        }
+        if (CopyMask & MMDBFCM_CisPeps)
+          model->CopyCisPeps ( MMDB->Model[i] );
+        if (CopyMask & MMDBFCM_ChainAnnot)  {
+          MMDB->GetChainTable ( i+1,chain,nchains );
+          for (j=0;j<nchains;j++)
+            if (chain[j])  {
+              chain[j]->GetChainID ( chID );
+              ch = model->GetChain ( chID );
+              if (!ch)  {
+                ch = new CChain();
+                ch->SetChainID ( chID );
+                model->AddChain ( ch );
+              }
+              ch->CopyAnnotations ( chain[j] );
+            }
+
+        }
+
+      }
+
   }
- 
+
   if (CopyMask & MMDBFCM_SA)  SA.Copy ( &(MMDB->SA) );
   if (CopyMask & MMDBFCM_SB)  SB.Copy ( &(MMDB->SB) );
   if (CopyMask & MMDBFCM_SC)  SC.Copy ( &(MMDB->SC) );
@@ -213,8 +258,10 @@ int      i,j,nm, nchains;
     GetModelTable ( model,nm );
     if (model)
       for (i=0;i<nm;i++)
-        if (model[i])
-          model[i]->RemoveLinks();
+        if (model[i])  {
+          model[i]->RemoveLinks ();
+          model[i]->RemoveLinkRs();
+        }
   }
 
   if (DelMask & MMDBFCM_CisPeps)  {

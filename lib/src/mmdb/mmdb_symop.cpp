@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -34,7 +34,7 @@
 //  **** Classes :   CSymOp  ( symmetry operator )
 //       ~~~~~~~~~   
 //
-//   (C) E. Krissinel 2000-2008
+//   (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -200,7 +200,7 @@ realtype V;
   } while (p1);
 
   DelSpaces ( L );
-  if (strlen(L)>=len)  return SYMOP_NotAnOperation;
+  if ((int)strlen(L)>=len)  return SYMOP_NotAnOperation;
 
   // translational part
   p1 = L;

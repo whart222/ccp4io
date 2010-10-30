@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CMMDBSelManager ( MMDB atom selection manager )
 //       ~~~~~~~~~
 //
-//   (C) E. Krissinel 2000-2008
+//   (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -1158,7 +1158,7 @@ void  CMMDBSelManager::Select (
              int   selKey    // selection key
                     )  {
 int       i,j,k,n,m1,m2,c, sk,nsel;
-Boolean   noRes,modelSel(False),chainSel,resSel,selAND;
+Boolean   noRes,modelSel,chainSel,resSel,selAND;
 PCModel   model;
 PCChain   chain;
 PCResidue res;
@@ -2813,7 +2813,7 @@ int RC,k;
     } else  {
       // assume a long chain ID
       k = 0;
-      while (*p && (*p!=':') && (k<sizeof(ChainID)-1)) {
+      while (*p && (*p!=':') && (k<(int)sizeof(ChainID)-1)) {
         chainID[k++] = *p;
         p++;
       }
@@ -2839,8 +2839,8 @@ pstr endptr;
   inscode[0] = '*';
   inscode[1] = char(0);
   seqNum     = ANY_RES;
-  if ((*p) && 
-      ((int(*p)>=int('0')) && (int(*p)<=int('9'))) || (*p=='-'))  {
+  if (((*p) &&
+       (int(*p)>=int('0')) && (int(*p)<=int('9'))) || (*p=='-'))  {
     N[0] = *p;
     p++;
     i = 1;

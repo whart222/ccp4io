@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    17.03.09   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -46,7 +46,7 @@
 //                  CBiomolecule
 //                  CMMDBTitle       ( MMDB title section )
 //
-//   (C) E. Krissinel 2000-2009
+//   (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -143,7 +143,7 @@ class CTitleLine : public CContString  {
 
     int   ConvertPDBASCII ( cpstr S );
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile ) { return False; }
     int   GetClassID      () { return ClassID_TitleLine; }
 
 //    void  GetCIF          ( PCMMCIFData CIF, int & Signal );
@@ -177,7 +177,7 @@ class CCaveat : public CContString  {
     ~CCaveat();
 
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile ) { return False; }
     void  MakeCIF         ( PCMMCIFData CIF, int N );
     int   ConvertPDBASCII ( cpstr S );
     void  GetCIF          ( PCMMCIFData CIF, int & Signal );
@@ -210,7 +210,7 @@ class CCompound : public CContString  {
     ~CCompound();
 
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile  ) { return False; }
     int   ConvertPDBASCII ( cpstr S );
     int   GetClassID      () { return ClassID_Compound; }
 
@@ -243,7 +243,7 @@ class CSource : public CContString  {
     ~CSource();
 
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile  ) { return False; }
     int   ConvertPDBASCII ( cpstr S );
     int   GetClassID      () { return ClassID_Source; }
 
@@ -315,7 +315,7 @@ class CExpData : public CContString  {
     ~CExpData();
 
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile ) { return False; }
 
     int   ConvertPDBASCII ( cpstr S );
     int   GetClassID      () { return ClassID_ExpData; }
@@ -349,7 +349,7 @@ class CAuthor : public CContString  {
     ~CAuthor();
 
     void  PDBASCIIDump    ( pstr S, int N   );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile ) { return False; }
 
     int   ConvertPDBASCII ( cpstr S );
     int   GetClassID      () { return ClassID_Author; }
@@ -465,7 +465,7 @@ class CJournal : public CContString  {
     ~CJournal();
 
     void  PDBASCIIDump    ( pstr S, int N );
-    Boolean PDBASCIIDump1 ( RCFile f ) { return False; }
+    Boolean PDBASCIIDump1 ( RCFile ) { return False; }
 
     int   ConvertPDBASCII ( cpstr S );
     int   GetClassID      () { return ClassID_Journal; }

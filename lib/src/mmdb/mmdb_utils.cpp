@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.06   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -60,7 +60,7 @@
 //                   ParseResID     ( parses residue ID line         )
 //                   ParseAtomPath  ( parses full atom path          )
 //
-//   (C) E. Krissinel  2000-2008
+//   (C) E. Krissinel  2000-2010
 //
 //  =================================================================
 //
@@ -985,7 +985,7 @@ int  CContString::ConvertPDBASCII ( cpstr S )  {
   return 0;
 }
 
-void  CContString::PDBASCIIDump ( pstr S, int N )  {
+void  CContString::PDBASCIIDump ( pstr S, int )  {
   if (Line)  strcpy ( S,Line );
        else  strcpy ( S,""   );
 }
@@ -1009,7 +1009,7 @@ char c;
     Signal = -1;
     return;
   }
-  if (Signal>=strlen(F))  {
+  if (Signal>=(int)strlen(F))  {
     CIF->DeleteField ( CIFCategory,CIFTag );
     Signal = -1;
     return;

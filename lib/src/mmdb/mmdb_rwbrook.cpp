@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    28.07.06   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -32,41 +32,41 @@
 //       ~~~~~~~~~
 //  **** Classes :   CChannel     ( I/O unit class                  )
 //       ~~~~~~~~~
-//  **** Functions : mmdb_f_init_     ( initializer                       )
-//       ~~~~~~~~~~~ mmdb_f_quit_     ( disposer                          )
-//                   autoserials_     ( switch to the autoserials regime  )
-//                   setreadcoords_   ( switch for reading coordinates    )
-//                   simrwbrook_      ( simulates old RWBROOK printout    )
-//                   mmdb_f_openl_    ( associates a unit with a file     )
-//                   mmdb_f_open_     ( associates a unit with a file     )
-//                   mmdb_f_copy_     ( copies contents of units          )
-//                   mmdb_f_delete_   ( deletes part of a unit            )
-//                   mmdb_f_settype_  ( changes type of file and r/w mode )
-//                   mmdb_f_setname_  ( changes file name                 )
-//                   mmdb_f_write_    ( writes a data structure into file )
-//                   mmdb_f_close_    ( closes and disposes a data str-re )
-//                   mmdb_f_advance_  ( advances the internal pointer     )
-//                   mmdb_f_rewd_     ( sets internal pointer on the top  )
-//                   mmdb_f_bksp_     ( shifts int-l pointer 1 atom back  )
-//                   mmdb_f_atom_     ( reads/writes atom properties      )
-//                   mmdb_f_coord_    ( reads/writes atom coordinates     )
-//                   mmdb_f_setcell_  ( sets the crystal cell parameters  )
-//                   mmdb_f_wbspgrp_  ( sets the space group              )
-//                   mmdb_f_rbspgrp_  ( gets the space group              )
-//                   mmdb_f_wbcell_   ( sets the crystal cell parameters  )
-//                   mmdb_f_rbcell_   ( gets the crystal cell parameters  )
-//                   mmdb_f_rbcelln_  ( gets the crystal cell parameters  )
-//                   mmdb_f_rbrcel_   ( gets the recipricol cell          )
-//                   mmdb_f_rborf_    ( returns or fill transf. matrices  )
-//                   mmdb_f_orthmat_  ( calc. standard othogonalisations  )
-//                   mmdb_f_cvanisou_ ( converts between cryst-c units    )
-//                   mmdb_f_wremark_  ( writes a remark statement         )
-//                   mmdb_f_setter
-//                   mmdb_f_sethet
-//                   rberrstop_       ( error messenger                   )
-//                   rbcheckerr_      ( a simple  error messenger         )
+//  **** Functions : mmdb_f_init_ ( initializer                       )
+//       ~~~~~~~~~~~ mmdb_f_quit_ ( disposer                          )
+//               autoserials_     ( switch to the autoserials regime  )
+//               setreadcoords_   ( switch for reading coordinates    )
+//               simrwbrook_      ( simulates old RWBROOK printout    )
+//               mmdb_f_openl_    ( associates a unit with a file     )
+//               mmdb_f_open_     ( associates a unit with a file     )
+//               mmdb_f_copy_     ( copies contents of units          )
+//               mmdb_f_delete_   ( deletes part of a unit            )
+//               mmdb_f_settype_  ( changes type of file and r/w mode )
+//               mmdb_f_setname_  ( changes file name                 )
+//               mmdb_f_write_    ( writes a data structure into file )
+//               mmdb_f_close_    ( closes and disposes a data str-re )
+//               mmdb_f_advance_  ( advances the internal pointer     )
+//               mmdb_f_rewd_     ( sets internal pointer on the top  )
+//               mmdb_f_bksp_     ( shifts int-l pointer 1 atom back  )
+//               mmdb_f_atom_     ( reads/writes atom properties      )
+//               mmdb_f_coord_    ( reads/writes atom coordinates     )
+//               mmdb_f_setcell_  ( sets the crystal cell parameters  )
+//               mmdb_f_wbspgrp_  ( sets the space group              )
+//               mmdb_f_rbspgrp_  ( gets the space group              )
+//               mmdb_f_wbcell_   ( sets the crystal cell parameters  )
+//               mmdb_f_rbcell_   ( gets the crystal cell parameters  )
+//               mmdb_f_rbcelln_  ( gets the crystal cell parameters  )
+//               mmdb_f_rbrcel_   ( gets the recipricol cell          )
+//               mmdb_f_rborf_    ( returns or fill transf. matrices  )
+//               mmdb_f_orthmat_  ( calc. standard othogonalisations  )
+//               mmdb_f_cvanisou_ ( converts between cryst-c units    )
+//               mmdb_f_wremark_  ( writes a remark statement         )
+//               mmdb_f_setter
+//               mmdb_f_sethet
+//               rberrstop_       ( error messenger                   )
+//               rbcheckerr_      ( a simple  error messenger         )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -752,6 +752,9 @@ FORTRAN_SUBR ( MMDB_F_OPEN, mmdb_f_open,
                 int * iUnit,   int * iRet
                ) )  {
 
+UNUSED_ARGUMENT(RWStat_len);
+UNUSED_ARGUMENT(FType_len);
+
 int k;
 char  L[500];
 
@@ -922,7 +925,8 @@ word copyMask;
             case 5  :  copyMask = MMDBFCM_Coord;  break;
             default :  copyMask = 0x0000;
           }
-          Channel[k1]->MMDBManager->Copy ( Channel[k2]->MMDBManager,copyMask );
+          Channel[k1]->MMDBManager->Copy ( Channel[k2]->MMDBManager,
+                                           copyMask );
           *iRet = RWBERR_Ok;
        } else
           *iRet = RWBERR_NoFile;
@@ -1010,6 +1014,9 @@ FORTRAN_SUBR ( MMDB_F_SETTYPE, mmdb_f_settype,
                 fpstr RWStat,  int RWStat_len,
                 int * iRet
                ) )  {
+UNUSED_ARGUMENT(FType_len);
+UNUSED_ARGUMENT(RWStat_len);
+
 int k;
   
   strcpy ( LastFunc,"MMDB_F_SetType" );
@@ -1145,6 +1152,9 @@ FORTRAN_SUBR ( MMDB_F_ADVANCE, mmdb_f_advance,
                ), ( // lengths-follow list
                 int * iUnit, int * iOut, int * iTer, int * iRet
                ) )  {
+
+UNUSED_ARGUMENT(iOut);
+
 int    k;
 PCAtom atom;
 
@@ -1469,7 +1479,7 @@ FORTRAN_SUBR ( MMDB_F_ATOM,  mmdb_f_atom,
             fpstr ID,     int   ID_len,
             int * iRet
            ) )  {
-int      k,i,RC;
+int      k,RC;
 ChainID  chainID;
 ResName  resName;
 InsCode  insCode;
@@ -1553,26 +1563,22 @@ char     charge[10];
 
     if (FTN_STR(ID)[0]==' ')  {
       atomName[0] = char(0);
-      if ((FTN_STR(AtNam)[1]=='H') && (FTN_STR(AtNam)[0]!='H') ||
-          ((FTN_STR(AtNam)[1]=='D') && (FTN_STR(ID)[2]=='D')))  {
-        i = 0;
-        while ((i<nHydAtomNames) && 
-               (FTN_STR(AtNam)[0]!=HydAtomName[i][0])) i++;
-        if (i<nHydAtomNames)
+//      if ((FTN_STR(AtNam)[1]=='H') ||
+//          ((FTN_STR(AtNam)[1]=='D') && (FTN_STR(ID)[2]=='D')))  {
+//        int i = 0;
+//        while ((i<nHydAtomNames) && 
+//               (FTN_STR(AtNam)[0]!=HydAtomName[i][0])) i++;
+//        if (i<nHydAtomNames)
+//          GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
+//      }
+      if ((FTN_STR(AtNam)[0]=='H') && (FTN_STR(AtNam)[3]!=' '))
           GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
-      }
-
-      if ((FTN_STR(AtNam)[0]=='A') || ((FTN_STR(AtNam)[0]=='N') && (FTN_STR(ID)[1]!='N'))) {
-        GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
-      } else if ((FTN_STR(ID)[1]=='N') && ( (FTN_STR(AtNam)[0]=='N') && (FTN_STR(AtNam)[1]=='N') )) {
-        GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
-      } else if (!atomName[0])  {
+      if (!atomName[0])  {
         atomName[0] = ' ';
         GetStrTer ( &(atomName[1]),FTN_STR(AtNam),3,4,FTN_LEN(AtNam) );
       }
     } else
       GetStrTer ( atomName,FTN_STR(AtNam),4,5,4 );
-
 
     RC = Channel[k]->MMDBManager->PutAtom ( Channel[k]->fPos,*iSer,
                               atomName,resName,chainID,*iResN,
@@ -1811,6 +1817,10 @@ FORTRAN_SUBR ( MMDB_F_COORD, mmdb_f_coord,
                 apireal * occ, apireal * BIso, apireal * U,
                 int * iRet
                ) )  {
+
+UNUSED_ARGUMENT(XFlag_len);
+UNUSED_ARGUMENT(BFlag_len);
+
 realtype AU[6];
 realtype xx,yy,zz;
 int      k,i,m;
@@ -2947,7 +2957,7 @@ char ErrLine[500];
     default                     :
       if ((*iRet & RWBWAR_Warning)==RWBWAR_Warning)  {
         Msg = NULL;
-        printf ( "\n \n *** Warning(s): point code unit    function\n" );
+        printf ( "\n\n *** Warning(s): point code unit    function\n" );
         printf ( " ***             %5i %4i %4i    %s\n",
                            *iPlace,*iRet,*iUnit,LastFunc );
         if (k>=0) 

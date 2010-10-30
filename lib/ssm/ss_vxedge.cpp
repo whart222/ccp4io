@@ -298,7 +298,7 @@ void CSSVertex::GetPosition ( realtype & vx0, realtype & vy0,
 }
 
 int CSSVertex::GetPositions ( PCMMDBManager MMDB, int minlen )  {
-int        i,selHnd_ca;
+int        selHnd_ca;
 PPCAtom    CA;
 
   initPos = MMDB->GetResidueNo ( 1,chainID,initSeqNum,initICode );
@@ -656,7 +656,6 @@ void  CompareStr ( pstr s1, pstr s2, pstr name )  {
 }
 
 void  CSSVertex::Copy ( PCSSVertex v )  {
-int i;
 
   FreeMemory();
 

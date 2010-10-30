@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -31,7 +31,7 @@
 //  **** Classes :  CFile  - file I/O Support.
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -76,10 +76,10 @@
 #define syskey_win   2
 #define syskey_all   3
 
-extern pstr  GetFPath   ( pstr  FilePath, int syskey=syskey_unix );
+extern cpstr GetFPath   ( pstr  FilePath, int syskey=syskey_unix );
 extern cpstr GetFName   ( cpstr FilePath, int syskey=syskey_unix );
 extern cpstr GetFExt    ( cpstr FilePath );
-extern pstr  ChangeExt  ( pstr  FilePath, cpstr newExt,
+extern cpstr ChangeExt  ( pstr  FilePath, cpstr newExt,
                                           int syskey=syskey_unix );
 extern cpstr FileError        ( int   ErrCode     );
 extern void  RemoveDelimiters ( pstr  S, int SLen );

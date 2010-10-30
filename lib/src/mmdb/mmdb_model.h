@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    30.04.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -40,11 +40,13 @@
 //                  CTurn         ( turn info                       )
 //                  CLinkContainer   ( container for link data      )
 //                  CLink            ( link data                    )
+//                  CLinkRContainer  ( container for refmac link    )
+//                  CLinkR           ( link data                    )
 //                  CCisPepContainer ( container for CisPep data    )
 //                  CCisPep          ( CisPep data                  )
 //                  CModel        ( PDB model                       )
 //
-//  Copyright (C) E. Krissinel 2000-2008
+//  Copyright (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -457,6 +459,81 @@ class CLink : public CContainerClass  {
 
 };
 
+//  ===================  CLinkRContainer  ====================
+
+DefineClass(CLinkRContainer)
+DefineStreamFunctions(CLinkRContainer)
+
+class CLinkRContainer : public CClassContainer  {
+
+  public :
+
+    CLinkRContainer  () : CClassContainer() {}
+    CLinkRContainer  ( RPCStream Object )
+                     : CClassContainer ( Object ) {}
+    ~CLinkRContainer () {}
+
+    PCContainerClass MakeContainerClass ( int ClassID );
+
+};
+
+
+//  ====================  CLinkR  ============================
+
+DefineClass(CLinkR)
+DefineStreamFunctions(CLinkR)
+
+
+/*
+LINK             LYS A  27                     PLP A 255                PLPLYS
+LINK             MAN S   3                     MAN S   4                BETA1-4
+LINK        C6  BBEN B   1                O1  BMAF S   2                BEN-MAF
+LINK        OE2 AGLU A 320                C1  AMAF S   2                GLU-MAF
+LINK        OE2  GLU A  67        1.895   ZN   ZN  R   5                GLU-ZN
+LINK        NE2  HIS A  71        2.055   ZN   ZN  R   5                HIS-ZN
+LINK        O    ARG A  69        2.240   NA   NA  R   9                ARG-NA
+*/
+
+class CLinkR : public CContainerClass  {
+
+  public :
+    LinkRID  linkRID;   // link name
+    AtomName atName1;   // name of 1st linked atom
+    AltLoc   aloc1;     // alternative location of 1st linked atom
+    ResName  resName1;  // residue name of 1st linked atom
+    ChainID  chainID1;  // chain ID of 1st linked atom
+    int      seqNum1;   // sequence number of 1st linked atom
+    InsCode  insCode1;  // insertion code of 1st linked atom
+    AtomName atName2;   // name of 2nd linked atom
+    AltLoc   aloc2;     // alternative location of 2nd linked atom
+    ResName  resName2;  // residue name of 2nd linked atom
+    ChainID  chainID2;  // chain ID of 2nd linked atom
+    int      seqNum2;   // sequence number of 2nd linked atom
+    InsCode  insCode2;  // insertion code of 2nd linked atom
+    realtype dist;      // link distance
+
+    CLinkR ();
+    CLinkR ( cpstr S );
+    CLinkR ( RPCStream Object );
+    ~CLinkR();
+
+    void  PDBASCIIDump    ( pstr S, int N   );
+    void  MakeCIF         ( PCMMCIFData CIF, int N );
+    int   ConvertPDBASCII ( cpstr S );
+    void  GetCIF          ( PCMMCIFData CIF, int & Signal );
+    int   GetClassID      () { return ClassID_LinkR; }
+
+    void  Copy  ( PCContainerClass LinkR );
+
+    void  write ( RCFile f );
+    void  read  ( RCFile f );
+
+  protected :
+
+    void InitLinkR();
+
+};
+
 
 
 //  ===================  CCisPepContainer  =====================
@@ -531,6 +608,9 @@ class CCisPep : public CContainerClass  {
 #define  SSERC_noAminoacids  2
 #define  SSERC_noSSE         3
 
+#define  SORT_CHAIN_ChainID_Asc    0
+#define  SORT_CHAIN_ChainID_Desc   1
+
 DefineFactoryFunctions(CModel)
 
 class CModel : public CProModel  {
@@ -552,7 +632,7 @@ class CModel : public CProModel  {
     ~CModel();
 
     void   SetMMDBManager   ( PCMMDBManager MMDBM, int serialNum );
-    void * GetCoordHierarchy() { return manager; }    
+    PCMMDBManager GetCoordHierarchy() { return manager; }
     
     //   GetChainCreate() returns pointer on chain, whose identifier
     // is given in chID. If such a chain is absent in the model,
@@ -566,12 +646,12 @@ class CModel : public CProModel  {
     // strictly discouraged.
     PCChain CreateChain    ( const ChainID chID );
 
-    pstr   GetEntryID ();
+    cpstr  GetEntryID ();
     void   SetEntryID ( const IDCode idCode );
 
     int    GetSerNum  (); // returns the model's serial number
 
-    pstr   GetModelID ( pstr modelID );  // returns "/mdl"
+    cpstr  GetModelID ( pstr modelID );  // returns "/mdl"
 
     int    GetNumberOfModels  (); // returns TOTAL number of models
     int    GetNumberOfAtoms   ( Boolean countTers ); // returns number
@@ -601,10 +681,14 @@ class CModel : public CProModel  {
     int  DeleteAllChains    ();
     int  DeleteSolventChains();
     void TrimChainTable     ();
-    
+
     //  -------------------  Adding chains  ---------------------------
 
     int  AddChain ( PCChain chain );
+
+    //  --------------------  Sort chains  ----------------------------
+
+    void SortChains ( int sortKey ); // SORT_CHAIN_XXXX
 
     //  ----------------  Extracting residues  ------------------------
 
@@ -880,6 +964,15 @@ class CModel : public CProModel  {
     void   RemoveLinks();
     void   AddLink    ( PCLink Link );
 
+    //  ----  Working Refmac Links
+
+    int    GetNumberOfLinkRs ();
+    PCLinkR          GetLinkR ( int serialNum ); // 1<=serNum<=NofLinks
+    PCLinkRContainer GetLinkRs() { return &LinkRs; }
+
+    void   RemoveLinkRs();
+    void   AddLinkR   ( PCLinkR LinkR );
+
 
     //  ----  Working CisPeps
 
@@ -910,7 +1003,12 @@ class CModel : public CProModel  {
     int   GetUDData ( int UDDhandle, pstr     & sudd );
 
 
-    void  Copy ( PCModel Model );
+    void  Copy             ( PCModel Model );
+    void  CopyHets         ( PCModel Model );
+    void  CopySecStructure ( PCModel Model );
+    void  CopyLinks        ( PCModel Model );
+    void  CopyLinkRs       ( PCModel Model );
+    void  CopyCisPeps      ( PCModel Model );
 
     void  write ( RCFile f );
     void  read  ( RCFile f );
@@ -925,6 +1023,7 @@ class CModel : public CProModel  {
     CSheets          Sheets;       // information on sheets
     CSSContainer     Turns;        // information on turns
     CLinkContainer   Links;        // information on links
+    CLinkRContainer  LinkRs;       // information on refmac links
     CCisPepContainer CisPeps;      // information on cispeps
 
     int              nChains;      // number of chains

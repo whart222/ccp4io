@@ -60,15 +60,15 @@ struct SSectionDist  {
 DefineStructure(SSSEDesc)
 
 struct SSSEDesc  {
-  realtype x1,y1,z1,x2,y2,z2;          // transformed start/end coordinates
-  realtype xs1,ys1,zs1,xs2,ys2,zs2;    // original start/end coordinates
+  realtype x1,y1,z1,x2,y2,z2;      // transformed start/end coordinates
+  realtype xs1,ys1,zs1,xs2,ys2,zs2;   // original start/end coordinates
   realtype score,Qscore,Rscore,Xscore; // overlaping scores
   int      pos,len,pend, type,classID;
   int      m,match;
   void  Transform ( mat44   & T );
   void  CalcScore ( RSSSEDesc D );
   realtype Cosine ( RSSSEDesc D );
-  void  Copy      ( RSSSEDesc D );
+  void       Copy ( RSSSEDesc D );
 };
 
 
@@ -126,7 +126,8 @@ class CSuperpose  {
     ~CSuperpose();
 
     void SetAllowMC         ( Boolean allowMisconnections );
-    void SetIterationLimits ( int iter_max, int iter_min, int max_hollow );
+    void SetIterationLimits ( int iter_max, int iter_min,
+                              int max_hollow );
     void SetCaSelections    ( pstr selection1, pstr selection2 );
 
     int  SuperposeSSGraphs  ( PCSSGraph G1, ivector F1,
@@ -135,27 +136,27 @@ class CSuperpose  {
 
     //  driver #1
     int  SuperposeCalphas  (
-            PCSSGraph     G1,   //  SSE graph of 1st structure
-            PCSSGraph     G2,   //  SSE graph of 2nd structure
-            ivector       F1,   //  matched vertices of G1 [1..mlen]
-            ivector       F2,   //  matched vertices of G2 [1..mlen]
-            int         mlen,   //  length of match (F1,F2)
-            PCMMDBManager M1,   //  1st structure
-            PCMMDBManager M2,   //  2nd structure
-            int  selHndIncl1=0, //  sel handle to include atoms from M1
-            int  selHndIncl2=0  //  sel handle to include atoms from M2
+            PCSSGraph     G1,   // SSE graph of 1st structure
+            PCSSGraph     G2,   // SSE graph of 2nd structure
+            ivector       F1,   // matched vertices of G1 [1..mlen]
+            ivector       F2,   // matched vertices of G2 [1..mlen]
+            int         mlen,   // length of match (F1,F2)
+            PCMMDBManager M1,   // 1st structure
+            PCMMDBManager M2,   // 2nd structure
+            int  selHndIncl1=0, // sel handle to include atoms from M1
+            int  selHndIncl2=0  // sel handle to include atoms from M2
                            );
 
     //  driver #2
     int  SuperposeCalphas  (
-            PSSuperposeData SD1,  // superposition data of 1st structure
-            PSSuperposeData SD2,  // superposition data of 2nd structure
-            ivector          F1,  // matched vertices of SD1.G [1..mlen]
-            ivector          F2,  // matched vertices of SD2.G [1..mlen]
-            int            mlen   // length of match (F1,F2)
+            PSSuperposeData SD1, // superposition data of 1st structure
+            PSSuperposeData SD2, // superposition data of 2nd structure
+            ivector          F1, // matched vertices of SD1.G [1..mlen]
+            ivector          F2, // matched vertices of SD2.G [1..mlen]
+            int            mlen  // length of match (F1,F2)
                            );
 
-    void  GetTMatrix       ( mat44 & TMat ); // to be applied to 1st structure
+    void  GetTMatrix ( mat44 & TMat ); // to be applied to 1st struct.
     mat44 *  GetTMatrix    ();    // to be applied to 1st structure
     realtype GetRMSD       ();
     int      GetNAlign     ();
@@ -187,15 +188,15 @@ class CSuperpose  {
     realtype  maxContact;  // maximal Calpha-pair contact parameter
     realtype  maxRMSD;     // maximal RMSD allowed
     realtype  minQStep;    // minimal quality improvement that counts
-    realtype  minCosine;   // minimum cosine between co-directional SSEs
+    realtype  minCosine;   // min cosine between co-directional SSEs
     realtype  SSEweight;   // additional weight for SSE atoms
     int       sseGray;     // gray zone on the ends of SSEs allowed for
                            // matching to non-SSE atoms
     int       selInclHnd1; // selection handle for included Calpha1
     int       selInclHnd2; // selection handle for included Calpha2
     int       driverID;    // ID of the used Superpose driver
-    pstr      selString1;  // optional selection string for 1st structure
-    pstr      selString2;  // optional selection string for 2nd structure
+    pstr      selString1;  // optional sel-n string for 1st structure
+    pstr      selString2;  // optional sel-n string for 2nd structure
 
 
     realtype  rmsd_achieved,Q_achieved,ncombs,seqIdent;
@@ -210,8 +211,8 @@ class CSuperpose  {
     rmatrix   A,U,V, AD;
     rvector   W,RV1;
 
-    ivector   FF1,FF2;  // copy pointers to input F1,F2
-    int       FFlen;    // length of FF1,FF2
+    ivector   copyF1,copyF2;   // copy pointers to input F1,F2
+    int       copyFlen;        // length of FF1,FF2
     rvector   cax0,cay0,caz0;  // working arrays
     PSSortDistData sdata;
 

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    17.03.09   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -46,7 +46,7 @@
 //                  CBiomolecule
 //                  CMMDBTitle  ( MMDB title section )
 //
-//  (C) E. Krissinel 2000-2009
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -130,7 +130,7 @@ int i;
     strncpy ( &(S[31+5*i]),rIdCode[i],4 );
 }
 
-void  CObsLine::MakeCIF ( PCMMCIFData CIF, int N )  {
+void  CObsLine::MakeCIF ( PCMMCIFData CIF, int )  {
 PCMMCIFLoop Loop;
 int         RC,i,j;
 char        DateCIF[20];
@@ -649,7 +649,7 @@ char S[500];
       k = strlen(KeyWord[i]);
       if (strlen(S)+k>70)  {
         CIF->PutString ( S,CIFCAT_STRUCT_KEYWORDS,CIFTAG_TEXT,True );
-        if (k>sizeof(S))  {
+        if (k>(int)sizeof(S))  {
           CIF->PutString ( KeyWord[i],CIFCAT_STRUCT_KEYWORDS,
                            CIFTAG_TEXT,True );
           k = 0;
@@ -1087,7 +1087,7 @@ int i;
     strncpy ( &(S[31+5*i]),sIdCode[i],4 );
 }
 
-void  CSupersede::MakeCIF ( PCMMCIFData CIF, int N )  {
+void  CSupersede::MakeCIF ( PCMMCIFData CIF, int )  {
 PCMMCIFLoop Loop;
 int         RC,i,j;
 char        DateCIF[20];
@@ -1239,7 +1239,7 @@ int  CJournal::ConvertPDBASCII ( cpstr S )  {
   return 0;
 }
 
-void  CJournal::PDBASCIIDump ( pstr S, int N )  {
+void  CJournal::PDBASCIIDump ( pstr S, int )  {
   strcpy ( S,"JRNL      " );
   strcat ( S,Line         );
 }
@@ -1296,7 +1296,7 @@ int i;
   return 0;
 }
 
-void  CRemark::PDBASCIIDump ( pstr S, int N )  {
+void  CRemark::PDBASCIIDump ( pstr S, int )  {
   if (remarkNum==MinInt4)
     strcpy ( S,Remark );
   else  {
@@ -1561,7 +1561,7 @@ int  l,j,lkey;
 int  CBMApply::addMatrices ( int & i, RPCRemark rem,
                              RCTitleContainer Remark )  {
 pmat44 tm1;
-int    l,lkey,nAdd,j,k1,k2,nAlloc;
+int    l,lkey,j,k1,k2,nAlloc;
 
   l      = Remark.Length();
   lkey   = R350_BIOMT;
@@ -1741,7 +1741,7 @@ Boolean cmp;
 
 void  CBiomolecule::Copy ( PCBiomolecule B )  {
 // if B is NULL, then empties the class
-int  i,j,k;
+int  i;
 
   FreeMemory();
 
@@ -1953,8 +1953,12 @@ PCContainerClass ContainerClass;
     return Error_WrongSection;
 
   //  check for ID code in columns 73-80
-  if ((!col73) && (!strncasecmp(idCode,&(PDBString[72]),4)))
-    col73 = True;
+  if (!col73)  {
+    if (('0'<=idCode[0]) && (idCode[0]<='9'))  {
+      if (!strncasecmp(idCode,&(PDBString[72]),4))
+        col73 = True;
+    }
+  }
 
   return  0;
 
@@ -2010,7 +2014,6 @@ int CMMDBTitle::ParseBiomolecules()  {
 PCRemark       rem;
 PCBiomolecule  BMol;
 PCBMApply      BMA;
-pstr           p,eptr;
 int            i,l, lkey;
 
   FreeBiomolecules();

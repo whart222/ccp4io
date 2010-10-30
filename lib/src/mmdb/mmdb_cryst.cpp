@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -35,7 +35,7 @@
 //                  CTVect          ( translational vector class    )
 //                  CMMDBCryst      ( MMDB cryst. section class     )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -399,6 +399,7 @@ void CTVect::Init()  {
 }
 
 void CTVect::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB TVECT line number N
   sprintf   ( S,"TVECT  %3i",serNum );
   PadSpaces ( S,80 );

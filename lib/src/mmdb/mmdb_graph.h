@@ -75,7 +75,7 @@ class CVertex : public CStream  {
   friend class CGraphMatch;
   friend class CSBase0;
 
-  public :
+  public:
 
     CVertex ();
     CVertex ( RPCStream Object );
@@ -85,10 +85,11 @@ class CVertex : public CStream  {
     CVertex ( cpstr chem_elem, cpstr name );
     ~CVertex();
 
-    void  SetVertex ( cpstr chem_elem );
-    void  SetVertex ( int vtype, cpstr vname );
-    void  SetVertex ( int vtype );
-    void  SetType   ( int vtype );
+    void  SetVertex  ( cpstr chem_elem );
+    void  SetVertex  ( int vtype, cpstr vname );
+    void  SetVertex  ( int vtype   );
+    void  SetType    ( int vtype   );
+    void  SetTypeExt ( int typeExt );
 
     void  RemoveChirality();
     void  LeaveChirality ( int eltype );
@@ -100,7 +101,7 @@ class CVertex : public CStream  {
     void  CopyNBonds  ( PCVertex V );
     int   GetProperty () { return property; }
     int   GetID       () { return id;       }
-    int   GetUserID   () { return userid;   }
+    int   GetUserID   () { return user_id;  }
     pstr  GetName     () { return name;     }
     int   GetType     () { return type;     }
     int   GetNBonds   ();
@@ -119,12 +120,13 @@ class CVertex : public CStream  {
     void  mem_read  ( cpstr S, int & l );
     void  mem_write ( pstr S, int & l );
 
-  protected :
+  protected:
     pstr name;     // name may be general, "C", "Hg", "Cl" etc.
     int  type;     // type of vertex, see comments in mmdb_graph.cpp
+    int  type_ext; // vertex type extention
     int  property; // flagwise properties -- user-defined
     int  id;       // a graph-defined vertex id
-    int  userid;   // a user-defined vertex id
+    int  user_id;  // a user-defined vertex id
 
     void InitVertex();
 
@@ -149,7 +151,7 @@ class CEdge : public CStream  {
   friend class CGMatch;
   friend class CSBase0;
 
-  public :
+  public:
 
     CEdge ();
     CEdge ( RPCStream Object );
@@ -183,7 +185,7 @@ class CEdge : public CStream  {
     void  mem_read  ( cpstr S, int & l );
     void  mem_write ( pstr S, int & l );
 
-  protected :
+  protected:
     int  v1,v2;  //  >=1
     int  type;
     int  property;
@@ -262,15 +264,19 @@ class CGraph : public CStream  {
     //                          altcode information in the residue
     int   MakeGraph   ( PCResidue R, cpstr altLoc=NULL );
 
+    int   MakeGraph   ( PPCAtom atom, int nAtoms );
+
     void  HideType    ( int bond_vx_type );
     void  ExcludeType ( int type );
 
     void  MakeSymmetryRelief ( Boolean noCO2 );
+    void  IdentifyRings      ();
 
     int   Build       ( Boolean bondOrder );  // returns 0 if Ok
 
     void  MakeVertexIDs      ();  // simply numbers vertices as 1.. on
     int   GetVertexID        ( int vertexNo );
+    int   GetVertexNo        ( cpstr vname  );
     // GetBondedVertexID(..) works after MoveType(..)
     int   GetNBondedVertices ( int vertexNo );
     int   GetBondedVertexID  ( int vertexNo, int bond_vx_type,
@@ -365,6 +371,16 @@ class CMatch : public CStream  {
 #define  GMF_UniqueMatch     0x00000001
 #define  GMF_NoCombinations  0x00000002
 
+#define  EXTTYPE_Ignore      0
+#define  EXTTYPE_Equal       1
+#define  EXTTYPE_AND         2
+#define  EXTTYPE_OR          3
+#define  EXTTYPE_XOR         4
+#define  EXTTYPE_NotEqual    5
+#define  EXTTYPE_NotAND      6
+#define  EXTTYPE_NotOR       7
+
+
 DefineClass(CGraphMatch)
 
 class CGraphMatch : public CStream  {
@@ -381,10 +397,22 @@ class CGraphMatch : public CStream  {
     void SetTimeLimit     ( int maxTimeToRun=0 );
     Boolean GetStopSignal () { return Stop; }
 
+    void Reset();
+
+    //  MatchGraphs looks for maximal common subgraphs of size
+    //  not less than minMatch. The number of found subgraphs
+    //  is returned by GetNofMatches(), the subgraph vertices
+    //  are returned by GetMatch(..). Control parameters:
+    //      vertexType   True if vertex type should be taken
+    //                   into account and False otherwise
+    //      vertexExt    key to use extended vertex types (defined
+    //                   as type_ext in CVertex).
     void MatchGraphs    ( PCGraph Gh1, PCGraph Gh2, int minMatch,
-                          Boolean vertexType=True );
+                          Boolean vertexType=True,
+                          int     vertexExt=EXTTYPE_Ignore );
     void PrintMatches   ();
     int  GetNofMatches  () { return nMatches; }
+    int  GetMaxMatchSize() { return maxMatch; }
 
     // do not allocate or dispose FV1 and FV2 in application!
     // FV1/p1 will always correspond to Gh1, and FV2/p2 -
@@ -424,7 +452,7 @@ class CGraphMatch : public CStream  {
     void    FreeRecHeap   ();
     void    GetMemory     ();
     void    GetRecHeap    ();
-    int     Initialize    ( Boolean vertexType );
+    int     Initialize    ( Boolean vertexType, int vertexExt );
 #ifdef _UseRecursion
     void    Backtrack     ( int i );          // exact matching
 #else

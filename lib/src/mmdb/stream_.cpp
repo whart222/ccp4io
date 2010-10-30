@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.12.00   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -31,7 +31,7 @@
 //  **** Classes :  CStream  ( Basic Stream Class )
 //       ~~~~~~~~~
 //
-//   (C) E. Krissinel 1995-2008
+//   (C) E. Krissinel 1995-2010
 //
 //  =================================================================
 //
@@ -77,7 +77,8 @@
 //  in the stream. If Object existed before StreamRead(..) but
 //  was not found in the stream, it will be disposed.
 
-void StreamRead_ ( RCFile f, RPCStream Object, InitStreamObject Init )  {
+void StreamRead_ ( RCFile f, RPCStream Object,
+                   InitStreamObject Init )  {
 int i;
   f.ReadInt ( &i );
   if (i)  {

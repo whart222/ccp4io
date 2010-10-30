@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    18.02.04   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -40,7 +40,7 @@
 //                  CHetRec         ( HET    records                  )
 //                  CChain          ( chain class                     )
 //
-//  Copyright (C) E. Krissinel 2000-2008
+//  Copyright (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -75,6 +75,8 @@
 DefineClass(CProModel)
 DefineStreamFunctions(CProModel)
 
+DefineClass(CMMDBManager)
+
 class CProModel : public CUDData  {
 
   friend class CChain;
@@ -85,13 +87,13 @@ class CProModel : public CUDData  {
     CProModel  ( RPCStream Object ) : CUDData ( Object ) {} 
     ~CProModel () {}
 
-    virtual pstr  GetEntryID () { return pstr(""); }
-    virtual void  SetEntryID ( const IDCode idCode ) {}
+    virtual cpstr GetEntryID () { return ""; }
+    virtual void  SetEntryID ( const IDCode ) {}
 
-    virtual int   AddChain ( PCChain chain ) { return 0; }
+    virtual int   AddChain ( PCChain ) { return 0; }
 
     // returns pointer to CMMDBFile
-    virtual void * GetCoordHierarchy() { return NULL; }
+    virtual PCMMDBManager GetCoordHierarchy() { return NULL; }
 
     //  GetNumberOfModels() returns TOTAL number of models
     virtual int GetNumberOfModels() { return 0;    }
@@ -105,12 +107,12 @@ class CProModel : public CUDData  {
 
     virtual int  GetSerNum       () { return 0; }
 
-    virtual void ExpandAtomArray ( int inc )  {}
-    virtual void AddAtomArray    ( int inc )  {}
+    virtual void ExpandAtomArray ( int )  {}
+    virtual void AddAtomArray    ( int )  {}
 
   protected :
 
-    virtual int  _ExcludeChain ( const ChainID chainID ) { return 0; } 
+    virtual int  _ExcludeChain ( const ChainID ) { return 0; }
 
 };
 
@@ -136,8 +138,8 @@ class CChainContainer : public CClassContainer  {
                                             // the Container
     
     // special functions used in CModel::GetCIF(..)
-    pstr  Get1stChainID ();
-    void  MoveByChainID ( ChainID chainID,
+    cpstr Get1stChainID ();
+    void  MoveByChainID ( const ChainID chainID,
                           PCChainContainer ChainContainer );
 
   protected :
@@ -409,7 +411,7 @@ class CChain : public CUDData  {
     CChainContainer Het;         // non-standard residues descriptions
 
     CChain ();  // SetModel() MUST be used after this constructor!
-    CChain ( PCProModel Model, ChainID chID );
+    CChain ( PCProModel Model, const ChainID chID );
     CChain ( RPCStream Object );
     ~CChain();
 
@@ -418,7 +420,7 @@ class CChain : public CUDData  {
     void SetModel ( PCProModel    Model );
     void SetChain ( const ChainID chID  );
 
-    void * GetCoordHierarchy();   // PCMMDBFile
+    PCMMDBManager GetCoordHierarchy();   // PCMMDBFile
 
     //   ConvertXXXXX(..) functions do not check for record name
     // and assume that PDBString is at least 81 symbols long
@@ -583,9 +585,9 @@ class CChain : public CUDData  {
 
     int   GetModelNum();
     PCModel GetModel () { return (PCModel)model; }
-    pstr  GetChainID () { return chainID; }
+    cpstr GetChainID () { return chainID; }
     void  SetChainID ( const ChainID chID );
-    pstr  GetChainID ( pstr  ChID );  // returns /m/c 
+    cpstr GetChainID ( pstr  ChID );  // returns /m/c
 
     void  GetAtomStatistics  ( RSAtomStat AS );
     void  CalcAtomStatistics ( RSAtomStat AS );
@@ -593,7 +595,7 @@ class CChain : public CUDData  {
     int   CheckID    ( const ChainID chID );
     int   CheckIDS   ( cpstr CID  );
 
-    pstr  GetEntryID ();
+    cpstr GetEntryID ();
     void  SetEntryID ( const IDCode idCode );
 
     int   GetNumberOfDBRefs ();
@@ -625,7 +627,8 @@ class CChain : public CUDData  {
     int   GetUDData ( int UDDhandle, pstr sudd, int maxLen );
     int   GetUDData ( int UDDhandle, pstr     & sudd );
 
-    void  Copy ( PCChain Chain );
+    void  Copy            ( PCChain Chain );
+    void  CopyAnnotations ( PCChain Chain );
 
     void  write ( RCFile f );    // writes header to PDB binary file
     void  read  ( RCFile f );    // reads header from PDB binary file

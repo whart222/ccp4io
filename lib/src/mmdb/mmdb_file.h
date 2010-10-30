@@ -320,7 +320,7 @@ class CMMDBFile : public CUDData  {
     // model.
     void  RemoveAtom ( int index );
 
-    void  FinishStructEdit();
+    int   FinishStructEdit();
 
     void  TrimModelTable();
 

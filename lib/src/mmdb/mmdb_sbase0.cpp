@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -34,7 +34,7 @@
 //                  CSBStructure ( SB structure (monomer) class )
 //                  CSBIndex     ( SB index class               )
 //
-//   (C) E. Krissinel 2000-2008
+//   (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -738,7 +738,7 @@ int  superpose_atoms ( mat44 & T, PPCSBAtom A1, PPCAtom A2, int nAtoms,
 // superposes exactly the atoms A1[0] and A2[0].
 realtype det,B;
 vect3    vc1,vc2;
-int      i,j,k,i1,i2;
+int      i,j,k;
 
   //  1.  Calculate the correlation matrix. The rotation will be
   //      done around
@@ -1320,11 +1320,7 @@ PPCSBIndex Index1;
     dirpath = new char[i+10];
     strcpy ( dirpath,path );
     if (i>0)  {
-#if defined(_MSC_VER) || defined (WIN32)
-      if (dirpath[i-1]!='\\')  strcat ( dirpath,"\\" );
-#else
       if (dirpath[i-1]!='/')  strcat ( dirpath,"/" );
-#endif
     }
   }
 
@@ -1486,11 +1482,21 @@ int MakeElementType ( int ElType, char chirality, Boolean Cflag )  {
   return ElType;
 }
 
-
 int CSBase0::GetStructNo ( cpstr compoundID )  {
 int  l1,l2,l,k;
 char id[20];
+
   strcpy_css ( id,compoundID );
+
+  if (nStructures<=3)  {
+    k = -1;
+    for (l=0;(l<nStructures) && (k<0);l++)
+      if (!strcasecmp(Index[l]->compoundID,id))
+        k = l;
+    if (k>=0)  return k;
+    return SBASE_StructNotFound;
+  }
+
   l1 = 0;
   l2 = nStructures-1;
   while (l1<l2-1)  {
@@ -1503,13 +1509,16 @@ char id[20];
       l2 = l;
     }
   }
+
   if (k==0)  return l;
   else if (l==l1)  {
     if (!strcasecmp(Index[l2]->compoundID,id))  return l2;
   } else if (l==l2)  {
     if (!strcasecmp(Index[l1]->compoundID,id))  return l1;
   }
+
   return SBASE_StructNotFound;
+
 }
 
 PCFile CSBase0::GetStructFile()  {

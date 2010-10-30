@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //                  CMMCIFData     ( mmCIF data block  )
 //                  CMMCIFFile     ( mmCIF file        )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -74,7 +74,7 @@ class CMMCIFCategory : public CStream  {
 
     pstr   GetCategoryName    () { return name;           }
     virtual int  GetCategoryID() { return MMCIF_Category; }
-    virtual void WriteMMCIF   ( RCFile f ) {}
+    virtual void WriteMMCIF   ( RCFile ) {}
     virtual void Optimize     ();
 
     void  Sort     ();

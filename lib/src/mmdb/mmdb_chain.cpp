@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    29.01.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -39,7 +39,7 @@
 //                  CHetRec         ( HET    records                  )
 //                  CChain          ( MMDB chain class                )
 //
-//  Copyright (C) E. Krissinel 2000-2008
+//  Copyright (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -68,6 +68,9 @@
 #include "mmdb_cifdefs.h"
 #endif
 
+//  ==================  CProModel  ======================
+
+MakeStreamFunctions(CProModel)
 
 //  ==============  CChainContainer  ====================
 
@@ -91,7 +94,7 @@ int i;
       (void)PCContainerChain(Container[i])->SetChain ( Chain );
 }
 
-pstr CChainContainer::Get1stChainID()  {
+cpstr CChainContainer::Get1stChainID()  {
 int i;
   i = 0;
   if (Container)  {
@@ -103,7 +106,7 @@ int i;
     return NULL;
 }
 
-void CChainContainer::MoveByChainID ( ChainID chainID,
+void CChainContainer::MoveByChainID ( const ChainID chainID,
                                       PCChainContainer ChainContainer )  {
 int i;
   for (i=0;i<length;i++)
@@ -182,6 +185,7 @@ void  CDBReference::InitDBReference()  {
 }
 
 void  CDBReference::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB DBREF line number N
 //  from the class' data
   strcpy ( S,"DBREF" );
@@ -198,6 +202,7 @@ void  CDBReference::PDBASCIIDump ( pstr S, int N )  {
 }
 
 void  CDBReference::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop1,Loop2;
 int         RC1,RC2;
 
@@ -442,6 +447,7 @@ void  CSeqAdv::InitSeqAdv()  {
 }
 
 void  CSeqAdv::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB SEQADV line number N
 //  from the class' data
   strcpy     ( S,"SEQADV" );
@@ -488,6 +494,7 @@ IDCode idCode;
 
 
 void  CSeqAdv::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
 
@@ -672,8 +679,7 @@ int  i,k,sN;
     i  = 0;
     sN = 1;
     while (i<numRes)  {
-      //PutInteger ( &(S[8]),sN,2 );
-      PutInteger ( &(S[7]),sN,3 );
+      PutInteger ( &(S[8]),sN,2 );
       k = 19;
       while ((i<numRes) && (k<70))  {
         if (resName[i][0])
@@ -920,6 +926,7 @@ void  CModRes::InitModRes()  {
 }
 
 void  CModRes::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB MODRES line number N
 //  from the class' data
   strcpy     ( S,"MODRES" );
@@ -959,6 +966,8 @@ IDCode idCode;
 }
 
 void  CModRes::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(CIF);
+UNUSED_ARGUMENT(N);
 /*  -- apparently wrong use of _struct_conn, to be revised
 PCMMCIFLoop Loop;
 int         RC;
@@ -991,6 +1000,7 @@ int         RC;
 }
 
 void  CModRes::GetCIF ( PCMMCIFData CIF, int & Signal )  {
+UNUSED_ARGUMENT(CIF);
 //  GetCIF(..) must be always run without reference to Chain,
 //  see CModel::GetCIF(..).
 
@@ -1125,6 +1135,7 @@ void  CHetRec::InitHetRec()  {
 }
 
 void  CHetRec::PDBASCIIDump ( pstr S, int N )  {
+UNUSED_ARGUMENT(N);
 //  makes the ASCII PDB MODRES line number N
 //  from the class' data
   strcpy     ( S,"HET" );
@@ -1154,6 +1165,7 @@ int  CHetRec::ConvertPDBASCII ( cpstr S )  {
 }
 
 void  CHetRec::MakeCIF ( PCMMCIFData CIF, int N )  {
+UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
 
@@ -1268,7 +1280,7 @@ CChain::CChain() : CUDData() {
   SetChain ( pstr("") );
 }
 
-CChain::CChain ( PCProModel Model, ChainID chID ) : CUDData() {
+CChain::CChain ( PCProModel Model, const ChainID chID ) : CUDData()  {
   InitChain();
   SetChain ( chID );
   if (Model)  Model->AddChain ( this );
@@ -1332,7 +1344,7 @@ void CChain::SetModel ( PCProModel Model )  {
   model = Model;
 }
 
-void * CChain::GetCoordHierarchy()  {
+PCMMDBManager CChain::GetCoordHierarchy()  {
   if (model)  return model->GetCoordHierarchy();
   return NULL;
 }
@@ -2048,27 +2060,37 @@ int i;
 
   FreeMemory();
 
-  strcpy ( chainID    ,Chain->chainID     );
-  strcpy ( prevChainID,Chain->prevChainID );
+  if (Chain)  {
 
-  DBReference.Copy ( &(Chain->DBReference) );
-  SeqAdv     .Copy ( &(Chain->SeqAdv)      );  //  SEQADV records
-  SeqRes     .Copy ( &(Chain->SeqRes)      );  //  SEQRES data
-  ModRes     .Copy ( &(Chain->ModRes)      );  //  MODRES records
-  Het        .Copy ( &(Chain->Het)         );  //  HET    records
+    CopyAnnotations ( Chain );
 
-  nResidues = Chain->nResidues;
-  ResLen    = nResidues;
-  if (nResidues>0)  {
-    Residue = new PCResidue[nResidues];
-    for (i=0;i<nResidues;i++)  {
-      Residue[i] = newCResidue();
-      Residue[i]->SetChain ( this );
-      Residue[i]->Copy ( Chain->Residue[i] );
+    nResidues = Chain->nResidues;
+    ResLen    = nResidues;
+    if (nResidues>0)  {
+      Residue = new PCResidue[nResidues];
+      for (i=0;i<nResidues;i++)  {
+        Residue[i] = newCResidue();
+        Residue[i]->SetChain ( this );
+        Residue[i]->Copy ( Chain->Residue[i] );
+      }
     }
+
   }
 
 }
+
+void  CChain::CopyAnnotations ( PCChain Chain )  {
+  if (Chain)  {
+    strcpy ( chainID    ,Chain->chainID     );
+    strcpy ( prevChainID,Chain->prevChainID );
+    DBReference.Copy ( &(Chain->DBReference) );
+    SeqAdv     .Copy ( &(Chain->SeqAdv)      );  //  SEQADV records
+    SeqRes     .Copy ( &(Chain->SeqRes)      );  //  SEQRES data
+    ModRes     .Copy ( &(Chain->ModRes)      );  //  MODRES records
+    Het        .Copy ( &(Chain->Het)         );  //  HET    records
+  }
+}
+
 
 void  CChain::_copy ( PCChain Chain )  {
 // modify both CChain::_copy and CChain::Copy methods simultaneously!
@@ -2157,7 +2179,7 @@ int i;
 }
 */
 
-pstr  CChain::GetEntryID()  {
+cpstr  CChain::GetEntryID()  {
   if (model)  return model->GetEntryID();
         else  return pstr("");
 }
@@ -2171,7 +2193,7 @@ int   CChain::GetModelNum()  {
   return 0;
 }
 
-pstr  CChain::GetChainID ( pstr ChID )  {
+cpstr  CChain::GetChainID ( pstr ChID )  {
   ChID[0] = char(0);
   if (model)
        sprintf ( ChID,"/%i/",model->GetSerNum() );
@@ -2359,7 +2381,7 @@ int  CChain::GetUDData ( int UDDhandle, pstr & sudd )  {
 }
 
 
-
+//  -------------------------------------------------------------------
 
 DefineClass(CSortResidues)
 
