@@ -731,6 +731,12 @@ char rS[100];
   AddField ( rS,T,False );
 }
 
+void CMMCIFStruct::PutReal ( realtype R, cpstr T, cpstr format )  {
+char rS[100];
+  sprintf  ( rS,format,R );
+  AddField ( DelSpaces(rS,' '),T,False );
+}
+
 void CMMCIFStruct::PutInteger ( int I, cpstr T )  {
 char iS[100];
   if (I>MinInt4)  {
@@ -1056,6 +1062,12 @@ char rS[100];
   AddString ( rS );
 }
 
+void CMMCIFLoop::AddReal ( realtype R, cpstr format )  {
+char rS[100];
+  sprintf ( rS,format,R );
+  AddString ( DelSpaces(rS,' ') );
+}
+
 void CMMCIFLoop::AddInteger ( int I )  {
 char iS[100];
   if (I>MinInt4)  {
@@ -1120,6 +1132,48 @@ int k = GetTagNo ( TName );
   return field[nrow][k];
 }
 
+//  CopyString() does nothing if RC is not 0
+void CMMCIFLoop::CopyString   ( pstr  buf,   int maxlength,
+                                cpstr TName, int nrow, int & RC )  {
+pstr p;
+int  k;
+
+  if (RC)  return;
+
+  k = GetTagNo ( TName );
+  if (k<0)  {
+    RC = CIFRC_NoTag;
+    buf[0] = char(0);
+    return;
+  }
+  if ((nrow<0) || (nrow>=nRows))  {
+    RC = CIFRC_WrongIndex;
+    buf[0] = char(0);
+    return;
+  }
+  if (!field[nrow])  {
+    RC = CIFRC_NoField;
+    buf[0] = char(0);
+    return;
+  }
+  p = field[nrow][k];
+  if (!p)  {
+    RC = CIFRC_NoField;
+    buf[0] = char(0);
+    return;
+  }
+
+  // char(2) means the field was either '.' or '?'
+  if (p[0]==char(2))  {
+    buf[0] = p[0];
+    buf[1] = char(0);
+  } else
+    strncpy ( buf,p,IMin(maxlength,strlen(p)+1) );
+
+}
+
+
+
 int CMMCIFLoop::DeleteField ( cpstr TName, int nrow )  {
 int k = GetTagNo ( TName );
   if (k<0)  return CIFRC_NoTag;
@@ -1166,6 +1220,28 @@ int  k = GetTagNo ( TName );
     field[nrow][k] = NULL;
   }
   return 0;
+}
+
+void CMMCIFLoop::CopyReal ( realtype & R, cpstr TName, int nrow,
+                            int & RC )  {
+pstr endptr;
+int  k;
+
+  if (RC)  return;
+
+  R = 0.0;
+  k = GetTagNo ( TName );
+
+  if (k<0)                              RC = CIFRC_NoTag;
+  else if ((nrow<0) || (nrow>=nRows))   RC = CIFRC_WrongIndex;
+  else if (!field[nrow])                RC = CIFRC_NoField;
+  else if (!field[nrow][k])             RC = CIFRC_NoField;
+  else if (field[nrow][k][0]==char(2))  RC = CIFRC_NoField;
+  else  {
+    R = strtod ( field[nrow][k],&endptr );
+    if (endptr==field[nrow][k])  RC = CIFRC_WrongFormat;
+  }
+
 }
 
 int  CMMCIFLoop::GetInteger ( int & I, cpstr TName, int nrow,
@@ -1338,11 +1414,17 @@ char S[10];
 }
 
 
-void CMMCIFLoop::PutReal ( realtype R, cpstr T, int nrow,
-                           int prec )  {
+void CMMCIFLoop::PutReal ( realtype R, cpstr T, int nrow, int prec )  {
 char rS[100];
   sprintf ( rS,"%.*g",prec,R );
   PutString ( rS,T,nrow );
+}
+
+void CMMCIFLoop::PutReal ( realtype R, cpstr T, int nrow,
+                           cpstr format )  {
+char rS[100];
+  sprintf ( rS,format,R );
+  PutString ( DelSpaces(rS,' '),T,nrow );
 }
 
 void CMMCIFLoop::PutInteger ( int I, cpstr T, int nrow )  {

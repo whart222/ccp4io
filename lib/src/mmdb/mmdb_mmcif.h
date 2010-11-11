@@ -150,6 +150,7 @@ class CMMCIFStruct : public CMMCIFCategory  {
     void PutDate     ( cpstr T );
     void PutNoData   ( int NoDataType, cpstr T  );
     void PutReal     ( realtype R, cpstr TName, int prec=8 );
+    void PutReal     ( realtype R, cpstr TName, cpstr format );
     void PutInteger  ( int      I, cpstr TName );
 
     Boolean WriteMMCIFStruct ( cpstr FName,
@@ -194,6 +195,7 @@ class CMMCIFLoop : public CMMCIFCategory  {
     void  AddString    ( cpstr S, Boolean NonBlankOnly=False );
     void  AddNoData    ( int NoDataType );
     void  AddReal      ( realtype R, int prec=8 );
+    void  AddReal      ( realtype R, cpstr format );
     void  AddInteger   ( int I          );
 
     int   GetLoopLength() { return nRows; }
@@ -204,12 +206,17 @@ class CMMCIFLoop : public CMMCIFCategory  {
     //  if GetString returns NULL but RC=0 then the field was
     //  either '.' or '?'
     pstr  GetString    ( cpstr TName, int nrow, int & RC );
+    //  CopyString() does nothing if RC is not 0
+    void  CopyString   ( pstr  buf,   int maxlength,
+                         cpstr TName, int nrow, int & RC );
     int   DeleteField  ( cpstr TName, int nrow );
     int   DeleteRow    ( int nrow );
 
     // returns 0 if GetXxxx(..) had success
     int   GetReal      ( realtype & R, cpstr TName, int nrow,
                                        Boolean Remove=False );
+    // CopyReal() does nothing if RC is not 0
+    void  CopyReal     ( realtype & R, cpstr TName, int nrow, int & RC);
     int   GetInteger   ( int      & I, cpstr TName, int nrow,
                                        Boolean Remove=False );
 
@@ -225,8 +232,8 @@ class CMMCIFLoop : public CMMCIFCategory  {
 
     void  PutString    ( cpstr S, cpstr T, int nrow );
     void  PutNoData    ( int NoDataType, cpstr T, int nrow );
-    void  PutReal      ( realtype R, cpstr T, int nrow,
-                                     int prec=8 );
+    void  PutReal      ( realtype R, cpstr T, int nrow, int prec=8 );
+    void  PutReal      ( realtype R, cpstr T, int nrow, cpstr format );
     void  PutInteger   ( int      I, cpstr T, int nrow );
 
     void  PutSVector   ( psvector S, cpstr T, int i1, int i2 );
@@ -506,7 +513,7 @@ class CMMCIFData : public CStream  {
     void FreeMemory ( int key );
 
     void PutDataName ( cpstr dname ); // stores name for 'data_'
-                                           // record
+                                      // record
 
     //   PutString(..), PutReal(..) and PutInteger(..) will put the
     // values given into the specified category (CName) under the
@@ -665,7 +672,7 @@ class CMMCIFFile : public CStream  {
     int   WriteMMCIFFile   ( cpstr FName,byte gzipMode=GZM_CHECK);
 
     int   GetNofData()  { return nData; }
-    PCMMCIFData GetCIFData ( int        dataNo );  // 0..nData-1
+    PCMMCIFData GetCIFData ( int   dataNo );  // 0..nData-1
     PCMMCIFData GetCIFData ( cpstr DName  );
     int   AddMMCIFData     ( cpstr DName  );
     int   GetCIFDataNo     ( cpstr DName  );

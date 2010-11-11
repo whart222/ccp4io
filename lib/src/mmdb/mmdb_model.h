@@ -406,7 +406,7 @@ class CLinkContainer : public CClassContainer  {
 
     CLinkContainer  () : CClassContainer() {}
     CLinkContainer  ( RPCStream Object )
-                     : CClassContainer ( Object ) {} 
+                     : CClassContainer ( Object ) {}
     ~CLinkContainer () {}
 
     PCContainerClass MakeContainerClass ( int ClassID );
@@ -436,7 +436,7 @@ class CLink : public CContainerClass  {
     InsCode  insCode2;  // insertion code of 2nd linked atom
     int      s1,i1,j1,k1;  // sym id of 1st atom
     int      s2,i2,j2,k2;  // sym id of 2nd atom
-    
+
     CLink ();
     CLink ( cpstr S );
     CLink ( RPCStream Object );
@@ -454,7 +454,7 @@ class CLink : public CContainerClass  {
     void  read  ( RCFile f );
 
   protected :
-    
+
     void InitLink();
 
 };
@@ -485,6 +485,8 @@ DefineStreamFunctions(CLinkR)
 
 
 /*
+
+Garib's
 LINK             LYS A  27                     PLP A 255                PLPLYS
 LINK             MAN S   3                     MAN S   4                BETA1-4
 LINK        C6  BBEN B   1                O1  BMAF S   2                BEN-MAF
@@ -492,6 +494,23 @@ LINK        OE2 AGLU A 320                C1  AMAF S   2                GLU-MAF
 LINK        OE2  GLU A  67        1.895   ZN   ZN  R   5                GLU-ZN
 LINK        NE2  HIS A  71        2.055   ZN   ZN  R   5                HIS-ZN
 LINK        O    ARG A  69        2.240   NA   NA  R   9                ARG-NA
+
+Coot's
+LINKR        O   VAL C 103                NA    NA C 401                VAL-NA
+LINKR        OD1 ASP D  58                NA    NA D 401                ASP-NA
+LINKR        O   ALA D  97                NA    NA D 401                ALA-NA
+LINKR        OG1 THR D  99                NA    NA D 401                THR-NA
+LINKR        O   SER D 101                NA    NA D 401                SER-NA
+LINKR        O   VAL D 103                NA    NA D 401                VAL-NA
+
+PDB's
+LINK         O   GLY A  49                NA    NA A6001     1555   1555  2.98
+LINK         OG1 THR A  51                NA    NA A6001     1555   1555  2.72
+LINK         OD2 ASP A  66                NA    NA A6001     1555   1555  2.72
+LINK         NE  ARG A  68                NA    NA A6001     1555   1555  2.93
+
+LINK         NE  ARG A  68                NA    NA A6001     1555   1555  2.93
+LINK         C21 2EG A   7                 C22 2EG B  19     1555   1555  1.56
 */
 
 class CLinkR : public CContainerClass  {
@@ -636,8 +655,13 @@ class CModel : public CProModel  {
     
     //   GetChainCreate() returns pointer on chain, whose identifier
     // is given in chID. If such a chain is absent in the model,
-    // it is created.
-    PCChain GetChainCreate ( const ChainID chID );
+    // it is created. If enforceUniqueChainID is True and chain with
+    // the same first letter in chain ID already exists in the model,
+    // then the new chain ID will be appended with a serial number
+    // in order to keep it unique. The model will contain chains like
+    // A, A0, A1, A2, ... in such cases.
+    PCChain GetChainCreate ( const ChainID chID,
+                             Boolean enforceUniqueChainID );
 
     //   CreateChain() creates a new chain with chain ID regardless
     // the presence of same-ID chains in the model. This function
@@ -985,7 +1009,7 @@ class CModel : public CProModel  {
 
 
 
-    void  ApplyTransform    ( mat44 & TMatrix );  // transforms all
+    void  ApplyTransform ( mat44 & TMatrix );  // transforms all
                                       // coordinates by multiplying
                                       // with matrix TMatrix
 

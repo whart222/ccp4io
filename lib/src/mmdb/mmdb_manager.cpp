@@ -184,7 +184,7 @@ int      i,j, nchains;
         if (CopyMask & MMDBFCM_SecStruct)
           model->CopySecStructure ( MMDB->Model[i] );
         if (CopyMask & MMDBFCM_Links)  {
-          model->CopyLinks ( MMDB->Model[i] );
+          model->CopyLinks  ( MMDB->Model[i] );
           model->CopyLinkRs ( MMDB->Model[i] );
         }
         if (CopyMask & MMDBFCM_CisPeps)

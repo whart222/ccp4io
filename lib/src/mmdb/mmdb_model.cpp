@@ -2485,7 +2485,7 @@ UNUSED_ARGUMENT(N);
   strcpy     ( S,"LINKR" );
   PadSpaces  ( S,80 );
 
-  strcpy_n1  ( &(S[11]),atName1 ,4 );
+  strcpy_n1  ( &(S[12]),atName1 ,4 );
   strcpy_n1  ( &(S[16]),aloc1   ,1 );
   strcpy_n1  ( &(S[17]),resName1,3 );
   strcpy_n1  ( &(S[21]),chainID1,1 );
@@ -2494,7 +2494,7 @@ UNUSED_ARGUMENT(N);
   if (dist>0.0)
     PutRealF ( &(S[32]),dist,7,3 );
 
-  strcpy_n1  ( &(S[41]),atName2 ,4 );
+  strcpy_n1  ( &(S[42]),atName2 ,4 );
   strcpy_n1  ( &(S[46]),aloc2   ,1 );
   strcpy_n1  ( &(S[47]),resName2,3 );
   strcpy_n1  ( &(S[51]),chainID2,1 );
@@ -2566,7 +2566,7 @@ int         RC;
 
 int CLinkR::ConvertPDBASCII ( cpstr S )  {
 
-  GetString    ( atName1 ,&(S[11]),4 );
+  GetString    ( atName1 ,&(S[12]),4 );
   strcpy_ncss  ( aloc1   ,&(S[16]),1 );
   strcpy_ncss  ( resName1,&(S[17]),3 );
   strcpy_ncss  ( chainID1,&(S[21]),1 );
@@ -2574,7 +2574,7 @@ int CLinkR::ConvertPDBASCII ( cpstr S )  {
 
   if (!GetReal(dist,&(S[32]),7)) dist = 0.0;
 
-  GetString    ( atName2 ,&(S[41]),4 );
+  GetString    ( atName2 ,&(S[42]),4 );
   strcpy_ncss  ( aloc2   ,&(S[46]),1 );
   strcpy_ncss  ( resName2,&(S[47]),3 );
   strcpy_ncss  ( chainID2,&(S[51]),1 );
@@ -2997,32 +2997,54 @@ int      i;
   }
 }
 
-PCChain CModel::GetChainCreate ( const ChainID chID )  {
+PCChain CModel::GetChainCreate ( const ChainID chID,
+                                 Boolean enforceUniqueChainID )  {
 //   Returns pointer on chain, whose identifier is
 // given in chID. If such a chain is absent in the
 // model, it is created.
-int i;
+PCChain chain;
+ChainID chainID;
+int     i,k;
 
   // check if such a chain is already in the model
-  if (chID[0])  {
+  chain = NULL;
+  if (enforceUniqueChainID)  {
+    k = 0;
     for (i=0;i<nChains;i++)
       if (Chain[i])  {
-        if (!strcmp(chID,Chain[i]->chainID))
-          return Chain[i]; // it is there; just return the pointer
+        // here we check only first letter as it is kept in all
+        // derived names
+        if (chID[0]==Chain[i]->chainID[0])  {
+          chain = Chain[i];
+          if (chain->GetNumberOfResidues()>0)  k++;
+        }
       }
+    if (k)            sprintf ( chainID,"%s%i",chID,k-1 );
+    else if (!chain)  strcpy  ( chainID,chID ); // chain is absent
+                else  return chain;  // the only empty chain
   } else  {
-    for (i=0;i<nChains;i++)
-      if (Chain[i])  {
-        if (!Chain[i]->chainID[0])
-          return Chain[i]; // it is there; just return the pointer
-      }
+    if (chID[0])  {
+      for (i=0;(i<nChains) && (!chain);i++)
+        if (Chain[i])  {
+          if (!strcmp(chID,Chain[i]->chainID))
+            chain = Chain[i]; // it is there; just return the pointer
+        }
+    } else  {
+      for (i=0;(i<nChains) && (!chain);i++)
+        if (Chain[i])  {
+          if (!Chain[i]->chainID[0])
+            chain = Chain[i]; // it is there; just return the pointer
+        }
+    }
+    if (chain)  return chain;
+    strcpy ( chainID,chID );
   }
 
   ExpandChainArray ( nChains );
 
   // create new chain
   Chain[nChains] = newCChain();
-  Chain[nChains]->SetChain ( chID );
+  Chain[nChains]->SetChain ( chainID );
   Chain[nChains]->SetModel ( this );
   nChains++;
 
@@ -4046,31 +4068,31 @@ int      RC;
   if (!strncmp(PDBString,"DBREF ",6))  {
 
     if (PDBString[12]!=' ')  chainID[0] = PDBString[12];
-    chain = GetChainCreate ( chainID );
+    chain = GetChainCreate ( chainID,False );
     return chain->ConvertDBREF ( PDBString );
 
   } else if (!strncmp(PDBString,"SEQADV",6))  {
 
     if (PDBString[16]!=' ')  chainID[0] = PDBString[16];
-    chain = GetChainCreate ( chainID );
+    chain = GetChainCreate ( chainID,False );
     return chain->ConvertSEQADV ( PDBString );
 
   } else if (!strncmp(PDBString,"SEQRES",6))  {
 
     if (PDBString[11]!=' ')  chainID[0] = PDBString[11];
-    chain = GetChainCreate ( chainID );
+    chain = GetChainCreate ( chainID,False );
     return chain->ConvertSEQRES ( PDBString );
 
   } else if (!strncmp(PDBString,"MODRES",6))  {
 
     if (PDBString[16]!=' ')  chainID[0] = PDBString[16];
-    chain = GetChainCreate ( chainID );
+    chain = GetChainCreate ( chainID,False );
     return chain->ConvertMODRES ( PDBString );
 
   } else if (!strncmp(PDBString,"HET   ",6))  {
 
     if (PDBString[12]!=' ')  chainID[0] = PDBString[12];
-    chain = GetChainCreate ( chainID );
+    chain = GetChainCreate ( chainID,False );
     return chain->ConvertHET ( PDBString );
 
   } else if (!strncmp(PDBString,"HETNAM",6))  {
@@ -4254,7 +4276,7 @@ PCChain          chain;
   if (RC)  return RC;
   chainID = PSClass.Get1stChainID();
   while (chainID)  {
-    chain   = GetChainCreate ( chainID );
+    chain   = GetChainCreate ( chainID,False );
     switch (ClassID)  {
       case ClassID_DBReference : Dest = &(chain->DBReference);  break;
       case ClassID_SeqAdv      : Dest = &(chain->SeqAdv);       break;
@@ -4273,7 +4295,7 @@ PCChain          chain;
   return 0;
 }
 
-int  CModel::GetCIF ( PCMMCIFData CIF )  {
+int  CModel::GetCIF ( PCMMCIFData CIF ) {
 CSeqRes  SeqRes;
 int      RC;
 PCChain  chain;
@@ -4286,7 +4308,7 @@ PCChain  chain;
 
   RC = SeqRes.GetCIF ( CIF );
   while (!RC)  {
-    chain = GetChainCreate ( SeqRes.chainID );
+    chain = GetChainCreate ( SeqRes.chainID,False );
     chain->SeqRes.Copy ( &SeqRes );
     RC    = SeqRes.GetCIF ( CIF );
   }

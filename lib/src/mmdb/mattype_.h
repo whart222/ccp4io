@@ -115,11 +115,11 @@ typedef   unsigned int       word2;
 typedef   byte *             byteptr;
 typedef   unsigned long      lword;
 
-typedef   byte intUniBin  [4];
+typedef   byte intUniBin      [4];
 typedef   byte shortUniBin    [2];
-typedef   byte longUniBin [4];
-typedef   byte wordUniBin [4];
-typedef   byte realUniBin [10];
+typedef   byte longUniBin     [4];
+typedef   byte wordUniBin     [4];
+typedef   byte realUniBin     [10];
 typedef   byte floatUniBin    [5];
 typedef   byte shortrealUniBin[5];
 
@@ -602,40 +602,40 @@ extern pstr EnforceSpaces ( pstr S );
 
 // -------------------------------------------------------------
 
-extern void int2UniBin   ( int      I,  intUniBin   iUB  );
-extern void short2UniBin ( short    S,  shortUniBin sUB  );
-extern void long2UniBin  ( long     L,  longUniBin  lUB  );
-extern void word2UniBin  ( word     W,  wordUniBin  wUB  );
-extern void real2UniBin  ( realtype R,  realUniBin  rUB  );
-extern void float2UniBin ( realtype R,  floatUniBin fUB  );
+extern void int2UniBin       ( int       I,  intUniBin        iUB  );
+extern void short2UniBin     ( short     S,  shortUniBin      sUB  );
+extern void long2UniBin      ( long      L,  longUniBin       lUB  );
+extern void word2UniBin      ( word      W,  wordUniBin       wUB  );
+extern void real2UniBin      ( realtype  R,  realUniBin       rUB  );
+extern void float2UniBin     ( realtype  R,  floatUniBin      fUB  );
 extern void shortreal2UniBin ( shortreal R,  shortrealUniBin  srUB );
-extern void UniBin2int   ( intUniBin   iUB, int      & I );
-extern void UniBin2short ( shortUniBin sUB, short    & S );
-extern void UniBin2long  ( longUniBin  lUB, long     & L );
-extern void UniBin2word  ( wordUniBin  wUB, word     & W );
-extern void UniBin2real  ( realUniBin  rUB, realtype & R );
+extern void UniBin2int       ( intUniBin        iUB, int       & I );
+extern void UniBin2short     ( shortUniBin      sUB, short     & S );
+extern void UniBin2long      ( longUniBin       lUB, long      & L );
+extern void UniBin2word      ( wordUniBin       wUB, word      & W );
+extern void UniBin2real      ( realUniBin       rUB, realtype  & R );
 extern void UniBin2shortreal ( shortrealUniBin srUB, shortreal & R );
-extern void UniBin2float ( floatUniBin fUB, realtype & R );
+extern void UniBin2float     ( floatUniBin      fUB, realtype  & R );
 
-extern void mem_write ( int      I, pstr S, int & l );
-extern void mem_write ( short    I, pstr S, int & l );
-extern void mem_write ( long     I, pstr S, int & l );
-extern void mem_write ( word     W, pstr S, int & l );
-extern void mem_write ( realtype R, pstr S, int & l );
+extern void mem_write ( int       I, pstr S, int & l );
+extern void mem_write ( short     I, pstr S, int & l );
+extern void mem_write ( long      I, pstr S, int & l );
+extern void mem_write ( word      W, pstr S, int & l );
+extern void mem_write ( realtype  R, pstr S, int & l );
 extern void mem_write ( shortreal R, pstr S, int & l );
-extern void mem_write ( pstr     L, int len, pstr S, int & l );
-extern void mem_write ( pstr     L, pstr S, int & l );
-extern void mem_write ( Boolean  B, pstr S, int & l );
+extern void mem_write ( pstr      L, int len, pstr S, int & l );
+extern void mem_write ( pstr      L, pstr S, int & l );
+extern void mem_write ( Boolean   B, pstr S, int & l );
 
-extern void mem_read  ( int      & I, cpstr S, int & l );
-extern void mem_read  ( short    & I, cpstr S, int & l );
-extern void mem_read  ( long     & I, cpstr S, int & l );
-extern void mem_read  ( word     & W, cpstr S, int & l );
-extern void mem_read  ( realtype & R, cpstr S, int & l );
+extern void mem_read  ( int       & I, cpstr S, int & l );
+extern void mem_read  ( short     & I, cpstr S, int & l );
+extern void mem_read  ( long      & I, cpstr S, int & l );
+extern void mem_read  ( word      & W, cpstr S, int & l );
+extern void mem_read  ( realtype  & R, cpstr S, int & l );
 extern void mem_read  ( shortreal & R, cpstr S, int & l );
-extern void mem_read  ( pstr     L, int len, cpstr S, int & l );
-extern void mem_read  ( pstr     & L, cpstr S, int & l );
-extern void mem_read  ( Boolean  & B, cpstr S, int & l );
+extern void mem_read  ( pstr        L, int len, cpstr S, int & l );
+extern void mem_read  ( pstr      & L, cpstr S, int & l );
+extern void mem_read  ( Boolean   & B, cpstr S, int & l );
 
 #endif
 

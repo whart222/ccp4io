@@ -1542,7 +1542,7 @@ realtype Q,L;
   fUB[0] = byte(k2);
   for (k=sizeof(floatUniBin)-1;k>0;k--)  {
     L = floor(Q/_rfbase);
-      fUB[k] = byte(int(Q-L*_rfbase));
+    fUB[k] = byte(int(Q-L*_rfbase));
     Q = L;
   }
   if (R<0)  fUB[1] |= _fsign;

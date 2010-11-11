@@ -47,7 +47,7 @@
 
 #define MMDB_MAJOR_VERSION    (1)
 #define MMDB_MINOR_VERSION    (23)
-#define MMDB_MICRO_VERSION    (1)
+#define MMDB_MICRO_VERSION    (3)
 
 
 //  =======================  types  =================================

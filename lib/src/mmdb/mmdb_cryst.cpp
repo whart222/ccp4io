@@ -1659,19 +1659,19 @@ int      i,j,k;
       }
 
     //  TmpMat = Tmp*AT
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         BB = 0.0;
-        for (k=0;k<=3;k++)
+        for (k=0;k<3;k++)
           BB += Tmp[i][k]*AT[k][j];
         TmpMat[i][j] = BB;
       }
 
     //  Tmp = A*TmpMat
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         BB = 0.0;
-        for (k=0;k<=3;k++)
+        for (k=0;k<3;k++)
           BB += A[i][k]*TmpMat[k][j];
         Tmp[i][j] = BB;
       }
@@ -1709,26 +1709,26 @@ int      i,j,k;
     Tmp[1][2] = U[5];
     Tmp[2][1] = U[5];
 
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         A [j][i] = RFU[j][i];
         AT[i][j] = RFU[j][i];
       }
 
     //  TmpMat = Tmp*AT
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         BB = 0.0;
-        for (k=0;k<=3;k++)
+        for (k=0;k<3;k++)
           BB += Tmp[i][k]*AT[k][j];
         TmpMat[i][j] = BB;
       }
 
     //  Tmp = A*TmpMat
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         BB = 0.0;
-        for (k=0;k<=3;k++)
+        for (k=0;k<3;k++)
           BB += A[i][k]*TmpMat[k][j];
         Tmp[i][j] = BB;
       }
@@ -1829,7 +1829,7 @@ int RC,l;
       strcpy_ncss ( spaceGroup,spGroup,l );
       strcpy ( spaceGroupFix,spaceGroup );
       if (spaceGroup[0])  {
-	RC = SymOps.SetGroup ( spaceGroup,syminfo_lib );
+        RC = SymOps.SetGroup ( spaceGroup,syminfo_lib );
 	//        RC = SymOps.SetGroup ( spGroup,syminfo_lib );
         //      strncpy ( spaceGroup,spGroup,l );
         //      spaceGroup[l] = char(0);

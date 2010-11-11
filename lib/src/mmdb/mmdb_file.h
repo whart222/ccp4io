@@ -93,6 +93,21 @@
 #define MMDBF_AllowDuplChainID        0x00004000
 #define MMDBF_FixSpaceGroup           0x00008000
 #define MMDBF_EnforceAtomNames        0x00010000
+#define MMDBF_EnforceUniqueChainID    0x00020000
+
+// MMDBF_EnforceUniqueChainID   will make MMDB to rename chains on
+//         reading a file such as to maintain chains uniquesness. This
+//         is supposed to work only with 1-letter chain IDs and only
+//         if chain names are interchanged in the file. For example,
+//         if file contains a sequence of chains named
+//
+//              A,B, A,B, A,B, A,B, A,B
+//
+//         and this flag is set on, the resulting chain names in
+//         MMDB will be:
+//
+//              A,B, A0,B0, A1,B1, A2,B2, A3,B3
+//
 
 // file types:
 #define MMDB_FILE_Undefined     -1
@@ -556,9 +571,10 @@ class CMMDBFile : public CUDData  {
     PCChain     crChain; // current chain, used at reading a PDB file
     PCResidue   crRes;   // current residue, used at reading a PDB file
 
-    Boolean     Exclude; // used internally
-    Boolean     ignoreRemarks;  // used temporarily
-    Boolean     allowDuplChID;  // used temporarily
+    Boolean     Exclude;            // used internally
+    Boolean     ignoreRemarks;      // used temporarily
+    Boolean     allowDuplChID;      // used temporarily
+    Boolean     enforceUniqueChID;  // used temporarily
 
     void  InitMMDBFile    ();
     void  FreeCoordMemory ();

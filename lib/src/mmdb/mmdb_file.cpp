@@ -100,9 +100,10 @@ void  CMMDBFile::InitMMDBFile()  {
   Flags   = 0x00000000;           // no special effects
   FType   = MMDB_FILE_Undefined;  // undefined file operation
   Exclude = True;
-  ignoreRemarks = False;  // used temporarily
-  allowDuplChID = False;  // used temporarily
-  modelCnt      = 0;      // used only at reading files
+  ignoreRemarks     = False;  // used temporarily
+  allowDuplChID     = False;  // used temporarily
+  enforceUniqueChID = False;  // used temporarily
+  modelCnt          = 0;      // used only at reading files
 }
 
 
@@ -171,22 +172,24 @@ void CMMDBFile::ResetManager() {
 
 void CMMDBFile::SetFlag ( word Flag )  {
   Flags |= Flag;
-  ignoreSegID   = (Flags & MMDBF_IgnoreSegID  )!=0;
-  ignoreElement = (Flags & MMDBF_IgnoreElement)!=0;
-  ignoreCharge  = (Flags & MMDBF_IgnoreCharge )!=0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors)!=0;
-  ignoreUnmatch = (Flags & MMDBF_IgnoreUnmatch)!=0;
-  allowDuplChID = (Flags & MMDBF_AllowDuplChainID )!=0;
-} 
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
+}
 
 void CMMDBFile::RemoveFlag ( word Flag )  {
   Flags &= ~Flag;
-  ignoreSegID   = (Flags & MMDBF_IgnoreSegID  )!=0;
-  ignoreElement = (Flags & MMDBF_IgnoreElement)!=0;
-  ignoreCharge  = (Flags & MMDBF_IgnoreCharge )!=0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors)!=0;
-  ignoreUnmatch = (Flags & MMDBF_IgnoreUnmatch)!=0;
-  allowDuplChID = (Flags & MMDBF_AllowDuplChainID )!=0;
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
 }
 
 
@@ -258,14 +261,15 @@ Boolean      fixSpaceGroup,fend;
   FreeFileMemory();
 
   FType = MMDB_FILE_PDB;
-  ignoreSegID   = (Flags & MMDBF_IgnoreSegID  )!=0;
-  ignoreElement = (Flags & MMDBF_IgnoreElement)!=0;
-  ignoreCharge  = (Flags & MMDBF_IgnoreCharge )!=0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors)!=0;
-  ignoreUnmatch = (Flags & MMDBF_IgnoreUnmatch)!=0;
-  ignoreRemarks = False;
-  allowDuplChID = (Flags & MMDBF_AllowDuplChainID)!=0;
-  fixSpaceGroup = (Flags & MMDBF_FixSpaceGroup   )!=0;
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
+  ignoreRemarks          = False;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
+  fixSpaceGroup          = (Flags & MMDBF_FixSpaceGroup         ) != 0;
 
   if (f.FileEnd())  return Error_EmptyFile;
 
@@ -304,7 +308,7 @@ Boolean      fixSpaceGroup,fend;
       ContString = new CContString(S);
       Footnote.AddData ( ContString );
     } else  {
-      RC = crModel->ConvertPDBString(S);
+      RC = crModel->ConvertPDBString ( S );
       if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
         RC = 0; 
       if (RC)  break;
@@ -336,12 +340,12 @@ Boolean      fixSpaceGroup,fend;
          strncmp(S,"HETATM",6) &&
          strncmp(S,"ENDMDL",6))  {
     if (!strncmp(S,"LINK  ",6))
-      crModel->ConvertPDBString(S);
+      crModel->ConvertPDBString ( S );
     else if (!strncmp(S,"CISPEP",6)) {
       GetInteger ( modNum,&(S[43]),3 );
       if (modNum<=0)  modNum = 1;
       if (modNum!=1)  SwitchModel ( modNum );
-      crModel->ConvertPDBString(S);
+      crModel->ConvertPDBString ( S );
       if (modNum!=1)  SwitchModel ( 1 );
     } else  {
       ContString = new CContString(S);
@@ -460,13 +464,14 @@ Boolean fixSpaceGroup;
   ResetManager  ();
   FreeFileMemory();
   FType = MMDB_FILE_CIF;
-  ignoreSegID   = (Flags & MMDBF_IgnoreSegID  )!=0;
-  ignoreElement = (Flags & MMDBF_IgnoreElement)!=0;
-  ignoreCharge  = (Flags & MMDBF_IgnoreCharge )!=0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors)!=0;
-  ignoreUnmatch = (Flags & MMDBF_IgnoreUnmatch)!=0;
-  allowDuplChID = (Flags & MMDBF_AllowDuplChainID)!=0;
-  fixSpaceGroup = (Flags & MMDBF_FixSpaceGroup   )!=0;
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
+  fixSpaceGroup          = (Flags & MMDBF_FixSpaceGroup         ) != 0;
   
   //  open the file as ASCII for reading
   //  opening it in pseudo-binary mode helps reading various
@@ -1725,7 +1730,7 @@ int i,kndex,RC;
   }
 
   if (kndex==0)  kndex = nAtoms+1;
-
+	
   if (!crModel)  SwitchModel ( 1 );
 
 
@@ -2099,13 +2104,23 @@ int  CMMDBFile::AllocateAtom ( int           index,
     //   All this does not work if insCode[0] is set to 1
     // which indicates a special case of 'TER' card without
     // parameters.
-    if (strcmp(chainID,crChain->chainID))
+    if (enforceUniqueChID)  {
+      // enforcing unique chain IDs should be used only in case
+      // of multi-chain complexes where 1-letter chain IDs are
+      // not enough to accomodate all chains. Then chains are
+      // dynamically renamed like A0,A1,A2,.. etc. Therefore, we
+      // check only first symbol here.
+      if (chainID[0]!=crChain->chainID[0])
+        crChain = NULL;  // the chain has to be changed
+    } else if (strcmp(chainID,crChain->chainID))
       crChain = NULL;  // the chain has to be changed
   }
   if (!crChain) {
     // either the model or chain was changed  -- get a new chain
-    if (allowDuplChID)  crChain = crModel->CreateChain    ( chainID );
-                  else  crChain = crModel->GetChainCreate ( chainID );
+    if (allowDuplChID)
+          crChain = crModel->CreateChain    ( chainID );
+    else  crChain = crModel->GetChainCreate ( chainID,
+                                              enforceUniqueChID );
     crRes = NULL;  // new chain - new residue
   }
 

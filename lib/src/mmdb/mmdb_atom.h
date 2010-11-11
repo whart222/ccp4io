@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    04.02.09   <--  Date of Last Modification.
+//    15.07.10   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -35,7 +35,7 @@
 //  **** Functions :  BondAngle
 //       ~~~~~~~~~~~
 //
-//  Copyright (C) E. Krissinel 2000-2009
+//  Copyright (C) E. Krissinel 2000-2010
 //
 //  =================================================================
 //
@@ -283,6 +283,24 @@ class CAtom : public CUDData  {
     pstr  GetElementName() { return element; }
     pstr  GetAtomCharge ( pstr chrg );
 
+    //   GetChainCalphas(...) is a specialized function for quick
+    // access to C-alphas of chain which includes given atom.
+    // This function works faster than an equivalent implementation
+    // through MMDB's selection procedures.
+    //    Parameters:
+    //       Calphas   - array to accept pointers on C-alpha atoms
+    //                  If Calphas!=NULL, then the function will
+    //                  delete and re-allocate it. When the array
+    //                  is no longer needed, the application MUST
+    //                  delete it:  delete[] Calphas; Deleting
+    //                  Calphas does not delete atoms from MMDB.
+    //       nCalphas   - integer to accept number of C-alpha atoms
+    //                  and the length of Calphas array.
+    //       altLoc     - alternative location indicator. By default
+    //                  (""), maximum-occupancy locations are taken.
+    void  GetChainCalphas ( PPCAtom & Calphas, int & nCalphas,
+                            cpstr altLoc = "" );
+
     Boolean isTer         () { return Ter; }
     Boolean isMetal       ();
     Boolean isSolvent     ();  // works only for atom in a residue!
@@ -291,6 +309,7 @@ class CAtom : public CUDData  {
     Boolean isCTerminus   ();
 
     void  CalcAtomStatistics ( RSAtomStat AS );
+
     realtype GetDist2 ( PCAtom a );
     realtype GetDist2 ( PCAtom a, mat44 & tm );  // tm applies to A
     realtype GetDist2 ( PCAtom a, mat33 & r, vect3 & t );// tm applies to A

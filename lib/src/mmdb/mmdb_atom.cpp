@@ -864,6 +864,132 @@ void  CAtom::GetStat ( realtype   v,
   v_m2 += v*v;
 }
 
+
+
+void  CAtom::GetChainCalphas ( PPCAtom & Calphas, int & nCalphas,
+                               cpstr altLoc )  {
+//   GetChainCalphas(...) is a specialized function for quick
+// access to C-alphas of chain which includes given atom.
+// This function works faster than an equivalent implementation
+// through MMDB's selection procedures.
+//    Parameters:
+//       Calphas   - array to accept pointers on C-alpha atoms
+//                  If Calphas!=NULL, then the function will
+//                  delete and re-allocate it. When the array
+//                  is no longer needed, the application MUST
+//                  delete it:  delete[] Calphas; Deleting
+//                  Calphas does not delete atoms from MMDB.
+//       nCalphas   - integer to accept number of C-alpha atoms
+//                  and the length of Calphas array.
+//       altLoc     - alternative location indicator. By default
+//                  (""), maximum-occupancy locations are taken.
+PCChain    chain;
+PPCResidue res;
+PPCAtom    atom;
+int        nResidues, nAtoms, i,j,k;
+
+  if (Calphas)  {
+    delete[] Calphas;
+    Calphas = NULL;
+  }
+  nCalphas = 0;
+
+  if (residue)  chain = residue->chain;
+          else  chain = NULL;
+
+  if (chain)  {
+
+    chain->GetResidueTable ( res,nResidues );
+
+    if (nResidues>0)  {
+
+      Calphas = new PCAtom[nResidues];
+
+      if ((!altLoc[0]) || (altLoc[0]==' '))  {  // main conformation
+
+        for (i=0;i<nResidues;i++)  {
+          nAtoms = res[i]->nAtoms;
+          atom   = res[i]->atom;
+          for (j=0;j<nAtoms;j++)
+            if (!strcmp(atom[j]->name," CA "))  {
+              Calphas[nCalphas++] = atom[j];
+              break;
+            }
+        }
+
+      } else  {  // specific conformation
+
+        for (i=0;i<nResidues;i++)  {
+          nAtoms = res[i]->nAtoms;
+          atom   = res[i]->atom;
+          k      = 0;
+          for (j=0;j<nAtoms;j++)
+            if (!strcmp(atom[j]->name," CA "))  {
+              k = 1;
+              if (!atom[j]->altLoc[0])  {
+                // take main conformation now as we do not know if
+                // the specific one is in the file
+                Calphas[nCalphas] = atom[j];
+                k = 2;
+              } else if (atom[j]->altLoc[0]==altLoc[0])  {
+                // get specific conformation and quit
+                Calphas[nCalphas] = atom[j];
+                k = 2;
+                break;
+              }
+            } else if (k)
+              break;
+          if (k==2)  nCalphas++;
+        }
+
+      }
+
+    }
+
+  } else if (residue)  {  // check just this atom's residue
+
+    Calphas = new PCAtom[1]; // can't be more than 1 C-alpha!
+
+    nAtoms = residue->nAtoms;
+    atom   = residue->atom;
+
+    if ((!altLoc[0]) || (altLoc[0]==' '))  {  // main conformation
+
+      for (j=0;j<nAtoms;j++)
+        if (!strcmp(atom[j]->name," CA "))  {
+          Calphas[nCalphas++] = atom[j];
+          break;
+        }
+
+    } else  {  // specific conformation
+
+      k = 0;
+      for (j=0;j<nAtoms;j++)
+        if (!strcmp(atom[j]->name," CA "))  {
+          k = 1;
+          if (!atom[j]->altLoc[0])  {
+            Calphas[nCalphas] = atom[j];
+            k = 2;
+          } else if (atom[j]->altLoc[0]==altLoc[0])  {
+            Calphas[nCalphas] = atom[j];
+            k = 2;
+            break;
+          }
+        } else if (k)
+          break;
+      if (k==2)  nCalphas++;
+
+    }
+
+  }
+
+  if (Calphas && (!nCalphas))  {
+    delete[] Calphas;
+    Calphas = NULL;
+  }
+
+}
+
 Boolean CAtom::isMetal()  {
   return  ::isMetal ( element );
 }

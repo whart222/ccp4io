@@ -127,12 +127,8 @@
 # define CALL_LIKE_VMS  1
 
 // MVS stands for Microsoft Visual Studio
-#elif defined(_MSC_VER)
-# if (_MSC_VER) >= 800
-# define CALL_LIKE_MVS  2
-# else
+#elif defined(_MVS) 
 # define CALL_LIKE_MVS  1
-# endif
 
 #elif defined(F2C) || defined(G77)
 # define CALL_LIKE_SUN  8
@@ -404,36 +400,6 @@ typedef  double     apireal;    // FORTRAN  real*8
 
 #elif defined(CALL_LIKE_MVS)
 
-# if ( CALL_LIKE_MVS == 2 )
-
-  typedef pstr fpstr;
-
-# define FTN_STR(s)  s
-# define FTN_LEN(s)  s##_len
-
-# define char_struct(s)           \
-    pstr  s;                      \
-    int   s##_len;
-# define fill_char_struct(s,str)  \
-    s  = str;                     \
-    s##_len = strlen(str);
-
-# ifdef __cplusplus
-#   define FORTRAN_SUBR(NAME,name,p_sun,p_stardent,p_mvs) \
-    extern "C" void NAME p_sun
-# else
-#   define FORTRAN_SUBR(NAME,name,p_sun,p_stardent,p_mvs) \
-    void NAME p_sun
-# endif
-
-# define FORTRAN_EXTERN(NAME,name,p_sun,p_stardent,p_mvs) \
-    extern "C" void NAME p_sun
-
-# define FORTRAN_CALL(NAME,name,p_sun,p_stardent,p_mvs) \
-    NAME p_sun
-
-# else 
-
   typedef pstr fpstr;
 
 # define FTN_STR(s)  s
@@ -459,7 +425,7 @@ typedef  double     apireal;    // FORTRAN  real*8
 
 # define FORTRAN_CALL(NAME,name,p_sun,p_stardent,p_mvs) \
     NAME p_mvs
-# endif
+
 #else
 
 # error  Unknown machine!!!

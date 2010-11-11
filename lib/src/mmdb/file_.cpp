@@ -337,7 +337,6 @@ int  i;
 #ifndef _MSC_VER
         for (i=0;(i<=retry) && (!hFile);i++)  {
           if (i>0)  sleep ( 1 );
-#endif
           if (TextMode)  {
             if (ReadOnly)  hFile = fopen ( FName,"rt"  );
                      else  hFile = fopen ( FName,"r+t" );
@@ -345,7 +344,6 @@ int  i;
             if (ReadOnly)  hFile = fopen ( FName,"rb"  );
                      else  hFile = fopen ( FName,"r+b" );
           }
-#ifndef _MSC_VER
         }
 #endif
 
@@ -363,7 +361,7 @@ int  i;
         }
         IOSuccess = True;
       } else  {
-        EofFile   = True;    
+        EofFile   = True;
         IOSuccess = False;
       }
 

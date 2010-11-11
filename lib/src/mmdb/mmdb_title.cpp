@@ -1381,10 +1381,6 @@ MakeStreamFunctions(CRemark)
 #define  R350_CHAINS         2
 #define  R350_BIOMT          3
 
-#ifdef _WIN32
-#define  strcasestr(s, t) strstr(strupr(s), t)
-#endif
-
 void getRemarkKey ( RPCRemark rem, int & lkey )  {
   if (rem)  {
     if (rem->remarkNum!=350)  lkey = R350_END;
@@ -1953,6 +1949,7 @@ PCContainerClass ContainerClass;
     return Error_WrongSection;
 
   //  check for ID code in columns 73-80
+
   if (!col73)  {
     if (('0'<=idCode[0]) && (idCode[0]<='9'))  {
       if (!strncasecmp(idCode,&(PDBString[72]),4))
@@ -2385,7 +2382,10 @@ int  i;
 }
 
 void  CMMDBTitle::TrimInput ( pstr PDBString )  {
-  if (col73)  PDBString[72] = char(0);
+  if (col73)  {
+    if (!strncasecmp(idCode,&(PDBString[72]),4))
+      PDBString[72] = char(0);
+  }
   PadSpaces ( PDBString,80 );
 }
 

@@ -1572,7 +1572,7 @@ char     charge[10];
 //          GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
 //      }
       if ((FTN_STR(AtNam)[0]=='H') && (FTN_STR(AtNam)[3]!=' '))
-          GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
+        GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
       if (!atomName[0])  {
         atomName[0] = ' ';
         GetStrTer ( &(atomName[1]),FTN_STR(AtNam),3,4,FTN_LEN(AtNam) );
@@ -2973,7 +2973,7 @@ char ErrLine[500];
               else
                 printf ( " *** position unavailable, serial number %i\n",
                          LastSer );
-	    }
+            }
           }
         if (!Msg)
           printf ( " *** warning: unknown warning code" );
