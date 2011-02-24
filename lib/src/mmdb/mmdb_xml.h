@@ -102,9 +102,9 @@ class CXMLObject : public CStream  {
 
     PCXMLObject GetObject ( cpstr Tag, int objNo=1 );
 
-    void  AddObject   ( PCXMLObject XMLObject , int lenInc=10 );
+    void  AddObject   ( PCXMLObject XMLObject, int lenInc=10 );
     int   WriteObject ( cpstr FName, int pos=0, int ident=2   );
-    void  WriteObject ( RCFile    f, int pos=0, int ident=2   );
+    void  WriteObject ( RCFile f, int pos=0, int ident=2   );
     int   ReadObject  ( cpstr FName );
     int   ReadObject  ( RCFile f, pstr S, int & pos, int slen );
 
