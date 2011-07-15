@@ -17,6 +17,7 @@
 //
 // =================================================================
 //
+
 #ifndef  __STRING_H
 #include <string.h>
 #endif
@@ -47,7 +48,6 @@ CSSMAlign::CSSMAlign ( RPCStream Object ) : CStream ( Object )  {
 
 CSSMAlign::~CSSMAlign()  {
   FreeMemory();
-  if (pqvalues) delete[] pqvalues;
 }
 
 void CSSMAlign::FreeMemory()  {
@@ -90,8 +90,6 @@ void CSSMAlign::InitSSMAlign()  {
 
   G1          = NULL;
   G2          = NULL; // retained SSE graphs
-  nMatches    = 0;
-  pqvalues    = NULL;
 
 }
 
@@ -192,72 +190,9 @@ PCSSGraph G;
 }
 
 
-
 int CSSMAlign::Align ( PCMMDBManager M1, PCMMDBManager M2,
                        int precision, int connectivity,
                        int selHnd1,   int selHnd2 )  {
-PPCSSMatch Match;
-ivector    F1,F2;
-realtype   Q1;
-//int        i,nMatches,nm;
-int        i,nm;
-
-  FreeMemory();
-
-  SetSSMatchPrecision    ( precision    );
-  SetSSConnectivityCheck ( connectivity );
-  cnCheck = connectivity;
-
-  U.SetUniqueMatch ( True );
-  U.SetBestMatch   ( True );
-
-  G1 = GetSSGraph ( M1,selHnd1,i );
-  if (!G1)  return i;
-
-  G2 = GetSSGraph ( M2,selHnd2,i );
-  if (!G2)  return i+2;
-
-  U.MatchGraphs ( G1,G2,1 );
-
-  U.GetMatches ( Match,nMatches );
-  if (nMatches<=0)  return SSM_noHits;
-
-  pqvalues = new realtype[nMatches];
-  for (i=0; i<nMatches; i++)
-      pqvalues[i]= -1.0;
-
-  Qscore = -0.5;
-  for (i=0;i<nMatches;i++)
-    if (Match[i])  {
-      Match[i]->GetMatch ( F1,F2,nm );
-      Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
-                                   selHnd1,selHnd2 );
-      Q1 = Superpose.GetCalphaQ();
-      if ((Q1>0.0) && (Q1>Qscore))  {
-        Qscore = Q1;
-        Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
-                                     rmsd,nalgn,ngaps,seqIdentity,
-                                     nmd,ncombs );
-      }
-
-      pqvalues[i] = Q1;
-
-    }
-
-  if (Qscore>0.0)  {
-    MakeSelections ( M1,selHnd1, M2,selHnd2 );
-    return SSM_Ok;
-  }
-
-  return SSM_noSPSN;
-
-}
-
-
-
-int CSSMAlign::AlignSelectedMatch( PCMMDBManager M1, PCMMDBManager M2,
-                       int precision, int connectivity,
-                       int selHnd1,   int selHnd2, int nselect )  {
 PPCSSMatch Match;
 ivector    F1,F2;
 realtype   Q1;
@@ -283,31 +218,25 @@ int        i,nMatches,nm;
   U.GetMatches ( Match,nMatches );
   if (nMatches<=0)  return SSM_noHits;
 
-  if (nselect >= nMatches)
-  {
-      printf(" There are only %d matches for this alignment", nMatches);
-      return SSM_noSPSN;
-  }
-
   Qscore = -0.5;
-
-    if (Match[nselect])  
-    {
-      Match[nselect]->GetMatch ( F1,F2,nm );
-      Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,selHnd1,selHnd2 );
-
+  for (i=0;i<nMatches;i++)
+    if (Match[i])  {
+      Match[i]->GetMatch ( F1,F2,nm );
+      Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
+                                   selHnd1,selHnd2 );
       Q1 = Superpose.GetCalphaQ();
-      if (Q1>0.0)  
-      {
+      if ((Q1>0.0) && (Q1>Qscore))  {
+        Qscore = Q1;
         Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
                                      rmsd,nalgn,ngaps,seqIdentity,
                                      nmd,ncombs );
-
-        MakeSelections ( M1,selHnd1, M2,selHnd2 );
-        return SSM_Ok;
       }
     }
 
+  if (Qscore>0.0)  {
+    MakeSelections ( M1,selHnd1, M2,selHnd2 );
+    return SSM_Ok;
+  }
 
   return SSM_noSPSN;
 

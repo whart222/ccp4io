@@ -77,23 +77,14 @@ class CSSMAlign : public CStream  {
                 int precision, int connectivity,
                 int selHnd1=0, int selHnd2=0 );
 
-    int AlignSelectedMatch( PCMMDBManager M1, PCMMDBManager M2,
-                int precision, int connectivity,
-                int selHnd1=0, int selHnd2=0 , int nselect=0);
-
-    realtype* GetQvalues() const { return pqvalues; }
-    int GetNMatches() const { return nMatches;}
-
     PCSSGraph GetSSGraph ( PCMMDBManager M, int selHnd, int & rc );
 
     void  read  ( RCFile f );
     void  write ( RCFile f );
-    
+
   protected :
     CSSGraphMatch U;
     CSuperpose    Superpose;
-    realtype *pqvalues;
-    int nMatches;
 
     void  InitSSMAlign();
     void  FreeMemory  ();

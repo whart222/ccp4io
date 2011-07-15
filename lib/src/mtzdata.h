@@ -45,9 +45,9 @@
 #define NBATCHINTEGERS 29     /**< size of integer section of batch header buffer */
 #define NBATCHREALS 156       /**< size of float section of batch header buffer */
 
-#define MXTALS       32      /**< maximum number of crystals (for a few arrays - to be removed!) */
-#define MSETS        32      /**< maximum number of datasets (for a few arrays - to be removed!) */
-#define MCOLUMNS    128      /**< maximum number of columns (for a few arrays - to be removed!) */
+#define MXTALS      100      /**< maximum number of crystals (for a few arrays - to be removed!) */
+#define MSETS      1000      /**< maximum number of datasets (for a few arrays - to be removed!) */
+#define MCOLUMNS  10000      /**< maximum number of columns (for a few arrays - to be removed!) */
 
 /** MTZ column struct. */
 typedef struct { char label[31];       /**< column name as given by user */

@@ -51,7 +51,6 @@
 #include "mattype_.h"
 #endif
 
-#include <limits>
 #include <stdio.h>
 
 // -------------------------------------------------------
@@ -614,12 +613,20 @@ void FreeMatrix3Memory  ( psmatrix3 & A, word N,      word M,
 
 realtype  MachinEps ()  {
 //  A1.3.1   :  Calculation of the machine's epsilon
-  return std::numeric_limits<realtype>::epsilon();
+realtype  rMachEps = 1.0;
+  do
+    rMachEps /= 2.0;
+  while ((1.0+rMachEps)!=1.0);
+  return  2.0*rMachEps;
 }
 
 realtype  floatMachinEps()  {
 //  A1.3.1   :  Calculation of the machine's epsilon
-  return std::numeric_limits<float>::epsilon();
+float fMachEps = 1.0;
+  do
+    fMachEps /= 2.0;
+  while (float(1.0+fMachEps)!=1.0);
+  return  2.0*fMachEps;
 }
 
 realtype  frac ( realtype R )  {
