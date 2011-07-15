@@ -47,10 +47,6 @@
 #include <ctype.h>
 #endif
 
-#ifndef __LIMITS_H
-#include <limits>
-#endif
-
 #ifndef  __MatType__
 #include "mattype_.h"
 #endif
@@ -1868,8 +1864,8 @@ void mem_read ( Boolean & B, cpstr S, int & l )  {
 // -------------------------------------------------------
 
 Boolean InitMatType()  {
-  MachEps      = std::numeric_limits<realtype>::epsilon();
-  floatMachEps = std::numeric_limits<float>::epsilon();
+  MachEps      = MachinEps();
+  floatMachEps = floatMachinEps();
   LnMaxReal    = log(fMaxReal);
   LnMinReal    = log(fMinReal);
   LnMaxRealExp = LnMaxReal;
