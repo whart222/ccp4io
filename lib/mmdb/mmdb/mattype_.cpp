@@ -51,7 +51,6 @@
 #include "mattype_.h"
 #endif
 
-#include <limits>
 #include <stdio.h>
 
 // -------------------------------------------------------
@@ -614,12 +613,20 @@ void FreeMatrix3Memory  ( psmatrix3 & A, word N,      word M,
 
 realtype  MachinEps ()  {
 //  A1.3.1   :  Calculation of the machine's epsilon
-  return std::numeric_limits<realtype>::epsilon();
+realtype  rMachEps = 1.0;
+  do
+    rMachEps /= 2.0;
+  while ((1.0+rMachEps)!=1.0);
+  return  2.0*rMachEps;
 }
 
 realtype  floatMachinEps()  {
 //  A1.3.1   :  Calculation of the machine's epsilon
-  return std::numeric_limits<float>::epsilon();
+float fMachEps = 1.0;
+  do
+    fMachEps /= 2.0;
+  while (float(1.0+fMachEps)!=1.0);
+  return  2.0*fMachEps;
 }
 
 realtype  frac ( realtype R )  {
@@ -1408,6 +1415,7 @@ int i,k;
 static realtype _fpower[_nfPowers+1];
 static realtype _fpower8;
 static realtype _fpower4;
+static Boolean  _old_float_unibin;
 
 Boolean InitFPowers()  {
 int i;
@@ -1419,9 +1427,13 @@ int i;
   _fpower[_nfPowers] = fMaxReal;
   _fpower8 = _fpower[_nfPower8];
   _fpower4 = _fpower[_nfPower4];
+  _old_float_unibin = True;
   return True;
 }
 
+void  set_new_float_unibin()  {
+  _old_float_unibin = False;
+}
 
 void  int2UniBin ( int I, intUniBin iUB )  {
 int j,n,sh;
@@ -1516,6 +1528,10 @@ realtype Q,L;
 
 }
 
+/*
+#undef _new_float_unibin
+
+#ifdef _new_float_unibin
 
 void  float2UniBin ( realtype R, floatUniBin fUB )  {
 int      k1,k2,k;
@@ -1541,6 +1557,77 @@ realtype Q,L;
   if (R<0)  fUB[1] |= _fsign;
 
 }
+
+#else
+
+void  float2UniBin ( realtype R, floatUniBin fUB )  {
+int      k1,k2,k;
+realtype Q,L;
+  if (R>=0)  Q = R;
+       else  Q = -R;
+  k1 = 0;
+  k2 = _nfPowers;
+  do {
+    k = (k1+k2)/2;
+    if (Q>=_fpower[k])  k1 = k;
+                  else  k2 = k;
+  } while (k2>k1+1);
+  if (Q<=_fpower[0])  k2 = 0;
+  Q = (Q/_fpower[k2])*_fpower8;
+  fUB[0] = byte(k2);
+  for (k=sizeof(realUniBin)-1;k>0;k--)  {
+    L = floor(Q/_rfbase);
+    if (k<=sizeof(floatUniBin))
+      fUB[k] = byte(int(Q-L*_rfbase));
+    Q = L;
+  }
+  if (R<0)  fUB[1] |= _fsign;
+
+}
+
+#endif
+*/
+
+void  float2UniBin ( realtype R, floatUniBin fUB )  {
+int      k1,k2,k;
+realtype Q,L;
+
+  if (R>=0)  Q = R;
+       else  Q = -R;
+  k1 = 0;
+  k2 = _nfPowers;
+  do {
+    k = (k1+k2)/2;
+    if (Q>=_fpower[k])  k1 = k;
+                  else  k2 = k;
+  } while (k2>k1+1);
+  if (Q<=_fpower[0])  k2 = 0;
+  fUB[0] = byte(k2);
+
+  if (_old_float_unibin)  {
+    // this is wrong but compatible with already existing files :(
+    // in the result, it gives errors in 6th digit at back conversion
+    Q = (Q/_fpower[k2])*_fpower8;
+    for (k=sizeof(realUniBin)-1;k>0;k--)  {
+      L = floor(Q/_rfbase);
+      if (k<=(int)sizeof(floatUniBin))
+        fUB[k] = byte(int(Q-L*_rfbase));
+      Q = L;
+    }
+  } else  {
+    // this is correct
+    Q = (Q/_fpower[k2])*_fpower4;
+    for (k=sizeof(floatUniBin)-1;k>0;k--)  {
+      L = floor(Q/_rfbase);
+      fUB[k] = byte(int(Q-L*_rfbase));
+      Q = L;
+    }
+  }
+
+  if (R<0)  fUB[1] |= _fsign;
+
+}
+
 
 /*
 void  shortreal2UniBin ( shortreal R, shortrealUniBin srUB )  {
@@ -1672,6 +1759,9 @@ int j,s;
   if (s)  R = -R;
 }
 
+/*
+#ifdef _new_float_unibin
+
 void  UniBin2float ( floatUniBin fUB, realtype & R )  {
 int j,s;
   if (fUB[1] & _fsign)  {
@@ -1685,6 +1775,60 @@ int j,s;
   R = (R/_fpower4)*_fpower[int(fUB[0])];
   if (s)  R = -R;
 }
+
+#else
+
+void  UniBin2float ( floatUniBin fUB, realtype & R )  {
+int j,s;
+  if (fUB[1] & _fsign)  {
+    s = 1;
+    fUB[1] &= _fsign1;
+  } else
+    s = 0;
+  R = int(fUB[1]);
+  for (j=2;j<sizeof(floatUniBin);j++)
+    R = R*_rfbase + int(fUB[j]);
+  for (j=sizeof(floatUniBin);j<sizeof(realUniBin);j++)
+    R *= _rfbase;
+  R = (R/_fpower8)*_fpower[int(fUB[0])];
+  if (s)  R = -R;
+}
+
+#endif
+*/
+
+
+void  UniBin2float ( floatUniBin fUB, realtype & R )  {
+int j,s;
+
+  if (fUB[1] & _fsign)  {
+    s = 1;
+    fUB[1] &= _fsign1;
+  } else
+    s = 0;
+
+  R = int(fUB[1]);
+
+  if (_old_float_unibin)  {
+    // this is wrong and gives a conversion error in 6th digit :(
+    // we have to keep this for compatibility with alreadu existing
+    // files
+    for (j=2;j<(int)sizeof(floatUniBin);j++)
+      R = R*_rfbase + int(fUB[j]);
+    for (j=sizeof(floatUniBin);j<(int)sizeof(realUniBin);j++)
+      R *= _rfbase;
+    R = (R/_fpower8)*_fpower[int(fUB[0])];
+  } else  {
+    // this is correct
+    for (j=2;j<(int)sizeof(floatUniBin);j++)
+      R = R*_rfbase + int(fUB[j]);
+    R = (R/_fpower4)*_fpower[int(fUB[0])];
+  }
+  if (s)  R = -R;
+}
+
+
+
 
 /*
 void  UniBin2shortreal ( shortrealUniBin srUB, shortreal & R )  {

@@ -254,7 +254,7 @@ int ccp4fyp(int argc, char **argv)
   char *testarg=NULL;
 
   /* Filenames, directories etc */
-  const char *pkgroot=0;//PACKAGE_ROOT;
+  const char *pkgroot=PACKAGE_ROOT;
   char *basename=NULL,*cinclude=NULL,*home=NULL;
   char *dir=NULL,*std_dir=NULL,*tmpstr=NULL;
 
