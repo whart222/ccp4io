@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "ccp4_errno.h"
 #include "ccp4_fortran.h"
 #include "ccp4_parser.h"

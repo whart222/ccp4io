@@ -97,9 +97,7 @@
 #include "ccp4_errno.h"
 #include "ccp4_fortran.h"
 
-#if defined(GFORTRAN) || defined (G95)
 #include <time.h>
-#endif
 
 /* rcsid[] = "$Id$" */
 
