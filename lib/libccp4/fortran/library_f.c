@@ -49,7 +49,7 @@
 /* \newcommand{\fixme}[1]{\index{Fixme!}[{\bf Fixme!:} #1\@.]}              */
 /*                                                                          */
 /* \title{FORTRAN wrapper library routines}                                 */
-/* \date{$ $Date: 2011/08/02 13:43:24 $ $}                                  */
+/* \date{$ $Date: 2011/10/04 17:17:43 $ $}                                  */
 /* \author{This version: Martyn Winn, Charles Ballard @ Daresbury}          */
 /*                                                                          */
 /* \makeindex                                                               */
@@ -93,11 +93,16 @@
 /*                                                                          */
 /* <*>=                                                                     */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 #include "ccp4_utils.h"
 #include "ccp4_errno.h"
 #include "ccp4_fortran.h"
 
+#if defined(GFORTRAN) || defined (G95)
 #include <time.h>
+#endif
 
 /* rcsid[] = "$Id$" */
 
@@ -168,7 +173,7 @@ FORTRAN_SUBR ( USTENV, ustenv,
 
   temp_name = ccp4_FtoCString(FTN_STR(str), FTN_LEN(str));
 
-  if (*result = ccp4_utils_setenv (temp_name))  
+  if ((*result = ccp4_utils_setenv (temp_name)) != 0)
     ccp4_fatal("USTENV/CCP4_SETENV: Memory allocation failure"); 
   free(temp_name);
 }
@@ -533,8 +538,7 @@ FORTRAN_SUBR ( CCHMOD, cchmod,
 # if CALL_LIKE_MVS == 1
 int __stdcall ISATTY (int *lunit)
 {
-  lunit = 0 ;
-  return *lunit;
+  return 0;
 }
 
 /* erfc doesnt seem to be in Mircrosoft Visual Studdio so this is a fudge */
@@ -547,8 +551,7 @@ float __stdcall ERFC(float *value)
 
 int isatty_ (int *lunit)
 {
-  lunit = 0 ;
-  return *lunit;
+  return 0;
 }
 
 float erfc_ (float *value)
@@ -754,7 +757,7 @@ int isatty_(int *iunit)
 #endif
 
 /* neither gfortran or g95 have isatty */
-/* not true, since August 05 this has been added to gfortran"
+/* not true, since August 05 this has been added to gfortran */
 
 /* G95 support */
 #if defined(G95)
@@ -791,8 +794,15 @@ void ltime_(int *stime, int tarray[9])
 {
   int i;
   struct tm ldatim;
+  time_t t = *stime;
 
-  if (localtime_r((time_t) stime, &ldatim) != NULL) {
+#ifdef __MINGW32__ // no localtime_r in MinGW
+  struct tm* lt = localtime(&t);
+  if (lt != NULL) {
+    ldatim = *lt;
+#else
+  if (localtime_r(&t, &ldatim) != NULL) {
+#endif
     tarray[0] = ldatim.tm_sec;
     tarray[1] = ldatim.tm_min;
     tarray[2] = ldatim.tm_hour;
@@ -824,8 +834,15 @@ void gmtime_(int *stime, int gmarray[9])
 {
   int i;
   struct tm udatim;
+  time_t t = *stime;
 
-  if (gmtime_r((time_t) stime, &udatim) != NULL) {
+#ifdef __MINGW32__ // no gmtime_r in MinGW
+  struct tm *p = gmtime(&t);
+  if (p != NULL) {
+    udatim = *p;
+#else
+  if (gmtime_r(&t, &udatim) != NULL) {
+#endif
     gmarray[0] = udatim.tm_sec;
     gmarray[1] = udatim.tm_min;
     gmarray[2] = udatim.tm_hour;

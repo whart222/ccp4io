@@ -104,7 +104,7 @@ char *ccp4RCSDate(const char *rcs_string)
     tmpstr2[2] = '\0';
     if (strncmp(tmpstr1,"$Date: ",7) == 0) {
       /* Raw form of RCS string (not exported) i.e.:
-	 "$Date: 2010/03/12 14:27:50 $"
+	 "$Date: 2011/09/27 16:02:19 $"
       */
       /* Build the date string in the form DD/MM/YY */
       strncpy(RCSDate,rcs_string+15,2);
