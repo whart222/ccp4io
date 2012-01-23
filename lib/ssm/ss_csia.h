@@ -24,10 +24,7 @@
 #ifndef  __SS_CSIA__
 #define  __SS_CSIA__
 
-
-#ifndef  __SS_Graph__
 #include "ss_graph.h"
-#endif
 
 
 //  =========================  CSSMatch  ===========================

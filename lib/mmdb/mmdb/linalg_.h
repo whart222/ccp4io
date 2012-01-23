@@ -48,21 +48,22 @@
 //  ==========================  Jacobi  =============================
 
 
-//  Diagonalization of symmetric matrices  by the method of Jacobi.
-extern void  Jacobi ( int     N,     // dimension of the matrix
-                      rmatrix A,     // matrix to diagonalize; the
-                                     // lower triangle, except the
-                                     // diagonal, will remain unchanged
-                      rmatrix T,     // eigenvectors placed as columns
-                      rvector Eigen, // vector of eigenvalues, orderd
-                                     // by increasing
-                      rvector Aik,   // working array
-                      int &  Signal  // 0 <=> Ok, ItMax <=> iteration
-                                     // limit exchausted.
+///  Diagonalization of symmetric matrices A[1..N][1..N]
+/// by the method of Jacobi.
+extern void  Jacobi ( int     N,     //!< dimension of the matrix
+                      rmatrix A,     //!< matrix to diagonalize; the
+                                     /// lower triangle, except the
+                                     /// diagonal, will remain unchanged
+                      rmatrix T,     //!< eigenvectors placed as columns
+                      rvector Eigen, //!< vector of eigenvalues, orderd
+                                     /// by increasing
+                      rvector Aik,   //!< working array
+                      int &  Signal  //!< 0 <=> Ok, ItMax <=> iteration
+                                     /// limit exchausted.
                     );
 
 
-//  A5.5.2  :  Perturbated Cholessky Decomposition
+//  A5.5.2  :  Perturbed Cholesky Decomposition
 extern void  PbCholDecomp ( int        N,
                             rvector    HDiag,
                             realtype   MaxOff,
@@ -70,16 +71,16 @@ extern void  PbCholDecomp ( int        N,
                             rmatrix    L,
                             realtype & MaxAdd );
 
-//  A3.2.3a  :  Cholessky's   L - Solution  of
+//  A3.2.3a  :  Cholesky's   L - Solution  of
 //              L*Y  =  B  ( given  B )
 extern void  LSolve ( int N, rmatrix L, rvector B, rvector Y );
 
-//  A3.2.3b  :  Cholessky's   LT - Solution  of
+//  A3.2.3b  :  Cholesky's   LT - Solution  of
 //              LT*X  =  Y  ( given  Y )
 extern void  LTSolve ( int N, rmatrix L, rvector Y, rvector X );
 
 //  A3.2.3   :  Solution of the equation    L*LT*S = G
-//              by the  Cholessky's  method
+//              by the  Cholesky's  method
 extern void  ChSolve ( int N, rmatrix L, rvector G, rvector S );
 
 

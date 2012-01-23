@@ -1652,8 +1652,8 @@ int      i,j,k;
     Tmp[1][2] = U[5];
     Tmp[2][1] = U[5];
 
-    for (i=0;i<=3;i++)
-      for (j=0;j<=3;j++)  {
+    for (i=0;i<3;i++)
+      for (j=0;j<3;j++)  {
         A [j][i] = ROU[j][i];
         AT[i][j] = ROU[j][i];
       }

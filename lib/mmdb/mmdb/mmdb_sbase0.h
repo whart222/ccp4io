@@ -283,6 +283,8 @@ class CSBStructure : public CStream  {
 
     int   GetAtomNo  ( cpstr sca_name ); // returns 0 if atom not
                             // found, >0 gives the atom ordinal number
+    int   GetAtomNo_nss ( cpstr sca_name ); // same but disregards
+                            // leading and trailing spaces
 
     PCSBAtom GetAtom ( cpstr sca_name );
 

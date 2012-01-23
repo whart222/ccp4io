@@ -16,17 +16,10 @@
 //
 
 
-#ifndef  __STRING_H
 #include <string.h>
-#endif
 
-#ifndef  __LinAlg__
-#include "linalg_.h"
-#endif
-
-#ifndef  __SS_Graph__
 #include "ss_graph.h"
-#endif
+#include "mmdb/linalg_.h"
 
 
 //  ==========================  CSSGraph  ===========================

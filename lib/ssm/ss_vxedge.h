@@ -19,10 +19,7 @@
 #ifndef  __SS_VxEdge__
 #define  __SS_VxEdge__
 
-#ifndef  __MMDB_Manager__
-#include "mmdb_manager.h"
-#endif
-
+#include "mmdb/mmdb_manager.h"
 
 //  ==========================  Tune-up  ============================
 

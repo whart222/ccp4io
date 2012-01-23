@@ -19,9 +19,7 @@
 #ifndef  __SSM_Superpose__
 #define  __SSM_Superpose__
 
-#ifndef  __SS_Graph__
 #include "ss_graph.h"
-#endif
 
 
 //  =================================================================
@@ -115,8 +113,6 @@ struct SSuperposeData  {
 #define  UNMAP_YES  (-2)
 #define  UNMAP_NO   (-1)
 
-#undef FF1 // sys/ioctl_compat.h, sys/termios.h under Mac OS (e.g. 10.6)
-
 DefineClass(CSuperpose)
 
 class CSuperpose  {
@@ -168,6 +164,9 @@ class CSuperpose  {
                              int & nAligned,   int & nGaps,
                              realtype & seqIdentity,
                              int & nMisD, realtype & nCombs );
+
+    void GetCalphas1 ( PPCAtom & Calpha, int & numRes );
+    void GetCalphas2 ( PPCAtom & Calpha, int & numRes );
 
     void GetSSEDesc1 ( RPSSSEDesc SSEDesc, int & numSSEs );
     void GetSSEDesc2 ( RPSSSEDesc SSEDesc, int & numSSEs );

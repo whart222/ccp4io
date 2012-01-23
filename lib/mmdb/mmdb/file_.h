@@ -86,6 +86,15 @@ extern void  RemoveDelimiters ( pstr  S, int SLen );
 extern void  PickOutNumber    ( cpstr S, pstr SV, int SLen, int & j );
 
 
+#ifdef _WIN32
+#define _dir_sep_c  '\\'
+#define _dir_sep    "\\"
+#else
+#define _dir_sep_c  '/'
+#define _dir_sep    "/"
+#endif
+
+
 // =========================  CFile  ================================
 
 DefineClass(CFile)

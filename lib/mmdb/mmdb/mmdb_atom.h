@@ -167,7 +167,7 @@ class CAtom : public CUDData  {
     realtype   occupancy;      // occupancy
     realtype   tempFactor;     // temperature factor
     SegID      segID;          // segment identifier
-    Element    element;        // element symbol (ALIGNED)
+    Element    element;        // element symbol (ALIGNED TO RIGHT)
     EnergyType energyType;     // energy type (without spaces)
     realtype   charge;         // charge on the atom
     realtype   sigX,sigY,sigZ; // standard deviations of the coords

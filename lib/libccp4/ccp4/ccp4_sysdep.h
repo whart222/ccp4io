@@ -189,9 +189,8 @@
 #  endif
 #endif
 
-/* rint() function does not seen to exist for mingw32
-   defined in library_utils.c */
-#  if ((defined _WIN32) || (defined _MSC_VER)) && (!defined rint)
+/* defined in library_utils.c */
+#if defined(_MSC_VER)
   double rint(double x);
 #endif
 
@@ -274,7 +273,7 @@
 #  define NATIVEIT DFNTI_IBO
 #endif
 
-#if defined(MIPSEB) || defined(__hpux) || defined(_AIX) || defined(m68k) || defined(mc68000) || defined(sparc) || defined (__sparc__)
+#if defined(MIPSEB) || defined(__hpux) || defined(_AIX) || defined(m68k) || defined(mc68000) || defined(sparc) || defined (__sparc__) || defined(__s390__)
 #  define NATIVEIT DFNTI_MBO
 #  define NATIVEFT DFNTF_BEIEEE
 #endif

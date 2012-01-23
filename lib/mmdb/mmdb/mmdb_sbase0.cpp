@@ -619,6 +619,24 @@ int n,i;
   return n;
 }
 
+int CSBStructure::GetAtomNo_nss ( cpstr sca_name )  {
+// disregards leading and trailing spaces
+AtomName name_0;
+AtomName name_i;
+int n,i;
+  strcpy_css ( name_0,sca_name );
+//  printf ( " name_0 = '%s'\n",name_0 );
+  n = 0;
+  for (i=0;(i<nAtoms) && (!n);i++)
+    if (Atom[i])  {
+      strcpy_css ( name_i,Atom[i]->sca_name );
+//      printf ( " name_i = '%s'\n",name_i );
+      if (!strcmp(name_0,name_i))
+        n = i+1;
+    }
+  return n;
+}
+
 PCSBAtom CSBStructure::GetAtom ( cpstr sca_name )  {
 int n;
   n = GetAtomNo ( sca_name );

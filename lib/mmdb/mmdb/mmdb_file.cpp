@@ -97,7 +97,7 @@ void  CMMDBFile::InitMMDBFile()  {
   crRes   = NULL;
   lcount  = 0;
   strcpy ( S,"" );
-  //  Flags   = 0x00000000;           // no special effects
+//  Flags   = 0x00000000;           // no special effects
   Flags   = MMDBF_IgnoreElement;  // done at request for default
   FType   = MMDB_FILE_Undefined;  // undefined file operation
   Exclude = True;
@@ -341,6 +341,8 @@ Boolean      fixSpaceGroup,fend;
          strncmp(S,"HETATM",6) &&
          strncmp(S,"ENDMDL",6))  {
     if (!strncmp(S,"LINK  ",6))
+      crModel->ConvertPDBString ( S );
+    else if (!strncmp(S,"LINKR ",6))
       crModel->ConvertPDBString ( S );
     else if (!strncmp(S,"CISPEP",6)) {
       GetInteger ( modNum,&(S[43]),3 );
@@ -2211,8 +2213,8 @@ pstr FName;
 int  CMMDBFile::WritePDBASCII ( cpstr PDBFileName, byte gzipMode )  {
 CFile f;
 
-  //  opening it in pseudo-text mode ensures that the line terminators
-  //  will correspond to the system MMDB is running on
+  //  opening it in pseudo-text mode ensures that the line
+  //  endings will correspond to the system MMDB is running on
   f.assign ( PDBFileName,True,False,gzipMode );
   FType = MMDB_FILE_PDB;
 

@@ -15,23 +15,11 @@
 // =================================================================
 //
 
-#ifndef  __STRING_H
 #include <string.h>
-#endif
-
-#ifndef  __MATH_H
 #include <math.h>
-#endif
 
-
-#ifndef  __BFGS_Min__
-#include "bfgs_min.h"
-#endif
-
-#ifndef  __SSM_Superpose__
+#include "mmdb/bfgs_min.h"
 #include "ssm_superpose.h"
-#endif
-
 
 //  =================================================================
 
@@ -434,6 +422,18 @@ int i,j;
     nCombs       = 1.0;
   }
 }
+
+
+void CSuperpose::GetCalphas1 ( PPCAtom & Calpha, int & numRes )  {
+  Calpha = Calpha1;
+  numRes = nres1;
+}
+
+void CSuperpose::GetCalphas2 ( PPCAtom & Calpha, int & numRes )  {
+  Calpha = Calpha2;
+  numRes = nres2;
+}
+
 
 void CSuperpose::GetSSEDesc1 ( RPSSSEDesc SSEDesc, int & numSSEs )  {
 int i;
@@ -1417,6 +1417,9 @@ void  CSuperpose::RecoverGaps ( PPCAtom Ca1, PSSpAtom at1, int nat1,
 realtype thr2,d,d2;
 int      i, k1,k2,n1,n2,sw;
 Boolean  B1,B2;
+
+  d    = 0.0;  // to supress warnings
+  d2   = 0.0;  // to supress warnings
 
   thr2 = thresh*thresh;
   i    = 0;

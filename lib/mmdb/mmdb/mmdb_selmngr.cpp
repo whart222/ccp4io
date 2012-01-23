@@ -850,7 +850,7 @@ pstr      charge_l;
 
   if ((selHnd<=0) || (selHnd>nSelections) || (nAtoms<=0))  return;
 
-  modelSel = NULL;
+  modelSel = False;
 
   k  = selHnd-1;
   sk = selKey;
@@ -1112,9 +1112,23 @@ pstr    altLocs;
   Elements = new char[l];
   altLocs  = new char[l];
 
-  RC = ParseSelectionPath ( CID,iModel,Chains,seqNum1,insCode1,
-                            seqNum2,insCode2,RNames,ANames,
-                            Elements,altLocs );
+  if (strcmp(CID,"-all"))  {
+    RC = ParseSelectionPath ( CID,iModel,Chains,seqNum1,insCode1,
+                              seqNum2,insCode2,RNames,ANames,
+                              Elements,altLocs );
+  } else  {
+    iModel = 0;
+    strcpy ( Chains,"*" );
+    seqNum1 = ANY_RES;
+    seqNum2 = ANY_RES;
+    strcpy ( insCode1,"*" );
+    strcpy ( insCode2,"*" );
+    strcpy ( RNames  ,"*" );
+    strcpy ( ANames  ,"*" );
+    strcpy ( Elements,"*" );
+    strcpy ( altLocs ,""  ); // only main conformation by default
+    RC = 0;
+  }
 
   if (!RC)  {
     Select ( selHnd,selType,iModel,Chains,seqNum1,insCode1,
@@ -1174,7 +1188,7 @@ pstr      aloc_l;
 
   if ((selHnd<=0) || (selHnd>nSelections) || (nAtoms<=0))  return;
 
-  modelSel = NULL;
+  modelSel = False;
 
   k  = selHnd-1;
   sk = selKey;

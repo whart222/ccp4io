@@ -16,26 +16,12 @@
 //
 
 
-#ifndef  __STDLIB_H
 #include <stdlib.h>
-#endif
-
-#ifndef  __MATH_H
 #include <math.h>
-#endif
-
-#ifndef  __STRING_H
 #include <string.h>
-#endif
 
-#ifndef  __Math__
-#include "math_.h"
-#endif
-
-
-#ifndef  __SS_VxEdge__
 #include "ss_vxedge.h"
-#endif
+#include "mmdb/math_.h"
 
 
 
@@ -463,7 +449,7 @@ int  i;
   //  2. Calculate the vertex's direction
 
   // set (vdx,vdy,vdz) to the approximate direction of the structure
-  // as given by its boundaring C_alpha atoms
+  // as given by its outmost C_alpha atoms
 
   x1 = GetCoor1(CA,1);
   x2 = GetCoor2(CA,1);
@@ -480,12 +466,18 @@ int  i;
   ex    /= length;
   ey    /= length;
   ez    /= length;
-  dalpha = 2.0*asin(length_atol/length);
+
+  dalpha = RMin(0.785,2.0*asin(length_atol/RMax(length_atol,length)));
 
 }
 
 realtype CSSVertex::GetCoor1 ( PPCAtom CA, int coor_key )  {
 realtype c0,c1,c2,c3;
+
+  c1 = 0.0; // only to keep compiler happy
+  c2 = 0.0; // only to keep compiler happy
+  c3 = 0.0; // only to keep compiler happy
+
   switch (coor_key)  {
     default :
     case 1 : c0 = CA[0]->x;
@@ -504,16 +496,24 @@ realtype c0,c1,c2,c3;
              if (nres>3) c3 = CA[3]->z;
            break;
   }
+
   if (nres<3) return  c0;
+
   if (type==V_HELIX)  {
     if (nres<5) return  (c0+c2)/2.0;
     return (0.74*(c0+c3)+c1+c2)/3.48;
   } else
     return (c0+c1)/2.0;
+
 }
 
 realtype CSSVertex::GetCoor2 ( PPCAtom CA, int coor_key )  {
 realtype c1,c2,c3,c4;
+
+  c2 = 0.0;  // only to keep compiler happy
+  c3 = 0.0;  // only to keep compiler happy
+  c4 = 0.0;  // only to keep compiler happy
+
   switch (coor_key)  {
     default :
     case 1 : c1 = CA[nres-1]->x;
@@ -532,12 +532,15 @@ realtype c1,c2,c3,c4;
              if (nres>3) c4 = CA[nres-4]->z;
            break;
   }
+
   if (nres<3) return  c1;
+
   if (type==V_HELIX)  {
     if (nres<5) return  (c1+c3)/2.0;
     return (0.74*(c1+c4)+c2+c3)/3.48;
   } else
     return (c1+c2)/2.0;
+
 }
 
 realtype CSSVertex::GetAngle ( PCSSVertex v )  {

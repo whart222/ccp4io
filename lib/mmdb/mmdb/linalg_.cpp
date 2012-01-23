@@ -210,7 +210,10 @@ void  PbCholDecomp ( int        N,
                      rmatrix    L,
                      realtype & MaxAdd )  {
 
-//  A5.5.2  :  Perturbated Cholessky Decomposition
+//  A5.5.2  :  Perturbed Cholesky Decomposition
+// Part of the modular software system from
+// the appendix of the book "Numerical Methods for Unconstrained
+// Optimization and Nonlinear Equations" by Dennis & Schnabel 1983.
 
 int      i,j,k;
 realtype MinL,MinL2,S,MinLjj,MaxOffl, BB;
@@ -266,7 +269,7 @@ realtype MinL,MinL2,S,MinLjj,MaxOffl, BB;
 // -----------------------------------------------------
 
 void  LSolve ( int N, rmatrix L, rvector B, rvector Y )  {
-//  A3.2.3a  :  Cholessky's   L - Solution  of
+//  A3.2.3a  :  Cholesky's   L - Solution  of
 //              L*Y  =  B  ( given  B )
 int  i,j;
   Y[1] = B[1]/L[1][1];
@@ -283,7 +286,7 @@ int  i,j;
 // -----------------------------------------------------
 
 void  LTSolve ( int N, rmatrix L, rvector Y, rvector X )  {
-//  A3.2.3b  :   Cholessky's   LT - Solution  of
+//  A3.2.3b  :   Cholesky's   LT - Solution  of
 //               LT*X  =  Y  ( given  Y )
 int  i,j;
   X[N] = Y[N]/L[N][N];
@@ -301,12 +304,12 @@ int  i,j;
 
 void  ChSolve ( int N, rmatrix L, rvector G, rvector S )  {
 //  A3.2.3  :  Solution of the equation    L*LT*S = G
-//             by the  Cholessky's  method
-int i;
+//             by the  Cholesky's  method
+//int i;
   LSolve  ( N,L,G,S );
   LTSolve ( N,L,S,S );
-  for (i=1;i<=N;i++)
-    S[i] = -S[i];
+//  for (i=1;i<=N;i++)
+//    S[i] = -S[i];
 }
 
 

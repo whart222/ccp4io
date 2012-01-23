@@ -17,22 +17,12 @@
 //
 // =================================================================
 //
-#ifndef  __STRING_H
+
 #include <string.h>
-#endif
-
-#ifndef  __CTYPE_H
 #include <ctype.h>
-#endif
 
-
-#ifndef  __MMDB_Tables__
-#include "mmdb_tables.h"
-#endif
-
-#ifndef  __SSM_Align__
+#include "mmdb/mmdb_tables.h"
 #include "ssm_align.h"
-#endif
 
 
 //  ---------------------------  CSSMAlign ------------------------
@@ -47,17 +37,18 @@ CSSMAlign::CSSMAlign ( RPCStream Object ) : CStream ( Object )  {
 
 CSSMAlign::~CSSMAlign()  {
   FreeMemory();
-  if (pqvalues) delete[] pqvalues;
 }
 
 void CSSMAlign::FreeMemory()  {
-  FreeVectorMemory ( Ca1  ,0 );
-  FreeVectorMemory ( dist1,0 );
-  FreeVectorMemory ( Ca2  ,0 );
+  FreeVectorMemory ( Ca1     ,0 );
+  FreeVectorMemory ( dist1   ,0 );
+  FreeVectorMemory ( Ca2     ,0 );
+  FreeVectorMemory ( pqvalues,0 );
   if (G1)  delete G1;
   if (G2)  delete G2;
   G1 = NULL;
   G2 = NULL;
+  nMatches = 0;
 }
 
 void CSSMAlign::InitSSMAlign()  {
@@ -90,8 +81,9 @@ void CSSMAlign::InitSSMAlign()  {
 
   G1          = NULL;
   G2          = NULL; // retained SSE graphs
-  nMatches    = 0;
+
   pqvalues    = NULL;
+  nMatches    = 0;
 
 }
 
@@ -192,14 +184,12 @@ PCSSGraph G;
 }
 
 
-
 int CSSMAlign::Align ( PCMMDBManager M1, PCMMDBManager M2,
                        int precision, int connectivity,
                        int selHnd1,   int selHnd2 )  {
 PPCSSMatch Match;
 ivector    F1,F2;
 realtype   Q1;
-//int        i,nMatches,nm;
 int        i,nm;
 
   FreeMemory();
@@ -222,9 +212,10 @@ int        i,nm;
   U.GetMatches ( Match,nMatches );
   if (nMatches<=0)  return SSM_noHits;
 
-  pqvalues = new realtype[nMatches];
-  for (i=0; i<nMatches; i++)
-      pqvalues[i]= -1.0;
+
+  GetVectorMemory ( pqvalues,nMatches,0 );
+  for (i=0;i<nMatches;i++)
+    pqvalues[i] = -1.0;
 
   Qscore = -0.5;
   for (i=0;i<nMatches;i++)
@@ -235,13 +226,11 @@ int        i,nm;
       Q1 = Superpose.GetCalphaQ();
       if ((Q1>0.0) && (Q1>Qscore))  {
         Qscore = Q1;
-        Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
-                                     rmsd,nalgn,ngaps,seqIdentity,
-                                     nmd,ncombs );
+        Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,
+                                     TMatrix,rmsd,nalgn,ngaps,
+                                     seqIdentity, nmd,ncombs );
       }
-
       pqvalues[i] = Q1;
-
     }
 
   if (Qscore>0.0)  {
@@ -254,14 +243,17 @@ int        i,nm;
 }
 
 
-
-int CSSMAlign::AlignSelectedMatch( PCMMDBManager M1, PCMMDBManager M2,
-                       int precision, int connectivity,
-                       int selHnd1,   int selHnd2, int nselect )  {
+int CSSMAlign::AlignSelectedMatch ( PCMMDBManager M1,
+                                    PCMMDBManager M2,
+                                    int    precision,
+                                    int connectivity,
+                                    int      selHnd1,
+                                    int      selHnd2,
+                                    int      nselect )  {
 PPCSSMatch Match;
 ivector    F1,F2;
 realtype   Q1;
-int        i,nMatches,nm;
+int        i,nGMatches,nm;
 
   FreeMemory();
 
@@ -280,39 +272,36 @@ int        i,nMatches,nm;
 
   U.MatchGraphs ( G1,G2,1 );
 
-  U.GetMatches ( Match,nMatches );
-  if (nMatches<=0)  return SSM_noHits;
+  U.GetMatches ( Match,nGMatches );
+  if (nGMatches<=0)  return SSM_noHits;
 
-  if (nselect >= nMatches)
-  {
-      printf(" There are only %d matches for this alignment", nMatches);
-      return SSM_noSPSN;
+  if (nselect>=nGMatches)  {
+//  printf(" There are only %d matches for this alignment", nGMatches);
+    return SSM_tooFewMatches;
   }
 
   Qscore = -0.5;
 
-    if (Match[nselect])  
-    {
-      Match[nselect]->GetMatch ( F1,F2,nm );
-      Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,selHnd1,selHnd2 );
+  if (Match[nselect])  {
 
-      Q1 = Superpose.GetCalphaQ();
-      if (Q1>0.0)  
-      {
-        Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
-                                     rmsd,nalgn,ngaps,seqIdentity,
-                                     nmd,ncombs );
+    Match[nselect]->GetMatch   ( F1,F2,nm );
+    Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
+                                 selHnd1,selHnd2 );
 
-        MakeSelections ( M1,selHnd1, M2,selHnd2 );
-        return SSM_Ok;
-      }
+    Q1 = Superpose.GetCalphaQ();
+    if (Q1>0.0)  {
+      Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
+                                   rmsd,nalgn,ngaps,seqIdentity,
+                                   nmd,ncombs );
+      MakeSelections ( M1,selHnd1, M2,selHnd2 );
+      return SSM_Ok;
     }
 
+  }
 
   return SSM_noSPSN;
 
 }
-
 
 
 void CSSMAlign::write ( RCFile f )  {
@@ -387,7 +376,6 @@ int i,j;
   StreamRead ( f,G2 );
 
 }
-
 
 MakeStreamFunctions(CSSMAlign)
 

@@ -19,13 +19,9 @@
 #ifndef  __SS_Graph__
 #define  __SS_Graph__
 
-#ifndef  __MMDB_Manager__
-#include "mmdb_manager.h"
-#endif
+#include "mmdb/mmdb_manager.h"
 
-#ifndef  __SS_VxEdge__
 #include "ss_vxedge.h"
-#endif
 
 
 //  ==========================  CSSGraph  ===========================

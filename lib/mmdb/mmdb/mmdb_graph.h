@@ -59,7 +59,7 @@
 
 //  ==========================  CVertex  ============================
 
-DefineClass(CVertex)
+DefineClass(CVertex);
 
 #define  CHIRAL_RIGHT      0x10000000
 #define  CHIRAL_LEFT       0x20000000
@@ -132,7 +132,7 @@ class CVertex : public CStream  {
 
 };
 
-DefineStreamFunctions(CVertex)
+DefineStreamFunctions(CVertex);
 
 
 
@@ -143,7 +143,7 @@ DefineStreamFunctions(CVertex)
 #define BOND_AROMATIC  3
 #define BOND_TRIPLE    4
 
-DefineClass(CEdge)
+DefineClass(CEdge);
 
 class CEdge : public CStream  {
 
@@ -194,7 +194,7 @@ class CEdge : public CStream  {
 
 };
 
-DefineStreamFunctions(CEdge)
+DefineStreamFunctions(CEdge);
 
 
 
@@ -205,7 +205,7 @@ DefineStreamFunctions(CEdge)
 #define MKGRAPH_ChangedAltLoc  1
 #define MKGRAPH_MaxOccupancy   2
 
-DefineClass(CGraph)
+DefineClass(CGraph);
 
 class CGraph : public CStream  {
 
@@ -317,13 +317,13 @@ class CGraph : public CStream  {
 
 };
 
-DefineStreamFunctions(CGraph)
+DefineStreamFunctions(CGraph);
 
 
 //  ==========================  CMatch  ============================
 
-DefineClass(CMatch)
-DefineStreamFunctions(CMatch)
+DefineClass(CMatch);
+DefineStreamFunctions(CMatch);
 
 class CMatch : public CStream  {
 
@@ -381,7 +381,7 @@ class CMatch : public CStream  {
 #define  EXTTYPE_NotOR       7
 
 
-DefineClass(CGraphMatch)
+DefineClass(CGraphMatch);
 
 class CGraphMatch : public CStream  {
 
@@ -467,7 +467,7 @@ class CGraphMatch : public CStream  {
 
 };
 
-DefineStreamFunctions(CGraphMatch)
+DefineStreamFunctions(CGraphMatch);
 
 extern void  SetGraphAllocPortion ( int alloc_portion );
 

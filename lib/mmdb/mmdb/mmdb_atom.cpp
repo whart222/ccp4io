@@ -1386,7 +1386,7 @@ int  RC;
                         sizeof(element),pstr("  ") );
 
   RestoreElementName();
-  //  MakePDBAtomName();
+  MakePDBAtomName   ();
 
   RC = CIFGetReal1 ( sigX,Loop,CIFTAG_CARTN_X_ESD,k );
   if (!RC) RC = CIFGetReal1 ( sigY,Loop,CIFTAG_CARTN_Y_ESD,k );
@@ -1448,6 +1448,12 @@ Boolean CAtom::RestoreElementName()  {
       element[0] = ' ';
       element[1] = name[1];
     }
+    element[2] = char(0);
+    return False;
+  } else if (!element[1])  {
+    // not aligned element name, possibly coming from mmCIF
+    element[1] = element[0];
+    element[0] = ' ';
     element[2] = char(0);
     return False;
   }

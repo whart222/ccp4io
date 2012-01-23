@@ -229,7 +229,6 @@ cpstr const HydAtomName[nHydAtomNames] = {
 
 
 
-
 Boolean isMetal ( cpstr element )  {
 char    name[3];
 Boolean isThere;

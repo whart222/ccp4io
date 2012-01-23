@@ -570,7 +570,7 @@ extern int strlen_des ( cpstr s );
 // tracing spaces and any sequential spaces when more than one.
 extern pstr strcpy_des ( pstr d, cpstr s );
 
-//   strcpy_des appends string s to string d removing all extra
+//   strcat_des appends string s to string d removing all extra
 // spaces from the latter. Extra spaces include all leading and
 // tracing spaces and any sequential spaces when more than one.
 extern pstr strcat_des ( pstr d, cpstr s );
@@ -609,6 +609,7 @@ extern pstr EnforceSpaces ( pstr S );
 /// is not affected by this call, and to the best of knowledge is
 /// correct (no loss of precision).
 extern void set_new_float_unibin();
+extern void set_old_float_unibin();
 
 extern void int2UniBin       ( int       I,  intUniBin        iUB  );
 extern void short2UniBin     ( short     S,  shortUniBin      sUB  );

@@ -65,6 +65,13 @@
 #endif
 
 
+// _WIN32_NEWLINE should be raised when compilinig on Windows in
+// order to enforce Windows' line endings when writing text in
+// files opened for *binary* output. Otherwise, writing text lines
+// in binary files will results in UNIX line endings. Line endings
+// in files, opened for output in text mode, will be always
+// platform-specific.
+
 #ifdef  _WIN32_NEWLINE
 //  for DOS/WINDOWS machines:
 #define  NEWLINE  "\r\n"
@@ -748,7 +755,8 @@ Boolean  CFile::WriteLine ( cpstr Line )  {
   if ((!memIO) && TextMode)  {
     if (hFile==NULL)  return False;
     fputs ( Line,hFile );
-    return (fputs(NEWLINE,hFile)>=0);
+//    return (fputs(NEWLINE,hFile)>=0);
+    return (fputs("\n",hFile)>=0);
   } else  {
     if (WriteFile(Line,strlen(Line)))
           return  WriteFile ( (void *)NEWLINE,strlen(NEWLINE) );
@@ -787,7 +795,8 @@ char N[50];
 Boolean  CFile::LF()  {
   if ((!memIO) && TextMode)  {
     if (hFile==NULL)  return False;
-    return (fputs(NEWLINE,hFile)>=0);
+//    return (fputs(NEWLINE,hFile)>=0);
+    return (fputs("\n",hFile)>=0);
   } else
     return WriteFile ( (void *)NEWLINE,strlen(NEWLINE) );
 }

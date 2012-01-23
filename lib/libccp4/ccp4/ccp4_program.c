@@ -76,6 +76,20 @@ char *ccp4ProgramName(const char *progname)
   return programname;
 }
 
+/* ccp4_prog_info
+
+   Print program info for -i option.
+ */
+void ccp4_prog_info(void)
+{
+    printf("CCP4 software suite: library version %s\n",CCP4_VERSION_NO);
+    printf("CCP4 software suite: patch level     %s\n",CCP4_PATCH_LEVEL);
+    printf("Program:             %s",ccp4ProgramName(NULL));
+    if (ccp4_prog_vers(NULL) && strlen(ccp4_prog_vers(NULL))) 
+      printf("; version %s",ccp4_prog_vers(NULL));
+    printf("\n");
+}
+
 /* ccp4RCSDate
 
    Set or return program RCS date
@@ -104,7 +118,7 @@ char *ccp4RCSDate(const char *rcs_string)
     tmpstr2[2] = '\0';
     if (strncmp(tmpstr1,"$Date: ",7) == 0) {
       /* Raw form of RCS string (not exported) i.e.:
-	 "$Date: 2011/09/27 16:02:19 $"
+	 "$Date: 2011/11/07 13:17:27 $"
       */
       /* Build the date string in the form DD/MM/YY */
       strncpy(RCSDate,rcs_string+15,2);

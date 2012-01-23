@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 #define CCP4_VERSION_NO "6.2"
-#define CCP4_PATCH_LEVEL "6.2.0"
+#define CCP4_PATCH_LEVEL "6.2.991"
 
 /* Maximum lengths of strings holding program names and versions */
 #define MAXLEN_PROGNAME    80
@@ -74,6 +74,10 @@ char *ccp4_prog_vers(const char *progvers);
  * @return Program name
  */
 char *ccp4ProgramName(const char *progname);
+
+/** Print program info for -i option.
+ */ 
+void ccp4_prog_info(void);
 
 /** Set or return program RCS date
  * @param rcs_string Date string, or NULL to query existing value.

@@ -240,11 +240,7 @@ CMMCIFCategory::CMMCIFCategory() : CStream()  {
 
 CMMCIFCategory::CMMCIFCategory ( cpstr N ) : CStream()  {
   InitMMCIFCategory();
-  if (N[0])  CreateCopy ( name,N );
-  else  {
-    CreateCopy ( name,pstr(" ") );
-    name[0] = char(1);  // no category name
-  }
+  SetCategoryName ( N );
 }
 
 CMMCIFCategory::CMMCIFCategory ( RPCStream Object )
@@ -274,6 +270,14 @@ int i;
   FreeVectorMemory ( index,0 );
   nTags      = 0;
   nAllocTags = 0;
+}
+
+void CMMCIFCategory::SetCategoryName ( cpstr N )  {
+  if (N[0])  CreateCopy ( name,N );
+  else  {
+    CreateCopy ( name,pstr(" ") );
+    name[0] = char(1);  // no category name
+  }
 }
 
 void CMMCIFCategory::ExpandTags ( int nTagsNew )  {
@@ -429,7 +433,7 @@ int i;
   }
 }
 
-Boolean CMMCIFCategory::CheckTags ( pstr * tagList )  {
+Boolean CMMCIFCategory::CheckTags ( cpstr * tagList )  {
 int i;
   i = 0;
   while (tagList[i][0])  {
@@ -656,7 +660,7 @@ int  k = GetTagNo ( TName );
   if (!field)                return CIFRC_NoField;
   if (k<0)                   return CIFRC_NoTag;
   if (!field[k])             return CIFRC_NoField;
-  if (field[k][0]==char(2))  return CIFRC_NoField;
+  if (field[k][0]==char(2))  return CIFRC_NoData;
   R = strtod ( field[k],&endptr );
   if (endptr==field[k])  RC = CIFRC_WrongFormat;
   else  {
@@ -680,7 +684,7 @@ int  k = GetTagNo ( TName );
   if (!field[k])             return CIFRC_NoField;
   if (field[k][0]==char(2))  {
     if (field[k][1]=='.')  I = MinInt4;
-    return CIFRC_NoField;
+    return CIFRC_NoData;
   }
   I = mround ( strtod(field[k],&endptr) );
   if (endptr==field[k])  RC = CIFRC_WrongFormat;
@@ -1251,6 +1255,28 @@ int  k;
 
 }
 
+void CMMCIFLoop::CopyInteger ( int & I, cpstr TName, int nrow,
+                               int & RC )  {
+pstr endptr;
+int  k;
+
+  if (RC)  return;
+
+  I = 0;
+  k = GetTagNo ( TName );
+
+  if (k<0)                              RC = CIFRC_NoTag;
+  else if ((nrow<0) || (nrow>=nRows))   RC = CIFRC_WrongIndex;
+  else if (!field[nrow])                RC = CIFRC_NoField;
+  else if (!field[nrow][k])             RC = CIFRC_NoField;
+  else if (field[nrow][k][0]==char(2))  RC = CIFRC_NoField;
+  else  {
+    I = mround ( strtod ( field[nrow][k],&endptr ) );
+    if (endptr==field[nrow][k])  RC = CIFRC_WrongFormat;
+  }
+
+}
+
 int  CMMCIFLoop::GetInteger ( int & I, cpstr TName, int nrow,
                               Boolean Remove )  {
 pstr endptr;
@@ -1770,7 +1796,7 @@ void  CMMCIFData::RemoveFlag ( int F )  {
   flags &= ~F;
 }
 
-void  CMMCIFData::SetWrongFields ( pstr * cats, pstr * tags )  {
+void  CMMCIFData::SetWrongFields ( cpstr *cats, cpstr *tags )  {
 int i,lc,lt;
   FreeWrongFields();
   if ((!cats) || (!tags))  return;
@@ -1806,12 +1832,16 @@ int i;
   return False;
 }
 
+#define _max_buf_len   500
+
+static char  _err_string[_max_buf_len+1];
+static int   _err_line;
+
 
 int  CMMCIFData::ReadMMCIFData ( cpstr FName, byte gzipMode )  {
 CFile f;
-char  S[500];
-int   lcount;
-int   RC;
+char  S[_max_buf_len+1];
+int   RC,lcount;
   f.assign ( FName,True,False,gzipMode );
   if (f.reset(True))  {
     S[0]   = char(0);
@@ -1820,6 +1850,8 @@ int   RC;
     f.shut();
     return RC;
   } else  {
+    _err_string[0] = char(0);
+    _err_line      = 0;
     Warning = CIFRC_CantOpenFile;
     return CIFRC_CantOpenFile;
   }
@@ -1843,20 +1875,22 @@ pstr L;
     p = &(S[0]);
     while ((*p==' ') || (*p==char(9)))  p++;
     if (strncmp(p,"data_",5))  {
-      f.ReadLine ( S );
+      f.ReadLine ( S,_max_buf_len );
       lcount++;
       p = NULL;
     }
   } while ((!p) && (!f.FileEnd()));
 
   if (!p)  {
+    strcpy ( _err_string,S );
+    _err_line = lcount;
     if (flags & CIFFL_PrintWarnings)
       printf ( "\n **** mmCIF READ ERROR "
                "<<line %i: no 'data_XXXX' tag found>>\n",lcount );
     return CIFRC_NoDataLine;
   }
 
-  llen = 500;
+  llen = _max_buf_len;
   L    = new char[llen];
   i    = 0;
   p   += 5;
@@ -1885,10 +1919,13 @@ pstr L;
         break;
       } else  {
         // if got to here, the file is corrupted
+        strcpy ( _err_string,S );
+        _err_line = lcount;
         Warning |= CIFW_UnrecognizedItems;
         if (flags & CIFFL_PrintWarnings)
           printf ( "\n **** mmCIF READ WARNING "
-                   "<<line %i: unrecognized string>>\n%s\n",lcount,S );
+                   "<<line %i: unrecognized string>>\n%s\n",
+                   lcount,S );
         while ((*p) && (*p!=' ') && (*p!=char(9)))
           if (*p=='#')  *p = char(0);
                   else  p++;
@@ -1903,7 +1940,7 @@ pstr L;
 
     if (!(*p))  {
       if (!f.FileEnd())  {
-        f.ReadLine ( S );
+        f.ReadLine ( S,_max_buf_len );
         lcount++;
         p = &(S[0]);
       } else
@@ -1950,6 +1987,8 @@ int           RC,i;
   } else  {
     Struct = PCMMCIFStruct(Category[i]);
     if (Struct->GetCategoryID()!=MMCIF_Struct)  {
+      strcpy ( _err_string,S );
+      _err_line = lcount;
       Warning |= CIFW_NotAStructure;
       if (flags & CIFFL_PrintWarnings)
         printf ( "\n **** mmCIF READ WARNING "
@@ -1983,6 +2022,8 @@ int           RC,i;
   RC = GetField ( f,S,L,p,lcount,llen );
 
   if (RC)  {
+    strcpy ( _err_string,S );
+    _err_line = lcount;
     Warning |= CIFW_MissingField;
     if (flags & CIFFL_PrintWarnings)
       printf ( "\n **** mmCIF READ WARNING "
@@ -1999,7 +2040,9 @@ int           RC,i;
       tagNo++;
       ParamStr ( T,pstr("\1"),tagNo );
     } else  {
-      Warning |= CIFW_DuplicatedTag;
+      strcpy ( _err_string,S );
+      _err_line = lcount;
+      Warning |= CIFW_DuplicateTag;
       if (flags & CIFFL_PrintWarnings)
         printf ( "\n **** mmCIF READ WARNING "
                  "<<line %i: duplicated tag>>\n%s\n",lcount,S );
@@ -2059,6 +2102,8 @@ int         RC,i,nC;
         if ((i!=nC) && (nC>=0))  {  // empty loop; most probably
                                     // a corrupted file
           p = p1;   // play back to last category
+          strcpy ( _err_string,S );
+          _err_line = lcount;
           Warning |= CIFW_EmptyLoop;
           if (flags & CIFFL_PrintWarnings)
             printf ( "\n **** mmCIF READ WARNING "
@@ -2119,10 +2164,12 @@ int         RC,i,nC;
               ParamStr ( T,pstr("\1"),tagNo );
               Loop->AddTag(T);
             } else  {
-              Warning |= CIFW_DuplicatedTag;
+              strcpy ( _err_string,S );
+              _err_line = lcount;
+              Warning |= CIFW_DuplicateTag;
               if (flags & CIFFL_PrintWarnings)
                 printf ( "\n **** mmCIF READ WARNING "
-                         "<<line %i: duplicated tag>>\n%s\n",lcount,S );
+                         "<<line %i: duplicate tag>>\n%s\n",lcount,S );
             }
           }
         }
@@ -2138,10 +2185,12 @@ int         RC,i,nC;
     } else if (!(*p) || (*p=='#'))  {
       Repeat = !f.FileEnd();
       if (Repeat)  {
-        f.ReadLine ( S );
+        f.ReadLine ( S,_max_buf_len );
         lcount++;
         p = &(S[0]);
       } else  {
+        strcpy ( _err_string,S );
+        _err_line = lcount;
         Warning |= CIFW_UnexpectedEOF;
         if (flags & CIFFL_PrintWarnings)
           printf ( "\n **** mmCIF READ WARNING "
@@ -2159,7 +2208,7 @@ int         RC,i,nC;
       if (!(*p) || (*p=='#'))  {
         Repeat = !f.FileEnd();
         if (Repeat)  {
-          f.ReadLine ( S );
+          f.ReadLine ( S,_max_buf_len );
           lcount++;
           p = &(S[0]);
         }
@@ -2179,6 +2228,8 @@ int         RC,i,nC;
       }
     } while (Repeat);
     if ((Loop->iColumn!=0) || (RC))  {
+      strcpy ( _err_string,S );
+      _err_line = lcount;
       Warning |= CIFW_LoopFieldMissing;
       if (flags & CIFFL_PrintWarnings)
         printf ( "\n **** mmCIF READ WARNING "
@@ -2210,7 +2261,7 @@ char    c;
       Repeat = !f.FileEnd();
       if (Repeat)  {
         // take the next line
-        f.ReadLine ( S );
+        f.ReadLine ( S,_max_buf_len );
         lcount++;
         p = &(S[0]);
         Repeat = (*p!=';');
@@ -2231,7 +2282,7 @@ char    c;
     strcpy ( L,p );    // take first line of the field
     flen = strlen(L);
     while (!f.FileEnd())  {
-      f.ReadLine ( S );
+      f.ReadLine ( S,_max_buf_len );
       lcount++;
       p = &(S[0]);
       if (*p==';')  {  // multiline field terminated
@@ -2528,7 +2579,7 @@ int i;
   else  return NULL;
 }
 
-PCMMCIFLoop CMMCIFData::FindLoop ( pstr * tagList )  {
+PCMMCIFLoop CMMCIFData::FindLoop ( cpstr * tagList )  {
 int i;
   for (i=0;i<nCategories;i++)
     if (Category[i])  {
@@ -3345,28 +3396,26 @@ int i;
 }
 
 
-static char  S[500];
-static int   lcount;
-
 pstr GetMMCIFInputBuffer ( int & LineNo )  {
-  LineNo         = lcount;
-  S[sizeof(S)-1] = char(0);
-  return S;
+  LineNo = _err_line;
+  _err_string[sizeof(_err_string)-1] = char(0);
+  return _err_string;
 }
 
 int  CMMCIFFile::ReadMMCIFFile ( cpstr FName, byte gzipMode )  {
 CFile       f;
 PCMMCIFData CIF;
-int         RC;
+char        S[500];
+int         RC,lcount;
 
   FreeMemory();
 
   CIF = NULL;
   f.assign ( FName,True,False,gzipMode );
   if (f.reset(True))  {
-    S[0]       = char(0);
-    lcount     = 0;
-    RC         = 0;
+    S[0]   = char(0);
+    lcount = 0;
+    RC     = 0;
     while ((!RC) && (!f.FileEnd()))  {
       if (!CIF)  CIF = new CMMCIFData();
       CIF->SetPrintWarnings ( PrintWarnings );
@@ -3592,16 +3641,14 @@ MakeStreamFunctions(CMMCIFFile)
 
 int  isCIF ( cpstr FName, byte gzipMode )  {
 CFile   f;
-char    S[256];
+char    S[_max_buf_len+1];
 Boolean Done;
 pstr    p;
-int     m;
 
   f.assign ( FName,True,False,gzipMode );
-  m = sizeof(S)-1;
   if (f.reset(True))  {
-    f.ReadLine ( S,m );
-    S[m] = char(0);
+    f.ReadLine ( S,_max_buf_len );
+    S[_max_buf_len] = char(0);
     Done = False;
     while (!Done)  {
       p = &(S[0]);
@@ -3612,8 +3659,8 @@ int     m;
           Done = True;
           p    = NULL;
         } else  {
-          f.ReadLine ( S,sizeof(S)-1 );
-          S[m] = char(0);
+          f.ReadLine ( S,_max_buf_len );
+          S[_max_buf_len] = char(0);
         }
       }
     }
@@ -3658,8 +3705,8 @@ pstr InputLine;
     else if (RC & CIFW_NotALoop)
       sprintf ( M,"a structure is used as a loop on line %i\n%s",
                 LineNo,InputLine );
-    else if (RC & CIFW_DuplicatedTag)
-      sprintf ( M,"duplicated tag was found on line %i\n%s",
+    else if (RC & CIFW_DuplicateTag)
+      sprintf ( M,"duplicate tag was found on line %i\n%s",
                 LineNo,InputLine );
     else
       sprintf ( M,"undocumented warning issued for line %i\n%s",

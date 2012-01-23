@@ -22,9 +22,7 @@
 //
 
 
-#ifndef  __SS_CSIA__
 #include "ss_csia.h"
-#endif
 
 
 //  =========================  CSSMatch  ===========================

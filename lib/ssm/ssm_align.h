@@ -21,28 +21,22 @@
 #ifndef  __SSM_Align__
 #define  __SSM_Align__
 
-#ifndef  __MMDB_Manager__
-#include "mmdb_manager.h"
-#endif
+#include "mmdb/mmdb_manager.h"
 
-#ifndef  __SSM_Superpose__
 #include "ssm_superpose.h"
-#endif
-
-#ifndef  __SS_CSIA__
 #include "ss_csia.h"
-#endif
 
 
 //  ---------------------------  CSSMAlign  ------------------------
 
-#define SSM_Ok          0
-#define SSM_noHits      1
-#define SSM_noSPSN      2
-#define SSM_noGraph     3
-#define SSM_noVertices  4
-#define SSM_noGraph2    5
-#define SSM_noVertices2 6
+#define SSM_Ok            0
+#define SSM_noHits        1
+#define SSM_noSPSN        2
+#define SSM_noGraph       3
+#define SSM_noVertices    4
+#define SSM_noGraph2      5
+#define SSM_noVertices2   6
+#define SSM_tooFewMatches 7
 
 DefineClass(CSSMAlign)
 DefineStreamFunctions(CSSMAlign)
@@ -50,24 +44,24 @@ DefineStreamFunctions(CSSMAlign)
 class CSSMAlign : public CStream  {
 
   public :
-    mat44    TMatrix; // superposition matrix to be applied to 1st structure
-    realtype rmsd;         // core rmsd achieved
-    realtype Qscore;       // core Q achieved
-    int      cnCheck;      // connectivity option used
-    int      nres1,nres2;  // number of residues in structures
-    int      nsel1,nsel2;  // number of residues in aligned selections
-    int      nalgn;        // number of aligned residues
-    int      ngaps;        // number of gaps
-    int      nmd;          // number of misdirections
-    realtype ncombs;       // number of SSE combinations
-    realtype seqIdentity;  // sequence identity
-    int      selHndCa1,selHndCa2; // selection handles to used C-alphas
-    ivector  Ca1,Ca2;      // C-alpha correspondence vectors
-                           // Ca1[i] corresponds to a[i], where a is
-                           // selection identified by selHndCa1
-    rvector  dist1;        // optimizedd distances between the query
-                           // and target C-alphas
-    PCSSGraph G1,G2;       // retained SSE graphs
+    mat44    TMatrix; //!< superposition matrix to be applied to 1st structure
+    realtype rmsd;         //!< core rmsd achieved
+    realtype Qscore;       //!< core Q achieved
+    int      cnCheck;      //!< connectivity option used
+    int      nres1,nres2;  //!< number of residues in structures
+    int      nsel1,nsel2;  //!< number of residues in aligned selections
+    int      nalgn;        //!< number of aligned residues
+    int      ngaps;        //!< number of gaps
+    int      nmd;          //!< number of misdirections
+    realtype ncombs;       //!< number of SSE combinations
+    realtype seqIdentity;  //!< sequence identity
+    int      selHndCa1,selHndCa2; //!< selection handles to used C-alphas
+    ivector  Ca1,Ca2;      //!< C-alpha correspondence vectors
+                           //!< Ca1[i] corresponds to a[i], where a is
+                           //!< selection identified by selHndCa1
+    rvector  dist1;        //!< optimizedd distances between the query
+                           //!< and target C-alphas
+    PCSSGraph G1,G2;       //!< retained SSE graphs
 
     CSSMAlign ();
     CSSMAlign ( RPCStream Object );
@@ -77,23 +71,29 @@ class CSSMAlign : public CStream  {
                 int precision, int connectivity,
                 int selHnd1=0, int selHnd2=0 );
 
-    int AlignSelectedMatch( PCMMDBManager M1, PCMMDBManager M2,
-                int precision, int connectivity,
-                int selHnd1=0, int selHnd2=0 , int nselect=0);
 
-    realtype* GetQvalues() const { return pqvalues; }
-    int GetNMatches() const { return nMatches;}
+
+    int AlignSelectedMatch ( PCMMDBManager M1, PCMMDBManager M2,
+                             int precision, int connectivity,
+                             int selHnd1=0, int selHnd2=0,
+                             int nselect=0 );
+
+    rvector GetQvalues () const { return pqvalues; }
+    int     GetNMatches() const { return nMatches; }
+
 
     PCSSGraph GetSSGraph ( PCMMDBManager M, int selHnd, int & rc );
 
+    PCSuperpose GetSuperpose() { return &Superpose; }
+
     void  read  ( RCFile f );
     void  write ( RCFile f );
-    
+
   protected :
     CSSGraphMatch U;
     CSuperpose    Superpose;
-    realtype *pqvalues;
-    int nMatches;
+    rvector       pqvalues;
+    int           nMatches;
 
     void  InitSSMAlign();
     void  FreeMemory  ();
