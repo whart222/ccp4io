@@ -53,7 +53,7 @@
 #undef PACKAGE_NAME
 
 /* packge install directory */
-#undef PACKAGE_ROOT
+#define PACKAGE_ROOT NULL
 
 /* Define to the full name and version of this package. */
 #undef PACKAGE_STRING
