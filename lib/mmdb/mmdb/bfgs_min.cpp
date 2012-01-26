@@ -697,7 +697,7 @@ realtype Disc,  B1, B2, Lambda0;
            ( Lambda - LamPre );
       Disc = B*B - 3.0*A*InitSp;
       if (A==0.0)  LamTem = -InitSp/(2.0*B);
-             else  LamTem = (-B+sqrt(Disc))/(3.0*A);
+             else  LamTem = (-B+(Disc < 0 ? 0 : sqrt(Disc)))/(3.0*A);
       B1 = 0.5*Lambda;
       if (B1<LamTem)  LamTem = B1;
       LamPre = Lambda;
