@@ -47,7 +47,7 @@
 
 #define MMDB_MAJOR_VERSION    (1)
 #define MMDB_MINOR_VERSION    (24)
-#define MMDB_MICRO_VERSION    (0)
+#define MMDB_MICRO_VERSION    (1)
 
 
 //  =======================  types  =================================
@@ -245,11 +245,11 @@ typedef  char     maxMMDBName[MaxMMDBNameLength];
 
 //  =====================  classes  ===============================
 
-DefineClass(CAtom)
-DefineClass(CResidue)
-DefineClass(CChain)
-DefineClass(CModel)
-DefineClass(CMMDBManager)
+DefineClass(CAtom);
+DefineClass(CResidue);
+DefineClass(CChain);
+DefineClass(CModel);
+DefineClass(CMMDBManager);
 
 
 #endif

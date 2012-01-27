@@ -63,8 +63,8 @@
 
 //  ====================  CCrystContainer  ======================
 
-DefineClass(CCrystContainer)
-DefineStreamFunctions(CCrystContainer)
+DefineClass(CCrystContainer);
+DefineStreamFunctions(CCrystContainer);
 
 class CCrystContainer : public CClassContainer  {
 
@@ -89,8 +89,8 @@ class CCrystContainer : public CClassContainer  {
 #define NCSMSET_Matrix3  0x00000004
 #define NCSMSET_All      0x00000007
 
-DefineClass(CNCSMatrix)
-DefineStreamFunctions(CNCSMatrix)
+DefineClass(CNCSMatrix);
+DefineStreamFunctions(CNCSMatrix);
 
 class CNCSMatrix : public CContainerClass  {
 
@@ -137,8 +137,8 @@ class CNCSMatrix : public CContainerClass  {
 
 //  ==================  CTVect  ========================
 
-DefineClass(CTVect)
-DefineStreamFunctions(CTVect)
+DefineClass(CTVect);
+DefineStreamFunctions(CTVect);
 
 class CTVect : public CContainerClass  {
 
@@ -173,8 +173,8 @@ class CTVect : public CContainerClass  {
 
 //  =================  CMMDBCryst  =======================
 
-DefineClass(CMMDBCryst)
-DefineStreamFunctions(CMMDBCryst)
+DefineClass(CMMDBCryst);
+DefineStreamFunctions(CMMDBCryst);
 
 // constants for the CellCheck field
 #define CCHK_Ok            0x00000000

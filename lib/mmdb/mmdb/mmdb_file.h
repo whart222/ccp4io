@@ -145,8 +145,8 @@
 #define  CRRDY_NoSpaceGroup       -5
 
 
-DefineClass(CMMDBFile)
-DefineStreamFunctions(CMMDBFile)
+DefineClass(CMMDBFile);
+DefineStreamFunctions(CMMDBFile);
 
 class CMMDBFile : public CUDData  {
 

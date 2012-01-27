@@ -74,8 +74,8 @@
 
 //  ====================  CTitleContainer  ======================
 
-DefineClass(CTitleContainer)
-DefineStreamFunctions(CTitleContainer)
+DefineClass(CTitleContainer);
+DefineStreamFunctions(CTitleContainer);
 
 class CTitleContainer : public CClassContainer  {
 
@@ -93,8 +93,8 @@ class CTitleContainer : public CClassContainer  {
 
 //  ==================  CObsLine  ========================
 
-DefineClass(CObsLine)
-DefineStreamFunctions(CObsLine)
+DefineClass(CObsLine);
+DefineStreamFunctions(CObsLine);
 
 class CObsLine : public CContainerClass  {
 
@@ -129,8 +129,8 @@ class CObsLine : public CContainerClass  {
 
 //  ====================  CTitleLine  =====================
 
-DefineClass(CTitleLine)
-DefineStreamFunctions(CTitleLine)
+DefineClass(CTitleLine);
+DefineStreamFunctions(CTitleLine);
 
 class CTitleLine : public CContString  {
 
@@ -162,8 +162,8 @@ class CTitleLine : public CContString  {
 
 //  ====================  CCaveat  =====================
 
-DefineClass(CCaveat)
-DefineStreamFunctions(CCaveat)
+DefineClass(CCaveat);
+DefineStreamFunctions(CCaveat);
 
 class CCaveat : public CContString  {
 
@@ -197,8 +197,8 @@ class CCaveat : public CContString  {
 
 //  ====================  CCompound  =====================
 
-DefineClass(CCompound)
-DefineStreamFunctions(CCompound)
+DefineClass(CCompound);
+DefineStreamFunctions(CCompound);
 
 class CCompound : public CContString  {
 
@@ -230,8 +230,8 @@ class CCompound : public CContString  {
 
 //  ====================  CSource  =====================
 
-DefineClass(CSource)
-DefineStreamFunctions(CSource)
+DefineClass(CSource);
+DefineStreamFunctions(CSource);
 
 class CSource : public CContString  {
 
@@ -263,8 +263,8 @@ class CSource : public CContString  {
 
 //  ====================  CKeyWords  =====================
 
-DefineClass(CKeyWords)
-DefineStreamFunctions(CKeyWords)
+DefineClass(CKeyWords);
+DefineStreamFunctions(CKeyWords);
 
 class CKeyWords : public CStream  {
 
@@ -302,8 +302,8 @@ class CKeyWords : public CStream  {
 
 //  ====================  CExpData  =====================
 
-DefineClass(CExpData)
-DefineStreamFunctions(CExpData)
+DefineClass(CExpData);
+DefineStreamFunctions(CExpData);
 
 class CExpData : public CContString  {
 
@@ -336,8 +336,8 @@ class CExpData : public CContString  {
 
 //  ====================  CAuthor  =====================
 
-DefineClass(CAuthor)
-DefineStreamFunctions(CAuthor)
+DefineClass(CAuthor);
+DefineStreamFunctions(CAuthor);
 
 class CAuthor : public CContString  {
 
@@ -370,8 +370,8 @@ class CAuthor : public CContString  {
 
 //  ====================  CRevData  =====================
 
-DefineClass(CRevData)
-DefineStreamFunctions(CRevData)
+DefineClass(CRevData);
+DefineStreamFunctions(CRevData);
 
 #define REVDAT_WARN_MODNUM   0x00000001
 #define REVDAT_WARN_MODTYPE  0x00000002
@@ -414,8 +414,8 @@ class CRevData : public CContainerClass  {
 
 //  ==================  CSupersede  ========================
 
-DefineClass(CSupersede)
-DefineStreamFunctions(CSupersede)
+DefineClass(CSupersede);
+DefineStreamFunctions(CSupersede);
 
 class CSupersede : public CContainerClass  {
 
@@ -452,8 +452,8 @@ class CSupersede : public CContainerClass  {
 
 //  ====================  CJournal  =====================
 
-DefineClass(CJournal)
-DefineStreamFunctions(CJournal)
+DefineClass(CJournal);
+DefineStreamFunctions(CJournal);
 
 class CJournal : public CContString  {
 
@@ -486,8 +486,8 @@ class CJournal : public CContString  {
 
 //  ====================  CRemark  =====================
 
-DefineClass(CRemark)
-DefineStreamFunctions(CRemark)
+DefineClass(CRemark);
+DefineStreamFunctions(CRemark);
 
 class CRemark : public CContainerClass  {
 
@@ -522,8 +522,8 @@ class CRemark : public CContainerClass  {
 
 //  =================  CBiomolecule  =====================
 
-DefineClass(CBMApply)
-DefineStreamFunctions(CBMApply)
+DefineClass(CBMApply);
+DefineStreamFunctions(CBMApply);
 
 class CBMApply : public CStream  {
 
@@ -553,8 +553,8 @@ class CBMApply : public CStream  {
 };
 
 
-DefineClass(CBiomolecule)
-DefineStreamFunctions(CBiomolecule)
+DefineClass(CBiomolecule);
+DefineStreamFunctions(CBiomolecule);
 
 class CBiomolecule : public CStream  {
 
@@ -586,8 +586,8 @@ class CBiomolecule : public CStream  {
 
 //  =================  CMMDBTitle  =======================
 
-DefineClass(CMMDBTitle)
-DefineStreamFunctions(CMMDBTitle)
+DefineClass(CMMDBTitle);
+DefineStreamFunctions(CMMDBTitle);
 
 class CMMDBTitle : public CStream  {
 

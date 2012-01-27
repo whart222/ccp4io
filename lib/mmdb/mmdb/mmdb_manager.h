@@ -68,7 +68,7 @@
 #define MMDBFCM_Buffer         0x80000000
 #define MMDBFCM_Top            0xFFFFFFF7
 
-DefineStreamFunctions(CMMDBManager)
+DefineStreamFunctions(CMMDBManager);
 
 class CMMDBManager : public CMMDBBondManager  {
 

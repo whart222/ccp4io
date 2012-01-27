@@ -49,7 +49,7 @@
 #define _RN_MAX_IJ 31328
 #define _RN_MAX_KL 30081
 
-DefineClass(CRandomNumber)
+DefineClass(CRandomNumber);
 
 class CRandomNumber  {
   public :

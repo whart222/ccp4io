@@ -55,7 +55,7 @@
 #define BRICK_READY      0x00000004
 
 
-DefineClass(CBrick)
+DefineClass(CBrick);
 typedef  PPCBrick * PPPCBrick;
 
 class CBrick  {
@@ -83,7 +83,7 @@ class CBrick  {
 
 //  Bricking multiple structures
 
-DefineClass(CMBrick)
+DefineClass(CMBrick);
 typedef  PPCMBrick * PPPCMBrick;
 
 class CMBrick  {
@@ -111,8 +111,8 @@ class CMBrick  {
 
 //  ====================  CGenSym  ========================
 
-DefineClass(CGenSym)
-DefineStreamFunctions(CGenSym)
+DefineClass(CGenSym);
+DefineStreamFunctions(CGenSym);
 
 class CGenSym : public CSymOps  {
 
@@ -153,7 +153,7 @@ class CGenSym : public CSymOps  {
 
 // =========================  SContact  =============================
 
-DefineStructure(SContact)
+DefineStructure(SContact);
 
 struct SContact  {
   int      id1,id2;
@@ -166,7 +166,7 @@ struct SContact  {
 
 // ========================  CMContact  =============================
 
-DefineClass(CMContact)
+DefineClass(CMContact);
 
 class CMContact : public CStream  {
 
@@ -191,8 +191,8 @@ extern void DeleteMContacts ( PPCMContact & mcontact, int nContacts );
 
 // ======================  CMMDBCoorManager  =========================
 
-DefineClass(CMMDBCoorManager)
-DefineStreamFunctions(CMMDBCoorManager)
+DefineClass(CMMDBCoorManager);
+DefineStreamFunctions(CMMDBCoorManager);
 
 //  ----  Atom extraction return codes
 #define CID_Ok          0

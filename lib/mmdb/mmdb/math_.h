@@ -61,6 +61,8 @@ extern realtype log1mx  ( realtype x );
 //  Calculates precisely 1 - exp(x) for any x including very small values
 extern realtype expc    ( realtype x );
 
+inline double exp10  ( double x ) { return exp(x*ln10);   }
+
 //  Calculates precisely 1-(1-x)**y including very small x and very large y
 extern realtype expc1mx ( realtype x, realtype y );
 

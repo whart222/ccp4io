@@ -72,10 +72,10 @@
 // functions of CModel, which are used by CChain and
 // CResidue
 
-DefineClass(CProModel)
-DefineStreamFunctions(CProModel)
+DefineClass(CProModel);
+DefineStreamFunctions(CProModel);
 
-DefineClass(CMMDBManager)
+DefineClass(CMMDBManager);
 
 class CProModel : public CUDData  {
 
@@ -120,8 +120,8 @@ class CProModel : public CUDData  {
 
 //  ====================  CChainContainer  ======================
 
-DefineClass(CChainContainer)
-DefineStreamFunctions(CChainContainer)
+DefineClass(CChainContainer);
+DefineStreamFunctions(CChainContainer);
 
 class CChainContainer : public CClassContainer  {
 
@@ -150,8 +150,8 @@ class CChainContainer : public CClassContainer  {
 
 //  ==================  CContainerChain  =====================
 
-DefineClass(CContainerChain)
-DefineStreamFunctions(CContainerChain)
+DefineClass(CContainerChain);
+DefineStreamFunctions(CContainerChain);
 
 class CContainerChain : public CContainerClass {
 
@@ -174,8 +174,8 @@ class CContainerChain : public CContainerClass {
 
 //  ==================  CDBReference  ========================
 
-DefineClass(CDBReference)
-DefineStreamFunctions(CDBReference)
+DefineClass(CDBReference);
+DefineStreamFunctions(CDBReference);
 
 class CDBReference : public CContainerChain  {
 
@@ -219,8 +219,8 @@ class CDBReference : public CContainerChain  {
 
 //  ====================  CSeqAdv  ===========================
 
-DefineClass(CSeqAdv)
-DefineStreamFunctions(CSeqAdv)
+DefineClass(CSeqAdv);
+DefineStreamFunctions(CSeqAdv);
 
 class CSeqAdv : public CContainerChain  {
 
@@ -263,8 +263,8 @@ class CSeqAdv : public CContainerChain  {
 
 //  ==================  CSeqRes  ========================
 
-DefineClass(CSeqRes)
-DefineStreamFunctions(CSeqRes)
+DefineClass(CSeqRes);
+DefineStreamFunctions(CSeqRes);
 
 class CSeqRes : public CStream  {
 
@@ -305,8 +305,8 @@ class CSeqRes : public CStream  {
 
 //  ==================  CModRes  ========================
 
-DefineClass(CModRes)
-DefineStreamFunctions(CModRes)
+DefineClass(CModRes);
+DefineStreamFunctions(CModRes);
 
 class CModRes : public CContainerChain  {
 
@@ -344,8 +344,8 @@ class CModRes : public CContainerChain  {
 
 //  ==================  CHetRec  ===========================
 
-DefineClass(CHetRec)
-DefineStreamFunctions(CHetRec)
+DefineClass(CHetRec);
+DefineStreamFunctions(CHetRec);
 
 class CHetRec : public CContainerChain  {
 
@@ -384,7 +384,7 @@ class CHetRec : public CContainerChain  {
 
 //  =================  CChain  =======================
 
-DefineFactoryFunctions(CChain)
+DefineFactoryFunctions(CChain);
 
 class CChain : public CUDData  {
 

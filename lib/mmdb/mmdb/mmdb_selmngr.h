@@ -124,8 +124,8 @@
 
 
 
-DefineClass(CMMDBSelManager)
-DefineStreamFunctions(CMMDBSelManager)
+DefineClass(CMMDBSelManager);
+DefineStreamFunctions(CMMDBSelManager);
 
 class CMMDBSelManager : public CMMDBCoorManager  {
 

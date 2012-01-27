@@ -55,8 +55,8 @@
 
 //  ====================  CSymOp  ========================
 
-DefineClass(CSymOp)
-DefineStreamFunctions(CSymOp)
+DefineClass(CSymOp);
+DefineStreamFunctions(CSymOp);
 
 class CSymOp : public CStream  {
 
@@ -106,8 +106,8 @@ class CSymOp : public CStream  {
 #define SYMOP_ZeroDenominator     -6
 
 
-DefineClass(CSymOps)
-DefineStreamFunctions(CSymOps)
+DefineClass(CSymOps);
+DefineStreamFunctions(CSymOps);
 
 class CSymOps : public CStream  {
 

@@ -76,8 +76,8 @@
 //  ====================  CHetCompound  =======================
 
 
-DefineClass(CHetCompound)
-DefineStreamFunctions(CHetCompound)
+DefineClass(CHetCompound);
+DefineStreamFunctions(CHetCompound);
 
 class CHetCompound : public CStream  {
 
@@ -119,8 +119,8 @@ class CHetCompound : public CStream  {
 
 //  ====================  CSSContainer  ======================
 
-DefineClass(CSSContainer)
-DefineStreamFunctions(CSSContainer)
+DefineClass(CSSContainer);
+DefineStreamFunctions(CSSContainer);
 
 class CSSContainer : public CClassContainer  {
 
@@ -138,8 +138,8 @@ class CSSContainer : public CClassContainer  {
 
 //  ====================  CHelix  ============================
 
-DefineClass(CHelix)
-DefineStreamFunctions(CHelix)
+DefineClass(CHelix);
+DefineStreamFunctions(CHelix);
 
 class CHelix : public CContainerClass  {
 
@@ -184,8 +184,8 @@ class CHelix : public CContainerClass  {
 
 //  ====================  CStrand  ============================
 
-DefineClass(CStrand)
-DefineStreamFunctions(CStrand)
+DefineClass(CStrand);
+DefineStreamFunctions(CStrand);
 
 class CStrand : public CStream  {
 
@@ -241,8 +241,8 @@ class CStrand : public CStream  {
 
 //  ====================  CSheet  ============================
 
-DefineClass(CSheet)
-DefineStreamFunctions(CSheet)
+DefineClass(CSheet);
+DefineStreamFunctions(CSheet);
 
 class CSheet : public CStream  {
 
@@ -279,8 +279,8 @@ class CSheet : public CStream  {
 
 //  ====================  CSheets  ============================
 
-DefineClass(CSheets)
-DefineStreamFunctions(CSheets)
+DefineClass(CSheets);
+DefineStreamFunctions(CSheets);
 
 class CSheets : public CStream  {
 
@@ -313,8 +313,8 @@ class CSheets : public CStream  {
 
 //  ====================  CTurn  ============================
 
-DefineClass(CTurn)
-DefineStreamFunctions(CTurn)
+DefineClass(CTurn);
+DefineStreamFunctions(CTurn);
 
 class CTurn : public CContainerClass  {
 
@@ -357,8 +357,8 @@ class CTurn : public CContainerClass  {
 
 //  ====================  CHetCompounds  =======================
 
-DefineClass(CHetCompounds)
-DefineStreamFunctions(CHetCompounds)
+DefineClass(CHetCompounds);
+DefineStreamFunctions(CHetCompounds);
 
 class CHetCompounds : public CStream  {
 
@@ -397,8 +397,8 @@ class CHetCompounds : public CStream  {
 
 //  ===================  CLinkContainer  =====================
 
-DefineClass(CLinkContainer)
-DefineStreamFunctions(CLinkContainer)
+DefineClass(CLinkContainer);
+DefineStreamFunctions(CLinkContainer);
 
 class CLinkContainer : public CClassContainer  {
 
@@ -416,8 +416,8 @@ class CLinkContainer : public CClassContainer  {
 
 //  ====================  CLink  ============================
 
-DefineClass(CLink)
-DefineStreamFunctions(CLink)
+DefineClass(CLink);
+DefineStreamFunctions(CLink);
 
 class CLink : public CContainerClass  {
 
@@ -461,8 +461,8 @@ class CLink : public CContainerClass  {
 
 //  ===================  CLinkRContainer  ====================
 
-DefineClass(CLinkRContainer)
-DefineStreamFunctions(CLinkRContainer)
+DefineClass(CLinkRContainer);
+DefineStreamFunctions(CLinkRContainer);
 
 class CLinkRContainer : public CClassContainer  {
 
@@ -480,8 +480,8 @@ class CLinkRContainer : public CClassContainer  {
 
 //  ====================  CLinkR  ============================
 
-DefineClass(CLinkR)
-DefineStreamFunctions(CLinkR)
+DefineClass(CLinkR);
+DefineStreamFunctions(CLinkR);
 
 
 /*
@@ -557,8 +557,8 @@ class CLinkR : public CContainerClass  {
 
 //  ===================  CCisPepContainer  =====================
 
-DefineClass(CCisPepContainer)
-DefineStreamFunctions(CCisPepContainer)
+DefineClass(CCisPepContainer);
+DefineStreamFunctions(CCisPepContainer);
 
 class CCisPepContainer : public CClassContainer  {
 
@@ -576,8 +576,8 @@ class CCisPepContainer : public CClassContainer  {
 
 //  =====================  CCisPep  ===========================
 
-DefineClass(CCisPep)
-DefineStreamFunctions(CCisPep)
+DefineClass(CCisPep);
+DefineStreamFunctions(CCisPep);
 
 class CCisPep : public CContainerClass  {
 
@@ -630,7 +630,7 @@ class CCisPep : public CContainerClass  {
 #define  SORT_CHAIN_ChainID_Asc    0
 #define  SORT_CHAIN_ChainID_Desc   1
 
-DefineFactoryFunctions(CModel)
+DefineFactoryFunctions(CModel);
 
 class CModel : public CProModel  {
 

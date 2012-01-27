@@ -168,8 +168,8 @@
 //  assigned).
 
 
-DefineClass(CStream)
-DefineStreamFunctions(CStream)
+DefineClass(CStream);
+DefineStreamFunctions(CStream);
 
 class CStream  {
   public :

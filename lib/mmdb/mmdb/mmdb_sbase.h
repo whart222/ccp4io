@@ -54,14 +54,14 @@
 
 //  ===========================  CSBase  ============================
 
-DefineStructure(SAtomPair)
+DefineStructure(SAtomPair);
 
 struct SAtomPair  {
   PCAtom a1,a2;
 };
 
 
-DefineClass(CSBase)
+DefineClass(CSBase);
 
 class CSBase : public CSBase0  {
 

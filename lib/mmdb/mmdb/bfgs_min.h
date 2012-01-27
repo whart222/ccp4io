@@ -72,7 +72,7 @@ typedef void BFGSPrintFunc ( void * UserData, int N, int Itn,
                              rvector X, rvector G, realtype F );
 typedef BFGSPrintFunc * PBFGSPrintFunc;
 
-DefineClass(CBFGSMin)
+DefineClass(CBFGSMin);
 
 class CBFGSMin  {
 

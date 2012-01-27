@@ -49,8 +49,8 @@
 // =======================  CMMDBBondManager  =======================
 
 
-DefineClass(CMMDBBondManager)
-DefineStreamFunctions(CMMDBBondManager)
+DefineClass(CMMDBBondManager);
+DefineStreamFunctions(CMMDBBondManager);
 
 class CMMDBBondManager : public CMMDBSelManager  {
 

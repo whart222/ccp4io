@@ -56,8 +56,8 @@
 #define XMLR_BrokenTag    3
 #define XMLR_UnclosedTag  4
 
-DefineClass(CXMLObject)
-DefineStreamFunctions(CXMLObject)
+DefineClass(CXMLObject);
+DefineStreamFunctions(CXMLObject);
 
 class CXMLObject : public CStream  {
 

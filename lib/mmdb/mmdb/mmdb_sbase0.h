@@ -80,7 +80,7 @@ typedef char SBElementName[element_len+1];
 
 //  ======================  SB Atom Class  =========================
 
-DefineClass(CSBAtom)
+DefineClass(CSBAtom);
 
 class CSBAtom : public CStream  {
 
@@ -130,13 +130,13 @@ class CSBAtom : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBAtom)
+DefineStreamFunctions(CSBAtom);
 
 
 
 //  =======================  SB Bond Class  ========================
 
-DefineClass(CSBBond)
+DefineClass(CSBBond);
 
 class CSBBond : public CStream  {
 
@@ -166,13 +166,13 @@ class CSBBond : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBBond)
+DefineStreamFunctions(CSBBond);
 
 
 
 //  =======================  SB Angle Class  =======================
 
-DefineClass(CSBAngle)
+DefineClass(CSBAngle);
 
 class CSBAngle : public CStream  {
 
@@ -196,12 +196,12 @@ class CSBAngle : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBAngle)
+DefineStreamFunctions(CSBAngle);
 
 
 //  ======================  SB Torsion Class  ======================
 
-DefineClass(CSBTorsion)
+DefineClass(CSBTorsion);
 
 class CSBTorsion : public CStream  {
 
@@ -225,12 +225,12 @@ class CSBTorsion : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBTorsion)
+DefineStreamFunctions(CSBTorsion);
 
 
 //  ====================  Structure Class  =========================
 
-DefineClass(CSBStructure)
+DefineClass(CSBStructure);
 
 class CSBStructure : public CStream  {
 
@@ -334,13 +334,13 @@ class CSBStructure : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBStructure)
+DefineStreamFunctions(CSBStructure);
 
 
 
 //  ====================  Index Class  ==============================
 
-DefineClass(CSBIndex)
+DefineClass(CSBIndex);
 
 class CSBIndex : public CStream  {
 
@@ -369,7 +369,7 @@ class CSBIndex : public CStream  {
 
 };
 
-DefineStreamFunctions(CSBIndex)
+DefineStreamFunctions(CSBIndex);
 
 
 
@@ -414,7 +414,7 @@ extern int MakeElementType ( int ElType, char chirality,
 
 //   SDASelHandles is optionally used in MakeBonds(..), when
 // the latter works for hydrogen bond calculations.
-DefineStructure(SDASelHandles)
+DefineStructure(SDASelHandles);
 struct SDASelHandles  {
   int selHndDonor;
   int selHndAcceptor;
@@ -426,7 +426,7 @@ struct SDASelHandles  {
 };
 
 
-DefineClass(CSBase0)
+DefineClass(CSBase0);
 
 class CSBase0  {
 

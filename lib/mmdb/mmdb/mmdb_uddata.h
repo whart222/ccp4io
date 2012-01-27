@@ -65,8 +65,8 @@
 #define UDRF_MASK       0x00FFFFFF
 
 
-DefineClass(CUDRegister)
-DefineStreamFunctions(CUDRegister)
+DefineClass(CUDRegister);
+DefineStreamFunctions(CUDRegister);
 
 class CUDRegister : public CStream  {
 
@@ -107,8 +107,8 @@ class CUDRegister : public CStream  {
 #define UDDATA_WrongUDRType  -2
 #define UDDATA_NoData        -3
 
-DefineClass(CUDData)
-DefineStreamFunctions(CUDData)
+DefineClass(CUDData);
+DefineStreamFunctions(CUDData);
 
 class CUDData : public CMask  {
 

@@ -97,7 +97,7 @@ extern void  PickOutNumber    ( cpstr S, pstr SV, int SLen, int & j );
 
 // =========================  CFile  ================================
 
-DefineClass(CFile)
+DefineClass(CFile);
 
 class  CFile  {
 

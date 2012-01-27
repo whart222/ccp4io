@@ -51,8 +51,8 @@
 
 //  ====================  CMask  ========================
 
-DefineClass(CMask)
-DefineStreamFunctions(CMask)
+DefineClass(CMask);
+DefineStreamFunctions(CMask);
 
 class CMask : public CStream  {
 

@@ -3075,8 +3075,7 @@ FORTRAN_SUBR ( HY36DECODE_F, hy36decode_f,
                (const int *iwidth, fpstr strval, int *value, int strval_len),
                (const int *iwidth, fpstr strval, int *value),
                (const int *iwidth, fpstr strval, int strval_len, int *value))
-
-{
+{ UNUSED_ARGUMENT(strval);
   unsigned width;
   size_t length = FTN_LEN(strval);
   char* s;

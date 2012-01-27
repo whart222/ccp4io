@@ -227,8 +227,8 @@ extern cpstr  GetErrorDescription ( int ErrorCode );
 
 //  ==============  CContainerClass  ====================
 
-DefineClass(CContainerClass)
-DefineStreamFunctions(CContainerClass)
+DefineClass(CContainerClass);
+DefineStreamFunctions(CContainerClass);
 
 class CContainerClass : public CStream  {
 
@@ -291,8 +291,8 @@ class CContainerClass : public CStream  {
 
 //  ==============  CContString  ====================
 
-DefineClass(CContString)
-DefineStreamFunctions(CContString)
+DefineClass(CContString);
+DefineStreamFunctions(CContString);
 
 class CContString : public CContainerClass  {
 
@@ -329,8 +329,8 @@ class CContString : public CContainerClass  {
 
 //  ==============  CClassContainer  ====================
 
-DefineClass(CClassContainer)
-DefineStreamFunctions(CClassContainer)
+DefineClass(CClassContainer);
+DefineStreamFunctions(CClassContainer);
 
 class CClassContainer : public CStream  {
 
@@ -369,8 +369,8 @@ class CClassContainer : public CStream  {
 
 //  ======================  ID parsers  ==========================
 
-DefineClass(CAtomPath)
-DefineStreamFunctions(CAtomPath)
+DefineClass(CAtomPath);
+DefineStreamFunctions(CAtomPath);
 
 #define APATH_ModelNo     0x00000001
 #define APATH_ChainID     0x00000002
@@ -464,7 +464,7 @@ class CAtomPath : public CStream  {
 
 //  --------------------------------------------------------------
 
-DefineClass(CQuickSort)
+DefineClass(CQuickSort);
 
 class CQuickSort : public CStream  {
 

@@ -48,7 +48,7 @@
 
 
 DefineClass(CAlignParams);
-DefineStreamFunctions(CAlignParams)
+DefineStreamFunctions(CAlignParams);
 
 class CAlignParams : public CStream  {
 
@@ -72,7 +72,7 @@ class CAlignParams : public CStream  {
 
 //  =====================   CAlignment   ======================
 
-DefineClass(CAlignment)
+DefineClass(CAlignment);
 
 #define ALIGN_GLOBAL    0
 #define ALIGN_LOCAL     1
@@ -132,7 +132,7 @@ class  CAlignment : public CStream  {
 
 //  =====================   CAlignment1   ======================
 
-DefineClass(CAlignment1)
+DefineClass(CAlignment1);
 
 class  CAlignment1 : public CStream  {
 
