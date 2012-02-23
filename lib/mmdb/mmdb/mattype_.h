@@ -124,6 +124,9 @@ typedef   byte floatUniBin    [5];
 typedef   byte shortrealUniBin[5];
 
 #ifdef _WIN32
+#define   strncasecmp _strnicmp
+#define   strcasecmp  _stricmp
+#define   strlen      (int)strlen
 pstr strcasestr ( pstr s1, cpstr s2 );
 #endif
 
