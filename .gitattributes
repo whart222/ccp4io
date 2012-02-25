@@ -53,6 +53,8 @@ lib/libccp4/ccp4/overview.h svneol=native#text/plain
 lib/libccp4/ccp4/pack_c.c svneol=native#text/plain
 lib/libccp4/ccp4/pack_c.h svneol=native#text/plain
 lib/libccp4/config.h svneol=native#text/plain
+lib/libccp4/data/syminfo.lib -text
+lib/libccp4/data/symop.lib -text
 lib/libccp4/fortran/ccp4_diskio_f.c svneol=native#text/plain
 lib/libccp4/fortran/ccp4_general_f.c svneol=native#text/plain
 lib/libccp4/fortran/ccp4_parser_f.c svneol=native#text/plain
