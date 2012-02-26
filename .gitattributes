@@ -1,7 +1,5 @@
 * text=auto !eol
 /lgpl-3.0.txt svneol=native#text/plain
-lib/data/syminfo.lib -text
-lib/data/symop.lib -text
 lib/libccp4/ccp4/ccp4_array.c svneol=native#text/plain
 lib/libccp4/ccp4/ccp4_array.h svneol=native#text/plain
 lib/libccp4/ccp4/ccp4_errno.h svneol=native#text/plain
