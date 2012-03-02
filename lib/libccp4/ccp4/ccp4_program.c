@@ -149,6 +149,7 @@ char *ccp4RCSDate(const char *rcs_string)
 
    Set or print program time information
 */
+#if ! defined (_MSC_VER)
 void ccp4ProgramTime(int init)
 {
   static int elaps0=0;
@@ -168,6 +169,7 @@ void ccp4ProgramTime(int init)
   }
 
 }
+#endif
 
 /* ccp4VerbosityLevel
 

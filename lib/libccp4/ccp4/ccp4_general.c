@@ -127,7 +127,9 @@ int ccperror_noexit(int ierr, const char *message)
     ccp4printf(0," %s:  %s\n",prog_name,message);
     /* Get the amount of time elapsed since start of
        program. Initialised by ccp4fyp */
+#if ! defined (_MSC_VER) 
     ccp4ProgramTime(0);
+#endif
 
     /* closing tags - these are simplified w.r.t. Fortranic 
        versions for this special case */
@@ -154,7 +156,9 @@ int ccperror_noexit(int ierr, const char *message)
     ccp4printf(0," %s:  %s\n",prog_name,message);
     /* Get the amount of time elapsed since start of
        program. Initialised by ccp4fyp */
+#if ! defined (_MSC_VER) 
     ccp4ProgramTime(0);
+#endif
 
     /* closing tags - these are simplified w.r.t. Fortranic 
        versions for this special case */
@@ -288,7 +292,9 @@ int ccp4fyp(int argc, char **argv)
   /* ------------------------------------------------------ */
   /* Initialise program name and timing information */
   /* ------------------------------------------------------ */
+#if ! defined (_MSC_VER)
   ccp4ProgramTime(1);
+#endif
 
   /*ccp4ProgramName(ccp4_utils_basename(argv[0])); */
   basename = ccp4_utils_basename(argv[0]);
@@ -1399,8 +1405,13 @@ void ccp4_banner(void) {
   printf("%s\n",infoline);
   /* Rest of the banner */
   printf(" ###############################################################\n");
+#if ! defined (_MSC_VER)
   printf(" User: %s  Run date: %s Run time: %s \n\n\n",
-	 ccp4_utils_username(),ccp4_utils_date(date),ccp4_utils_time(time)); 
+	  ccp4_utils_username(),ccp4_utils_date(date),ccp4_utils_time(time));
+#else
+  printf(" User: unknown  Run date: %s Run time: %s \n\n\n",
+    ccp4_utils_date(date),ccp4_utils_time(time));
+#endif
   printf(" Please reference: Collaborative Computational Project, Number 4. 1994.\n");
   printf(" \"The CCP4 Suite: Programs for Protein Crystallography\". Acta Cryst. D50, 760-763.\n");
   printf(" as well as any specific reference in the program write-up.\n\n");
