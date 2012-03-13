@@ -42,7 +42,6 @@ lib/libccp4/ccp4/csymlib.h svneol=native#text/plain
 lib/libccp4/ccp4/cvecmat.c svneol=native#text/plain
 lib/libccp4/ccp4/cvecmat.h svneol=native#text/plain
 lib/libccp4/ccp4/library_err.c svneol=native#text/plain
-lib/libccp4/ccp4/library_f.h svneol=native#text/plain
 lib/libccp4/ccp4/library_file.c svneol=native#text/plain
 lib/libccp4/ccp4/library_file.h svneol=native#text/plain
 lib/libccp4/ccp4/library_utils.c svneol=native#text/plain
