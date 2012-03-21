@@ -202,7 +202,8 @@ int ccp4VerbosityLevel(int level)
    Internal function: applications should use the API functions
    ccp4SetCallback and ccp4InvokeCallback
  */
-int ccp4Callback(CCP4INTFUNCPTR mycallback, char *mode, int ierr, char *message)
+int ccp4Callback(CCP4INTFUNCPTR mycallback, char *mode, int ierr,
+    const char *message)
 {
   static CCP4INTFUNCPTR callback=ccp4NullCallback;
 
@@ -240,7 +241,7 @@ int ccp4SetCallback(CCP4INTFUNCPTR mycallback)
 
    This is a wrapper to ccp4Callback in "invoke" mode.
  */
-int ccp4InvokeCallback(int ierr, char *message)
+int ccp4InvokeCallback(int ierr, const char *message)
 {
   return ccp4Callback(ccp4NullCallback,"invoke",ierr,message);
 }
@@ -251,7 +252,7 @@ int ccp4InvokeCallback(int ierr, char *message)
    used by ccp4Callback if no user-defined function has been
    specified.
  */
-int ccp4NullCallback(int level, char *message)
+int ccp4NullCallback(int level, const char *message)
 {
   /* This is the default callback function which takes no
      action */
