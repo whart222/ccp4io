@@ -1434,12 +1434,16 @@ int i;
   _fpower[_nfPowers] = fMaxReal;
   _fpower8 = _fpower[_nfPower8];
   _fpower4 = _fpower[_nfPower4];
-  _old_float_unibin = True;
+  _old_float_unibin = False;
   return True;
 }
 
 void  set_new_float_unibin()  {
   _old_float_unibin = False;
+}
+
+Boolean is_new_float_unibin()  {
+  return !_old_float_unibin;
 }
 
 void  set_old_float_unibin()  {
@@ -1640,6 +1644,76 @@ realtype Q,L;
 }
 
 
+void  UniBin2float ( floatUniBin fUB, realtype & R )  {
+int j,s;
+
+  if (fUB[1] & _fsign)  {
+    s = 1;
+    fUB[1] &= _fsign1;
+  } else
+    s = 0;
+
+  R = int(fUB[1]);
+
+  if (_old_float_unibin)  {
+    // this is wrong and gives a conversion error in 6th digit :(
+    // we have to keep this for compatibility with already existing
+    // files
+    for (j=2;j<(int)sizeof(floatUniBin);j++)
+      R = R*_rfbase + int(fUB[j]);
+    for (j=sizeof(floatUniBin);j<(int)sizeof(realUniBin);j++)
+      R *= _rfbase;
+    R = (R/_fpower8)*_fpower[int(fUB[0])];
+  } else  {
+    // this is correct
+    for (j=2;j<(int)sizeof(floatUniBin);j++)
+      R = R*_rfbase + int(fUB[j]);
+    R = (R/_fpower4)*_fpower[int(fUB[0])];
+  }
+  if (s)  R = -R;
+}
+
+
+/* -------------------------------------------------------
+   This piece of code shows that float2Unibin - Unbin2float
+   pair does same-quality job as the native float - double
+   conversion:
+
+  InitMatType();
+  set_new_float_unibin();
+
+  floatUniBin      fUB;
+  realUniBin      rUB;
+  realtype         maxsh  = MaxShortReal/2.0; // max manageable /2!
+  float            maxshf = maxsh;
+  realtype         maxshr = maxshf;
+  realtype         maxsh1;
+
+  float2UniBin ( maxsh,fUB );
+  UniBin2float ( fUB,maxsh1 );
+
+  printf ( " float\n %10.3f\n %10.3f\n %10.3f\n %10.3f\n",
+           maxsh,maxsh1,maxshf,maxshr );
+
+  maxsh = MaxShortReal;
+  real2UniBin ( maxsh,rUB );
+  UniBin2real ( rUB,maxsh1 );
+
+  printf ( " real\n %10.3f\n %10.3f\n",maxsh,maxsh1 );
+
+---- RESULTS:
+
+ float
+ 170099999999999990938343446679146987520.000
+ 170099999948540854500627141228603899904.000
+ 170100000027769017014891478822147850240.000
+ 170100000027769017014891478822147850240.000
+ real
+ 340199999999999981876686893358293975040.000
+ 340199999999999981876686893358293975040.000
+
+-------------------------------------------------------------- */
+
 /*
 void  shortreal2UniBin ( shortreal R, shortrealUniBin srUB )  {
 int      k1,k2,k;
@@ -1808,35 +1882,6 @@ int j,s;
 #endif
 */
 
-
-void  UniBin2float ( floatUniBin fUB, realtype & R )  {
-int j,s;
-
-  if (fUB[1] & _fsign)  {
-    s = 1;
-    fUB[1] &= _fsign1;
-  } else
-    s = 0;
-
-  R = int(fUB[1]);
-
-  if (_old_float_unibin)  {
-    // this is wrong and gives a conversion error in 6th digit :(
-    // we have to keep this for compatibility with alreadu existing
-    // files
-    for (j=2;j<(int)sizeof(floatUniBin);j++)
-      R = R*_rfbase + int(fUB[j]);
-    for (j=sizeof(floatUniBin);j<(int)sizeof(realUniBin);j++)
-      R *= _rfbase;
-    R = (R/_fpower8)*_fpower[int(fUB[0])];
-  } else  {
-    // this is correct
-    for (j=2;j<(int)sizeof(floatUniBin);j++)
-      R = R*_rfbase + int(fUB[j]);
-    R = (R/_fpower4)*_fpower[int(fUB[0])];
-  }
-  if (s)  R = -R;
-}
 
 
 

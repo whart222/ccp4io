@@ -97,12 +97,13 @@ class CVertex : public CStream  {
     void  SetName     ( cpstr vname );
     void  SetProperty ( int vprop  );
     void  SetID       ( int vid    );
+    void  SetUserID   ( int vid    ) { user_id = vid; }
     void  AddBond     ();
     void  CopyNBonds  ( PCVertex V );
     int   GetProperty () { return property; }
     int   GetID       () { return id;       }
     int   GetUserID   () { return user_id;  }
-    pstr  GetName     () { return name;     }
+    cpstr GetName     () { return name;     }
     int   GetType     () { return type;     }
     int   GetNBonds   ();
 

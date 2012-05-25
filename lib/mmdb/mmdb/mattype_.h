@@ -610,8 +610,9 @@ extern pstr EnforceSpaces ( pstr S );
 ///   UniBin read/write of other types (realtype, shortreal, int etc)
 /// is not affected by this call, and to the best of knowledge is
 /// correct (no loss of precision).
-extern void set_new_float_unibin();
-extern void set_old_float_unibin();
+extern void   set_new_float_unibin();
+extern Boolean is_new_float_unibin();
+extern void   set_old_float_unibin();
 
 extern void int2UniBin       ( int       I,  intUniBin        iUB  );
 extern void short2UniBin     ( short     S,  shortUniBin      sUB  );

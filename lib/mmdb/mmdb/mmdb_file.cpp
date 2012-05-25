@@ -1572,7 +1572,7 @@ int  CMMDBFile::ReadPDBAtom ( cpstr L )  {
 // code.
 //   If L does not belong to the coordinate section,
 // Error_WrongSection is returned.
-int RC,index;
+int RC,index,i;
 
   if (!strncmp(L,"ATOM  ",6)) {
 
@@ -1614,10 +1614,15 @@ int RC,index;
 
     modelCnt++;
     RC = SwitchModel ( L );
-    if (!RC)  {
-      if (crModel->serNum!=modelCnt)
-        RC = Error_DuplicatedModel;
-    }
+    for (i=0;(i<nModels) && (!RC);i++)
+      if (Model[i] && (Model[i]!=crModel))  {
+        if (crModel->serNum==Model[i]->serNum)
+          RC = Error_DuplicatedModel;
+      }
+//    if (!RC)  {
+//      if (crModel->serNum!=modelCnt)
+//        RC = Error_DuplicatedModel;
+//    }
 
   } else if (!strncmp(L,"ENDMDL",6)) {
 

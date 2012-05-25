@@ -198,7 +198,7 @@
 #define  M_PI            3.14159265358979323846
 #endif
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #  define PATH_SEPARATOR '\\'
 #  define EXT_SEPARATOR '.'
 #else
@@ -230,9 +230,12 @@
 #endif
 #define O_TMP    0x0010       /**< i/o mode: scratch file */
 
-#define BYTE  0
-#define INT16 1   
-#define INT32 6
+/* Before version 6.3 we defined BYTE, INT16 and INT32 (without the CCP4_
+ * prefix). The prefix has been added to avoid name conflicts.
+ */
+#define CCP4_BYTE  0
+#define CCP4_INT16 1
+#define CCP4_INT32 6
 #define FLOAT32 2
 #define COMP32  3
 #define COMP64  4

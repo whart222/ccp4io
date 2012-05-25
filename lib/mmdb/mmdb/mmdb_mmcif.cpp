@@ -1240,7 +1240,7 @@ int  k;
 
   if (RC)  return;
 
-  R = 0.0;
+//  R = 0.0;
   k = GetTagNo ( TName );
 
   if (k<0)                              RC = CIFRC_NoTag;
