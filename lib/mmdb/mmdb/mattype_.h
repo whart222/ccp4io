@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -323,44 +323,44 @@ extern Boolean GetMatrixMemory
 //                         ~~~~~~~~~~~~~
 
 extern  void FreeMatrixMemory  ( rmatrix  & A,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( imatrix  & A,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( wmatrix  & W,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( bmatrix  & B,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( lmatrix  & L,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( lwmatrix & L,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 extern  void FreeMatrixMemory  ( psmatrix & P,  word N,
-				 word ShiftN=1, word ShiftM=1 );
+                 word ShiftN=1, word ShiftM=1 );
 
 
 // -------------------------------------------------------------
 //   3D matrices
 
 extern Boolean GetMatrix3Memory
-	       ( rmatrix3  & A, word N, word M, word K,
+           ( rmatrix3  & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( imatrix3  & A, word N, word M, word K,
+           ( imatrix3  & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( wmatrix3  & A, word N, word M, word K,
+           ( wmatrix3  & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( bmatrix3  & A, word N, word M, word K,
+           ( bmatrix3  & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( lmatrix3  & A, word N, word M, word K,
+           ( lmatrix3  & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( lwmatrix3 & A, word N, word M, word K,
+           ( lwmatrix3 & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 extern Boolean GetMatrix3Memory
-	       ( psmatrix3 & A, word N, word M, word K,
+           ( psmatrix3 & A, word N, word M, word K,
                  word ShiftN=1, word ShiftM=1, word ShiftK=1 );
 
 //
@@ -480,7 +480,7 @@ extern void GetString ( pstr L, cpstr S, int M );
 // or terminating null is found. If the terminating null is met among
 // the first n characters or if SMax<n, the string L will be padded
 // with spaces till the length of minimum of n and LMax and then
-// terminated with the null. 
+// terminated with the null.
 //   LMax and SMax are the buffer lengths of L and S,
 // respectively. Even if no space is found, the last character
 // in L will be the terminating null.
@@ -495,7 +495,7 @@ extern void GetStrTer ( pstr L, cpstr S, int n, int LMax,
 // terminating null is found. If the terminating null
 // is met among the first n characters or if SMax<n, the string
 // L will be padded with spaces till the length of minimum of
-// n and LMax and then terminated with the null. 
+// n and LMax and then terminated with the null.
 //   SMax are buffer lengths of L and S, respectively. The last
 // character in L will be the terminating null.
 extern void GetStrTerWin32File ( pstr L, cpstr S, int n,
@@ -614,6 +614,8 @@ extern void   set_new_float_unibin();
 extern Boolean is_new_float_unibin();
 extern void   set_old_float_unibin();
 
+extern void __modify4();
+
 extern void int2UniBin       ( int       I,  intUniBin        iUB  );
 extern void short2UniBin     ( short     S,  shortUniBin      sUB  );
 extern void long2UniBin      ( long      L,  longUniBin       lUB  );
@@ -638,6 +640,7 @@ extern void mem_write ( shortreal R, pstr S, int & l );
 extern void mem_write ( pstr      L, int len, pstr S, int & l );
 extern void mem_write ( pstr      L, pstr S, int & l );
 extern void mem_write ( Boolean   B, pstr S, int & l );
+extern void mem_write_byte ( byte B, pstr S, int & l );
 
 extern void mem_read  ( int       & I, cpstr S, int & l );
 extern void mem_read  ( short     & I, cpstr S, int & l );
@@ -648,6 +651,7 @@ extern void mem_read  ( shortreal & R, cpstr S, int & l );
 extern void mem_read  ( pstr        L, int len, cpstr S, int & l );
 extern void mem_read  ( pstr      & L, cpstr S, int & l );
 extern void mem_read  ( Boolean   & B, cpstr S, int & l );
+extern void mem_read_byte ( byte  & B, cpstr S, int & l );
 
 #endif
 

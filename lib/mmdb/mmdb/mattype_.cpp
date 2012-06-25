@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -1066,7 +1066,7 @@ void GetStrTer ( pstr L, cpstr S, int n, int LMax, int SMax )  {
 // space or terminating null is found. If the terminating null
 // is met among the first n characters or if SMax<n, the string
 // L will be padded with spaces till the length of minimum of
-// n and LMax and then terminated with the null. 
+// n and LMax and then terminated with the null.
 //   SMax are buffer lengths of L and S, respectively. Even if
 // no space is found, the last character in L will be the
 // terminating null.
@@ -1102,7 +1102,7 @@ void GetStrTerWin32File ( pstr L, cpstr S, int n, int LMax,
 // terminating null is found. If the terminating null
 // is met among the first n characters or if SMax<n, the string
 // L will be padded with spaces till the length of minimum of
-// n and LMax and then terminated with the null. 
+// n and LMax and then terminated with the null.
 //   SMax are buffer lengths of L and S, respectively. The last
 // character in L will be the terminating null.
 //
@@ -1411,7 +1411,8 @@ int i,k;
 # define _nfPowers  255
 # define _nfPower0  127
 # define _nfPower8  135
-# define _nfPower4  131
+//# define _nfPower4  131
+# define _nfPower4  130
 #else
 # define _nfPowers  31
 # define _nfPower0  15
@@ -1438,6 +1439,10 @@ int i;
   return True;
 }
 
+void __modify4()  {
+  _fpower4 = _fpower[_nfPower4-1];
+}
+
 void  set_new_float_unibin()  {
   _old_float_unibin = False;
 }
@@ -1450,6 +1455,7 @@ void  set_old_float_unibin()  {
   _old_float_unibin = True;
 }
 
+/*
 void  int2UniBin ( int I, intUniBin iUB )  {
 int j,n,sh;
   sh = 8*(sizeof(intUniBin)-1);
@@ -1457,6 +1463,17 @@ int j,n,sh;
     n = (I >> sh) & 0xFF;
     iUB[j] = byte(n);
     sh -= 8;
+  }
+}
+*/
+
+void  int2UniBin ( int I, intUniBin iUB )  {
+int  n;
+word j;
+  n = I;
+  for (j=0;j<sizeof(intUniBin);j++)  {
+    iUB[j] = byte(n & 0xFF);
+    n >>= 8;
   }
 }
 
@@ -1639,6 +1656,8 @@ realtype Q,L;
     }
   }
 
+//if (fUB[1] & _fsign)  printf ( " error!\n" );
+
   if (R<0)  fUB[1] |= _fsign;
 
 }
@@ -1768,7 +1787,7 @@ realtype Q,L;
 }
 */
 
-
+/*
 void  UniBin2int ( intUniBin iUB, int & I )  {
 int j,n,sh;
   sh = 8*sizeof(intUniBin);
@@ -1777,6 +1796,16 @@ int j,n,sh;
     sh -= 8;
     n   = byte(iUB[j]);
     I   = I | (n << sh);
+  }
+}
+*/
+
+void  UniBin2int ( intUniBin iUB, int & I )  {
+int j;
+  I = 0x00;
+  for (j=sizeof(intUniBin)-1;j>=0;j--)  {
+    I <<= 8;
+    I |= int(iUB[j]);
   }
 }
 
@@ -1987,10 +2016,15 @@ int len;
   }
 }
 
-void mem_write ( Boolean  B, pstr S, int & l )  {
+void mem_write ( Boolean B, pstr S, int & l )  {
   if (B)  S[l++] = 'Y';
     else  S[l++] = 'N';
   S[l] = char(0);
+}
+
+void mem_write_byte ( byte B, pstr S, int & l )  {
+  S[l++] = char(B);
+  S[l]   = char(0);
 }
 
 
@@ -2057,8 +2091,11 @@ int len;
 }
 
 void mem_read ( Boolean & B, cpstr S, int & l )  {
-  B = (S[l]=='Y');
-  l++;
+  B = (S[l++]=='Y');
+}
+
+void mem_read_byte ( byte & B, cpstr S, int & l )  {
+  B = byte(S[l++]);
 }
 
 // -------------------------------------------------------

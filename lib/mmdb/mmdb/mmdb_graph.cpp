@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    22.05.12   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -34,7 +34,7 @@
 //                  CMatch      ( match of structural graphs         )
 //                  CGraphMatch ( CSIA algorithms for graph matching )
 //
-//   (C) E. Krissinel 2000-2008
+//   (C) E. Krissinel 2000-2012
 //
 //  When used, please cite:
 //
@@ -263,6 +263,8 @@ int Version;
 }
 
 void  CVertex::mem_write ( pstr S, int & l )  {
+byte Version=2;
+  ::mem_write_byte ( Version ,S,l );
   ::mem_write ( name    ,S,l );
   ::mem_write ( type    ,S,l );
   ::mem_write ( property,S,l );
@@ -272,6 +274,8 @@ void  CVertex::mem_write ( pstr S, int & l )  {
 }
 
 void  CVertex::mem_read ( cpstr S, int & l )  {
+byte Version;
+  ::mem_read_byte ( Version ,S,l );
   ::mem_read ( name    ,S,l );
   ::mem_read ( type    ,S,l );
   ::mem_read ( property,S,l );
@@ -280,7 +284,7 @@ void  CVertex::mem_read ( cpstr S, int & l )  {
   ::mem_read ( type_ext,S,l );
 }
 
-MakeStreamFunctions(CVertex)
+MakeStreamFunctions(CVertex);
 
 
 
@@ -388,6 +392,8 @@ int Version;
 }
 
 void  CEdge::mem_write ( pstr S, int & l )  {
+byte Version=1;
+  ::mem_write_byte ( Version ,S,l );
   ::mem_write ( v1      ,S,l );
   ::mem_write ( v2      ,S,l );
   ::mem_write ( type    ,S,l );
@@ -395,6 +401,8 @@ void  CEdge::mem_write ( pstr S, int & l )  {
 }
 
 void  CEdge::mem_read ( cpstr S, int & l )  {
+byte Version;
+  ::mem_read_byte ( Version ,S,l );
   ::mem_read ( v1      ,S,l );
   ::mem_read ( v2      ,S,l );
   ::mem_read ( type    ,S,l );
@@ -402,7 +410,7 @@ void  CEdge::mem_read ( cpstr S, int & l )  {
 }
 
 
-MakeStreamFunctions(CEdge)
+MakeStreamFunctions(CEdge);
 
 
 
@@ -475,7 +483,7 @@ int i;
 
 void  CGraph::Reset()  {
   FreeMemory();
-  CreateCopy ( name,pstr("UNNAMED") );  
+  CreateCopy ( name,pstr("UNNAMED") );
 }
 
 void  CGraph::SetName ( cpstr gname )  {
@@ -649,7 +657,7 @@ PCEdge   G;
       rc = MKGRAPH_ChangedAltLoc;
       strcpy ( aLoc,aL[0] );
     }
-  } else if ((alflag & ALF_Mess) || 
+  } else if ((alflag & ALF_Mess) ||
              ((alflag & ALF_NoEmptyAltLoc) && (!aLoc[0])))  {
     // There is a mess in the residue alt codes, or empty alt code
     // does not designate a conformation but ordered. In this
@@ -691,7 +699,7 @@ PCEdge   G;
             // Check if this atom has the altcode that we need.
             for (j=i+1;(j<R->nAtoms) && (!B);j++)
               if (R->atom[j])  {
-                if ((!R->atom[j]->Ter) && 
+                if ((!R->atom[j]->Ter) &&
                     (!strcmp(R->atom[j]->name,R->atom[i]->name)))
                   B = !strcmp(aLoc,R->atom[j]->altLoc);
               }
@@ -745,7 +753,7 @@ PCEdge   G;
     }
     Vertex[i]->id = i+1;
   }
-      
+
   if (aL)  delete[] aL;
   FreeVectorMemory ( occupancy,0 );
 
@@ -1057,7 +1065,7 @@ int i,j, rc;
   for (i=1;i<=nVertices;i++)
     for (j=1;j<=nVertices;j++)
       graph[i][j] = 0;
-  
+
   rc = 0;
   if (bondOrder)  {
 
@@ -1279,8 +1287,10 @@ Boolean bondOrder;
 
 void  CGraph::mem_write ( pstr S, int & l )  {
 int     i,k;
+byte    Version=2;
 Boolean bondOrder=False;
 
+  ::mem_write_byte ( Version,S,l );
   ::mem_write ( bondOrder   ,S,l );
   ::mem_write ( name        ,S,l );
   ::mem_write ( nVertices   ,S,l );
@@ -1305,14 +1315,17 @@ Boolean bondOrder=False;
       k = 0;
       ::mem_write ( k,S,l );
     }
+
 }
 
 void  CGraph::mem_read ( cpstr S, int & l )  {
 int     i,k;
+byte    Version;
 Boolean bondOrder;
 
   FreeMemory();
 
+  ::mem_read_byte ( Version,S,l );
   ::mem_read ( bondOrder   ,S,l );
   ::mem_read ( name        ,S,l );
   ::mem_read ( nVertices   ,S,l );
@@ -1349,7 +1362,7 @@ Boolean bondOrder;
 
 }
 
-MakeStreamFunctions(CGraph)
+MakeStreamFunctions(CGraph);
 
 
 //  ==========================  CMatch  ============================
@@ -1364,7 +1377,7 @@ CMatch::CMatch ( RPCStream Object ) : CStream ( Object )  {
 
 CMatch::CMatch ( ivector FV1, ivector FV2, int nv, int n, int m )  {
 int i;
-  if (FV1 && FV2)  {    
+  if (FV1 && FV2)  {
     n1     = n;
     n2     = m;
     nAlloc = n;
@@ -1529,7 +1542,7 @@ int i;
 }
 
 
-MakeStreamFunctions(CMatch)
+MakeStreamFunctions(CMatch);
 
 
 
@@ -1696,7 +1709,7 @@ void  CGraphMatch::MatchGraphs ( PCGraph Gh1, PCGraph Gh2,
 int  n1;
 
   if (Gh1->nVertices<=Gh2->nVertices)  {
-    G1   = Gh1; 
+    G1   = Gh1;
     G2   = Gh2;
     swap = False;
   } else  {
@@ -2177,7 +2190,7 @@ PPCMatch M1;
   else  Match[nMatches]->SetMatch ( F1,F2,nm,n,m );
 
   if (nm==n)  wasFullMatch = True;
- 
+
   if (nm>maxMatch)  maxMatch = nm;
 
   nMatches++;
@@ -2289,7 +2302,7 @@ int i;
   }
 }
 
-MakeStreamFunctions(CGraphMatch)
+MakeStreamFunctions(CGraphMatch);
 
 
 

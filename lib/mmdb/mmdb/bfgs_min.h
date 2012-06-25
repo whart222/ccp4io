@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 //  **** Module  :  bfgs_min  <interface>
 //       ~~~~~~~~~
 //  **** Classes :  CBFGSMin  ( minimization driver )
-//       ~~~~~~~~~  
+//       ~~~~~~~~~
 //
 //  (C) E. Krissinel 2000-2008
 //
@@ -79,7 +79,7 @@ class CBFGSMin  {
   public :
 
     CBFGSMin ();
-    ~CBFGSMin();
+    virtual ~CBFGSMin();
 
     virtual void  MinFunc  ( rvector X, realtype & F );
     virtual void  Print    ( int Itn, rvector X, rvector G,

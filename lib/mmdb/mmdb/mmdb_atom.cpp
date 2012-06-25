@@ -387,11 +387,15 @@ Boolean      singleModel = True;
     // the category was (re)created, provide tags
     Loop->AddLoopTag ( CIFTAG_GROUP_PDB          ); // ATOM, TER etc.
     Loop->AddLoopTag ( CIFTAG_ID                 ); // serial number
-    Loop->AddLoopTag ( CIFTAG_LABEL_ATOM_ID      ); // atom name
+    Loop->AddLoopTag ( CIFTAG_AUTH_ATOM_ID       ); // atom name
     Loop->AddLoopTag ( CIFTAG_LABEL_ALT_ID       ); // alt location
-    Loop->AddLoopTag ( CIFTAG_LABEL_COMP_ID      ); // residue name
-    Loop->AddLoopTag ( CIFTAG_LABEL_ASYM_ID      ); // chain ID
-    Loop->AddLoopTag ( CIFTAG_LABEL_SEQ_ID       ); // res seq number
+    Loop->AddLoopTag ( CIFTAG_AUTH_COMP_ID       ); // residue name
+    Loop->AddLoopTag ( CIFTAG_AUTH_ASYM_ID       ); // chain id
+    Loop->AddLoopTag ( CIFTAG_AUTH_SEQ_ID        ); // res seq number
+//    Loop->AddLoopTag ( CIFTAG_LABEL_ATOM_ID      ); // atom name
+//    Loop->AddLoopTag ( CIFTAG_LABEL_COMP_ID      ); // residue name
+//    Loop->AddLoopTag ( CIFTAG_LABEL_ASYM_ID      ); // chain ID
+//    Loop->AddLoopTag ( CIFTAG_LABEL_SEQ_ID       ); // res seq number
     Loop->AddLoopTag ( CIFTAG_PDBX_PDB_INS_CODE  ); // insertion code
     Loop->AddLoopTag ( CIFTAG_CARTN_X            ); // x-coordinate
     Loop->AddLoopTag ( CIFTAG_CARTN_Y            ); // y-coordinate
@@ -416,7 +420,7 @@ Boolean      singleModel = True;
     if (serNum>0)  Loop->AddInteger ( serNum );
              else  Loop->AddInteger ( index  );
     Loop->AddNoData ( CIF_NODATA_QUESTION );  // no atom name
-    Loop->AddNoData ( CIF_NODATA_QUESTION );  // no alt code
+    Loop->AddNoData ( CIF_NODATA_QUESTION ); // no alt code
     if (residue)   Loop->AddString ( residue->name       );
             else   Loop->AddString ( NULL                );
     if (chain)     Loop->AddString ( chain->chainID,True );
@@ -1359,7 +1363,7 @@ int  RC;
     return 0;
   }
 
-  CIFGetString ( name  ,Loop,CIFTAG_LABEL_ATOM_ID,k,
+  CIFGetString ( name  ,Loop,CIFTAG_AUTH_ATOM_ID,k,
                         sizeof(name)  ,pstr("") );
   CIFGetString ( altLoc,Loop,CIFTAG_LABEL_ALT_ID ,k,
                         sizeof(altLoc),pstr("") );
@@ -1387,6 +1391,7 @@ int  RC;
 
   RestoreElementName();
   MakePDBAtomName   ();
+//  printf ( "    '%s' '%s'\n",name,element );
 
   RC = CIFGetReal1 ( sigX,Loop,CIFTAG_CARTN_X_ESD,k );
   if (!RC) RC = CIFGetReal1 ( sigY,Loop,CIFTAG_CARTN_Y_ESD,k );
@@ -1517,6 +1522,11 @@ int     i,k;
       for (i=3;i>0;i--)
         name[i] = name[i-1];
       name[0] = ' ';
+      k = strlen(name);
+      while (k<4)
+        name[k++] = ' ';
+      name[k] = char(0);
+    } else  {
       k = strlen(name);
       while (k<4)
         name[k++] = ' ';

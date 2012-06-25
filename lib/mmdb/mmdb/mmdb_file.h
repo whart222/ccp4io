@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -145,8 +145,8 @@
 #define  CRRDY_NoSpaceGroup       -5
 
 
-DefineClass(CMMDBFile);
-DefineStreamFunctions(CMMDBFile);
+DefineClass(CMMDBFile)
+DefineStreamFunctions(CMMDBFile)
 
 class CMMDBFile : public CUDData  {
 
@@ -204,7 +204,7 @@ class CMMDBFile : public CUDData  {
                            byte gzipMode=GZM_CHECK );
     int   WriteCIFASCII1 ( cpstr CIFLFName,
                            byte gzipMode=GZM_CHECK );
-    
+
     int   ReadMMDBF      ( cpstr MMDBFileName,
                            byte gzipMode=GZM_CHECK );
     int   ReadMMDBF1     ( cpstr MMDBLFName,

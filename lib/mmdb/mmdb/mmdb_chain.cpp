@@ -1174,8 +1174,8 @@ int         RC;
   if (RC!=CIFRC_Ok)  {
     // the category was (re)created, provide tags
     Loop->AddLoopTag ( CIFTAG_ID              );
-    Loop->AddLoopTag ( CIFTAG_LABEL_ASYM_ID   );
-    Loop->AddLoopTag ( CIFTAG_LABEL_SEQ_ID    );
+    Loop->AddLoopTag ( CIFTAG_AUTH_ASYM_ID    );
+    Loop->AddLoopTag ( CIFTAG_AUTH_SEQ_ID     );
     Loop->AddLoopTag ( CIFTAG_INS_CODE        );
     Loop->AddLoopTag ( CIFTAG_NUMBER_ATOMS_NH );
     Loop->AddLoopTag ( CIFTAG_DETAILS         );
@@ -1211,10 +1211,10 @@ int           RC;
   //  Determine the ChainID first and store it locally. It will
   // be used by CModel for generating chains and placing the
   // primary structure data BEFORE reading the coordinate section.
-  F = Loop->GetString ( CIFTAG_LABEL_ASYM_ID,Signal,RC );
+  F = Loop->GetString ( CIFTAG_AUTH_ASYM_ID,Signal,RC );
   if ((!RC) && F)  {
     strcpy_n0 ( chainID,F,sizeof(ChainID)-1 );
-    Loop->DeleteField ( CIFTAG_LABEL_ASYM_ID,Signal );
+    Loop->DeleteField ( CIFTAG_AUTH_ASYM_ID,Signal );
   } else
     strcpy ( chainID,"" );
 
@@ -1222,7 +1222,7 @@ int           RC;
   CIFGetString ( hetID,Loop,CIFTAG_ID,Signal,sizeof(ResName),
                  pstr("UNK") );
 
-  if (CIFGetInteger(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,Signal))  return;
+  if (CIFGetInteger(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,Signal))  return;
 
   CIFGetString ( insCode,Loop,CIFTAG_INS_CODE,Signal,sizeof(InsCode),
                  pstr(" ") );
