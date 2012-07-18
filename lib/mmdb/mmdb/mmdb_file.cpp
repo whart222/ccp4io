@@ -2048,8 +2048,8 @@ pstr     F;
   // Get the residue sequence number/insert code. They are
   // removed from the file after reading.
   k = index-1;
-//  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,k))
-  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,k))
+  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,k)
+   || !CIFGetInteger1(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,k))
     CIFGetString  ( insCode,Loop,CIFTAG_NDB_INS_CODE,k,
                     sizeof(InsCode),pstr("") );
   else  {
@@ -2069,9 +2069,13 @@ pstr     F;
   }
 
   // get chain/residue ID
-  CIFGetString ( chainID,Loop,CIFTAG_AUTH_ASYM_ID,k,
+  RC = CIFGetString ( chainID,Loop,CIFTAG_AUTH_ASYM_ID,k,
                  sizeof(ChainID),pstr("") );
-  CIFGetString ( resName,Loop,CIFTAG_AUTH_COMP_ID,k,
+  if (RC)  CIFGetString ( chainID,Loop,CIFTAG_AUTH_SEQ_ID,k,
+                 sizeof(ChainID),pstr("") );
+  RC = CIFGetString ( resName,Loop,CIFTAG_AUTH_COMP_ID,k,
+                 sizeof(ResName),pstr("") );
+  if (RC) CIFGetString ( resName,Loop,CIFTAG_LABEL_COMP_ID,k,
                  sizeof(ResName),pstr("") );
 
   if (!CIFGetInteger1(nM,Loop,CIFTAG_PDBX_PDB_MODEL_NUM,k))  {
