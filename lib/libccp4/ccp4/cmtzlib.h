@@ -156,7 +156,6 @@ int MtzRrefl(CCP4File *filein, int ncol, float *refldata);
  * @return 1 on success, 0 on failure
  */
 int MtzPut(MTZ *mtz, const char *logname);
-extern char mtz_put_error_message[1024];
 
 /** Opens a new MTZ file for writing. The output file can be specified
  * either with a true filename, or more likely as a logical name
