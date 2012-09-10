@@ -65,6 +65,10 @@
 #define  CMTZERR_ColGroupError     25
 #define  CMTZERR_ColSourceError    26
 
+// FIXME why is this necessary???
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
 
 MTZ *MtzGet(const char *logname, int read_refs)
 
