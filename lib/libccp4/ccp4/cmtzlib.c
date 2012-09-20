@@ -33,6 +33,11 @@
 #include "ccp4_unitcell.h"
 /* "$Id$" */
 
+// FIXME why is this necessary???
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
 
@@ -65,10 +70,6 @@
 #define  CMTZERR_ColGroupError     25
 #define  CMTZERR_ColSourceError    26
 
-// FIXME why is this necessary???
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
 
 MTZ *MtzGet(const char *logname, int read_refs)
 
@@ -2579,8 +2580,6 @@ int ccp4_lwrefl(MTZ *mtz, const float adata[], MTZCOL *lookup[],
   return 1;
 }
 
-char mtz_put_error_message[1024]="";
-
 int MtzPut(MTZ *mtz, const char *logname)
 
 { char hdrrec[81],symline[81],spgname[MAXSPGNAMELENGTH+3];
@@ -2796,31 +2795,7 @@ int MtzPut(MTZ *mtz, const char *logname)
        if ( mtz->xtal[i]->set[j]->col[k]->min == FLT_MAX ) mtz->xtal[i]->set[j]->col[k]->min = 0.0f;
        if ( mtz->xtal[i]->set[j]->col[k]->max == -FLT_MAX ) mtz->xtal[i]->set[j]->col[k]->max = 0.0f;
 
-       /* mrt: no more than 17 chars are allowed for max and min
-        * This is a nasty bug. I am not sure of its actual impact.
-        * TODO: can one use %17.9e format instead, at a loss of precision ?
-        * If so, remove checks below */
-       if(  mtz->xtal[i]->set[j]->col[k]->max > 999999999999.9999
-         || mtz->xtal[i]->set[j]->col[k]->min > 999999999999.9999
-         || mtz->xtal[i]->set[j]->col[k]->max < -99999999999.9999
-         || mtz->xtal[i]->set[j]->col[k]->min < -99999999999.9999 )
-       {
-         snprintf(mtz_put_error_message, 1000, "\nERROR(MtzPut)! Too "
-           "large/small values for mtz file.\n Min: %f max: %f. Setid: %d."
-           " Type: %c\n Header: %s\n",
-           mtz->xtal[i]->set[j]->col[k]->min,
-           mtz->xtal[i]->set[j]->col[k]->max,
-           mtz->xtal[i]->set[j]->setid,
-           mtz->xtal[i]->set[j]->col[k]->type[0],
-           hdrrec
-         );
-         mtz_put_error_message[1000] = '\0';
-         /* mrt: uncommenting causes lots of failers
-          * return 0; */
-       }
-       /* mrt: replaced %17.4f format with %17.9e format to avoid buffer
-        * overflow. I am not sure if valid mtz file is produced. */
-       sprintf(hdrrec+38,"%c %17.9e %17.9e %4d",
+       sprintf(hdrrec+38,"%c %17.9g %17.9g %4d",
                    mtz->xtal[i]->set[j]->col[k]->type[0],
                    mtz->xtal[i]->set[j]->col[k]->min,
                    mtz->xtal[i]->set[j]->col[k]->max,
