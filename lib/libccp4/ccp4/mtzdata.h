@@ -46,10 +46,6 @@
 #define NBATCHINTEGERS 29     /**< size of integer section of batch header buffer */
 #define NBATCHREALS 156       /**< size of float section of batch header buffer */
 
-// FIXME need to override these at compile time instead
-#define MXTALS 32
-#define MSETS 32
-#define MCOLUMNS 128
 /* cctbx uses smaller values for these three */
 #ifndef MXTALS
 #define MXTALS      100      /**< maximum number of crystals (for a few arrays - to be removed!) */
