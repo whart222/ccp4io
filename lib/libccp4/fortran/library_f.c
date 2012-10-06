@@ -49,7 +49,7 @@
 /* \newcommand{\fixme}[1]{\index{Fixme!}[{\bf Fixme!:} #1\@.]}              */
 /*                                                                          */
 /* \title{FORTRAN wrapper library routines}                                 */
-/* \date{$ $Date: 2011/10/04 17:17:43 $ $}                                  */
+/* \date{$ $Date$ $}                                  */
 /* \author{This version: Martyn Winn, Charles Ballard @ Daresbury}          */
 /*                                                                          */
 /* \makeindex                                                               */

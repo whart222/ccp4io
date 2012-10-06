@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 //  **** Module  :  MMDB_MMCIF  <implementation>
 //       ~~~~~~~~~
 //  **** Project :  MacroMolecular Data Base (MMDB)
-//       ~~~~~~~~~ 
+//       ~~~~~~~~~
 //  **** Classes :  CMMCIFCategory ( mmCIF category    )
 //       ~~~~~~~~~  CMMCIFStruct   ( mmCIF structure   )
 //                  CMMCIFLoop     ( mmCIF loop        )
@@ -314,7 +314,7 @@ void CMMCIFCategory::Sort()  {
 int i,k;
   if (nAllocTags>0)  {
     k = 0;
-    if (!index) 
+    if (!index)
       GetVectorMemory ( index,nAllocTags,0 );
     for (i=0;i<nTags;i++)
       if (tag[i])  {
@@ -379,7 +379,7 @@ int l1,l2,l,k;
   }
 
   if (k==0)  return index[l];    // is at RCth position
-  k = strcasecmp ( ttag,tag[index[l1]] );   
+  k = strcasecmp ( ttag,tag[index[l1]] );
   if (k==0)  return index[l1];   // is at RCth position
   if (k<0)   return -1;          // would be at (-RC-1)th position
   if (l2!=l1)  {
@@ -404,7 +404,7 @@ int  i1,i;
     nTags  = 1;
     return -nTags;  // the tag has been added on the top of array
   }
-  i1 = GetTagNo ( ttag ); 
+  i1 = GetTagNo ( ttag );
   if (i1>=0)  return i1;  // non-negative returns mean that
                           // the tag is already in the array
   i1 = -i1-1;  // otherwise the tag has to be added and indexed at here
@@ -518,7 +518,7 @@ CMMCIFStruct::~CMMCIFStruct()  {
 
 void CMMCIFStruct::FreeMemory()  {
 int i;
-  for (i=0;i<nAllocTags;i++) 
+  for (i=0;i<nAllocTags;i++)
     if (field[i]) delete[] field[i];
   FreeVectorMemory ( field,0 );
   CMMCIFCategory::FreeMemory();
@@ -705,7 +705,7 @@ pstr p;
   if (!S)  PutNoData ( CIF_NODATA_QUESTION,T );
   else  {
     p = pstr(S);
-    if (NonBlankOnly) 
+    if (NonBlankOnly)
       while (*p==' ')  p++;
     if (!(*p))  PutNoData ( CIF_NODATA_DOT,T );
           else  AddField  ( S,T,False );
@@ -847,7 +847,7 @@ int i;
 void CMMCIFStruct::write ( RCFile f )  {
 int i;
   CMMCIFCategory::write ( f );
-  for (i=0;i<nTags;i++)  
+  for (i=0;i<nTags;i++)
     f.CreateWrite ( field[i] );
 }
 
@@ -1011,10 +1011,10 @@ int       i,j,nT1;
         } else
           field[i] = NULL;
       delete[] f1;
-    } else 
+    } else
       // The tag was already in the category. Just restore fields.
       field = f1;
-  }              
+  }
 }
 
 
@@ -1801,9 +1801,9 @@ int i,lc,lt;
   FreeWrongFields();
   if ((!cats) || (!tags))  return;
   lc = 0;
-  while (cats[lc]) lc++; 
+  while (cats[lc]) lc++;
   lt = 0;
-  while (tags[lt]) lt++; 
+  while (tags[lt]) lt++;
   nWrongFields = IMax(lc,lt);
   if (nWrongFields>0)  {
     WrongCat = new pstr[nWrongFields];
@@ -1954,7 +1954,7 @@ pstr L;
   Optimize();  // get rid of over-allocated fields.
 
   return Warning;
-  
+
 }
 
 
@@ -2141,7 +2141,7 @@ int         RC,i,nC;
       }
 */
       if (Loop)  {
-  
+
         if (*p=='.')  {  // get item name
           i = 0;
           p++;  // skip period
@@ -2156,7 +2156,7 @@ int         RC,i,nC;
         if (nWrongFields>0)
               WrongField = CheckWrongField ( Loop->name,T );
         else  WrongField = False;
- 
+
         if (!WrongField)  {
           if (Loop->AddTag(T)>=0)  {
             if (flags & CIFFL_SuggestTags)  {
@@ -2298,7 +2298,7 @@ char    c;
           delete[] L;
           L = L1;
         }
-        strcat ( L,"\n" );  
+        strcat ( L,"\n" );
         strcat ( L,S );
       }
     }
@@ -2307,7 +2307,7 @@ char    c;
     p = &(S[strlen(S)]);
 
   } else  {
-  
+
     i = 0;
     if (*p!='_')  {
       if ((*p=='\'') || (*p=='"'))  {
@@ -2455,7 +2455,7 @@ ivector          index1;
     nCategories  = 1;
     return -nCategories;  // the category has been added on the top of array
   }
-  l1 = GetCategoryNo ( cname ); 
+  l1 = GetCategoryNo ( cname );
   if (l1>=0)  return l1;  // non-negative returns mean that
                           // the category is already in the array
   l1 = -l1-1;  // otherwise the category has to be added and indexed at here
@@ -2500,7 +2500,7 @@ int  i;
     f.WriteLine ( pstr("\ndata_") );
 
   for (i=0;i<nCategories;i++)
-    if (Category[i]) 
+    if (Category[i])
       Category[i]->WriteMMCIF ( f );
 
 }
@@ -2614,7 +2614,7 @@ int  CMMCIFData::CheckData ( cpstr CName, cpstr TName )  {
 //                        tag TName
 //   CIFRC_NoCategory      category CName is not present.
 // If TName is set to NULL then only the CName is checked and
-// possible returns are CIFRC_Structure, CIFRC_Loop and 
+// possible returns are CIFRC_Structure, CIFRC_Loop and
 // CIFRC_NoCategory.
 int i,k;
   i = GetCategoryNo ( CName );
@@ -2636,13 +2636,13 @@ void CMMCIFData::Optimize()  {
 int              i,k;
 PPCMMCIFCategory C1;
   k = 0;
-  for (i=0;i<nCategories;i++) 
+  for (i=0;i<nCategories;i++)
     if (Category[i])  {
       Category[i]->Optimize();
       if (Category[i]->nTags<=0)  {
         delete Category[i];
         Category[i] = NULL;
-      } else 
+      } else
         k++;
     }
   if (k>0)  {
@@ -2722,7 +2722,7 @@ int  CMMCIFData::GetInteger ( int & I, cpstr CName,
 int j = GetCategoryNo ( CName );
   if (j<0)  return CIFRC_NoCategory;
   if (Category[j]->GetCategoryID()!=MMCIF_Struct)
-            return CIFRC_NotAStructure; 
+            return CIFRC_NotAStructure;
   return PCMMCIFStruct(Category[j])->GetInteger ( I,TName,Remove );
 }
 
@@ -2783,7 +2783,7 @@ int  CMMCIFData::GetLoopReal ( realtype & R, cpstr CName,
 int i = GetCategoryNo ( CName );
   if (i<0)  return CIFRC_NoCategory;
   if (Category[i]->GetCategoryID()!=MMCIF_Loop)
-            return CIFRC_NotALoop; 
+            return CIFRC_NotALoop;
   return PCMMCIFLoop(Category[i])->GetReal ( R,TName,nrow,Remove );
 }
 
@@ -2793,7 +2793,7 @@ int  CMMCIFData::GetLoopInteger ( int & I, cpstr CName,
 int j = GetCategoryNo ( CName );
   if (j<0)  return CIFRC_NoCategory;
   if (Category[j]->GetCategoryID()!=MMCIF_Loop)
-            return CIFRC_NotALoop; 
+            return CIFRC_NotALoop;
   return PCMMCIFLoop(Category[j])->GetInteger ( I,TName,nrow,Remove );
 }
 
@@ -3178,7 +3178,7 @@ int         i,RC;
 
 }
 
-int  CMMCIFData::PutLoopIVector ( ivector I, cpstr CName, 
+int  CMMCIFData::PutLoopIVector ( ivector I, cpstr CName,
                                   cpstr TName,
                                   int i1, int i2 )  {
 PCMMCIFLoop Loop;
@@ -3297,7 +3297,7 @@ void CMMCIFData::PrintCategories()  {
 int i;
   printf ( " Total %i categories:\n",nCategories );
   for (i=0;i<nCategories;i++)
-    if (Category[i])  {  
+    if (Category[i])  {
       printf ( " %5i. ",i+1 );
       if (Category[i]->GetCategoryID()==MMCIF_Loop)
             printf ( "Loop      %s\n",Category[i]->name );
@@ -3507,7 +3507,7 @@ int l1,l2,l,k;
   }
 
   if (k==0)  return index[l];    // is at RCth position
-  k = strcasecmp ( DName,data[index[l1]]->name );   
+  k = strcasecmp ( DName,data[index[l1]]->name );
   if (k==0)  return index[l1];   // is at RCth position
   if (k<0)   return -1;          // would be at (-RC-1)th position
   if (l2!=l1)  {
@@ -3570,7 +3570,7 @@ int  i1,i;
     return -nData;     // the CIF data structure has been added
                        // "on the top" of array
   }
-  i1 = GetCIFDataNo ( DName ); 
+  i1 = GetCIFDataNo ( DName );
   if (i1>=0)  return i1;  // non-negative returns mean that the CIF
                           // data structure is already in the array
   i1 = -i1-1;  // otherwise the data has to be added and indexed at here
@@ -3640,36 +3640,46 @@ MakeStreamFunctions(CMMCIFFile)
 
 
 int  isCIF ( cpstr FName, byte gzipMode )  {
-CFile   f;
+CFile f;
+int   rc;
+
+  f.assign ( FName,True,False,gzipMode );
+  if (f.reset(True))  {
+    rc = isCIF ( f );
+    f.shut();
+  } else
+    rc = -1;
+
+  return rc;
+
+}
+
+int  isCIF ( RCFile f )  {
 char    S[_max_buf_len+1];
 Boolean Done;
 pstr    p;
 
-  f.assign ( FName,True,False,gzipMode );
-  if (f.reset(True))  {
-    f.ReadLine ( S,_max_buf_len );
-    S[_max_buf_len] = char(0);
-    Done = False;
-    while (!Done)  {
-      p = &(S[0]);
-      while ((*p==' ') || (*p==char(9)))  p++;
-      Done = !strncmp(p,"data_",5);
-      if (!Done)  {
-        if (f.FileEnd())  {
-          Done = True;
-          p    = NULL;
-        } else  {
-          f.ReadLine ( S,_max_buf_len );
-          S[_max_buf_len] = char(0);
-        }
+  f.ReadLine ( S,_max_buf_len );
+  S[_max_buf_len] = char(0);
+  Done = False;
+  while (!Done)  {
+    p = &(S[0]);
+    while ((*p==' ') || (*p==char(9)))  p++;
+    Done = !strncmp(p,"data_",5);
+    if (!Done)  {
+      if (f.FileEnd())  {
+        Done = True;
+        p    = NULL;
+      } else  {
+        f.ReadLine ( S,_max_buf_len );
+        S[_max_buf_len] = char(0);
       }
     }
-    f.shut();
-    if (!p)  return 1;
-    if (!strncmp(p,"data_",5))  return 0;
-                          else  return 1;
-  } else
-    return -1;
+  }
+
+  if (!p)  return 1;
+  if (!strncmp(p,"data_",5))  return 0;
+                        else  return 1;
 
 }
 

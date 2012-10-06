@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -59,8 +59,8 @@
 #define MMCIF_Loop     2
 #define MMCIF_Data     3
 
-DefineClass(CMMCIFCategory);
-DefineStreamFunctions(CMMCIFCategory);
+DefineClass(CMMCIFCategory)
+DefineStreamFunctions(CMMCIFCategory)
 
 /// \brief CMMCIFCategory is a base class for CMMCIFStruct and
 ///        CMMCIFLoop, implementations of mmCIF's "structure" and
@@ -237,8 +237,8 @@ class CMMCIFCategory : public CStream  {
 
 //  ======================  CMMCIFStruct  ============================
 
-DefineClass(CMMCIFStruct);
-DefineStreamFunctions(CMMCIFStruct);
+DefineClass(CMMCIFStruct)
+DefineStreamFunctions(CMMCIFStruct)
 
 /// \brief Constants used to specify mmCIF's \"data not given\" and
 /// \"data not available\" data types.
@@ -1351,8 +1351,8 @@ class CMMCIFLoop : public CMMCIFCategory  {
 #define CIFFL_SuggestTags        0x00000008
 
 
-DefineClass(CMMCIFData);
-DefineStreamFunctions(CMMCIFData);
+DefineClass(CMMCIFData)
+DefineStreamFunctions(CMMCIFData)
 
 
 /// \brief CMMCIFData represents mmCIF's \"data\" category, which keeps
@@ -1833,7 +1833,7 @@ class CMMCIFData : public CStream  {
     //                        tag TName
     //   CIFRC_NoCategory      category CName is not present.
     // If TName is set to NULL then only the CName is checked and
-    // possible returns are CIFRC_Structure, CIFRC_Loop and 
+    // possible returns are CIFRC_Structure, CIFRC_Loop and
     // CIFRC_NoCategory.
     int  CheckData       ( cpstr CName, cpstr TName );
 
@@ -1982,7 +1982,7 @@ class CMMCIFData : public CStream  {
     // for nrow in the loop and move down to 0. The least efficient way
     // is to start with nrow=0 and move up.
     //   These functions allow to form loops in arbitrary way.
-    //   The functions may return CIFRC_Ok or CIFRC_NotALoop. 
+    //   The functions may return CIFRC_Ok or CIFRC_NotALoop.
     int  PutLoopNoData  ( int NoDataType, cpstr CName,
                                           cpstr TName, int nrow );
     int  PutLoopString  ( cpstr S,   cpstr CName,
@@ -2064,8 +2064,8 @@ class CMMCIFData : public CStream  {
 
 //  ======================  CMMCIFFile  =============================
 
-DefineClass(CMMCIFFile);
-DefineStreamFunctions(CMMCIFFile);
+DefineClass(CMMCIFFile)
+DefineStreamFunctions(CMMCIFFile)
 
 class CMMCIFFile : public CStream  {
 
@@ -2117,6 +2117,7 @@ extern pstr GetMMCIFInputBuffer ( int & LineNo );
 //     0   if file FName is likely a CIF file ( 'data_' is present )
 //     1   if file FName is not a CIF file ( 'data_' is absent )
 extern int isCIF ( cpstr FName, byte gzipMode=GZM_CHECK );
+extern int isCIF ( RCFile f );
 
 pstr GetCIFMessage ( pstr M, int RC );
 

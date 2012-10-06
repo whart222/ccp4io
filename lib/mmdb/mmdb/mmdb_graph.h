@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -105,6 +105,7 @@ class CVertex : public CStream  {
     int   GetUserID   () { return user_id;  }
     cpstr GetName     () { return name;     }
     int   GetType     () { return type;     }
+    int   GetTypeExt  () { return type_ext; }
     int   GetNBonds   ();
 
     void  SaveType    ();  // in userid
@@ -258,7 +259,7 @@ class CGraph : public CStream  {
     //                          is not made
     //   MKGRAPH_ChangedAltLoc  a different altcode was used because
     //                          the residue has only one altcode and
-    //                          that is different of 
+    //                          that is different of
     //   MKGRAPH_MaxOccupancy   a maximal-occupancy conformation has
     //                          been chosen because of default
     //                          ""-altcode supplied or incorrect
@@ -272,6 +273,7 @@ class CGraph : public CStream  {
 
     void  MakeSymmetryRelief ( Boolean noCO2 );
     void  IdentifyRings      ();
+    int   IdentifyConnectedComponents();  // returns their number >= 1
 
     int   Build       ( Boolean bondOrder );  // returns 0 if Ok
 
@@ -312,6 +314,8 @@ class CGraph : public CStream  {
 
     void  InitGraph ();
     void  FreeMemory();
+
+    void  markConnected ( int vno, int cno );
 
   private :
     int  nVAlloc,nEAlloc,nGAlloc;

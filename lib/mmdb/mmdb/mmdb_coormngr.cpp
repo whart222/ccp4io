@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -738,7 +738,7 @@ int      i,nnat,nat1;
   }
 
   return nModels;
-  
+
 }
 
 int  CMMDBCoorManager::InsModel ( PCModel model, int modelNo )  {
@@ -844,7 +844,7 @@ int     m1,m2,i11,i12,i21,i22,i,k,n;
 
   if (m1!=m2)  {
 
-    if (Model[m1]) 
+    if (Model[m1])
       Model[m1]->GetAIndexRange ( i11,i12 );
     else  {
       n = m1;
@@ -857,7 +857,7 @@ int     m1,m2,i11,i12,i21,i22,i,k,n;
     }
 
     if (n>=0)  {
-      if (Model[m2]) 
+      if (Model[m2])
         Model[m2]->GetAIndexRange ( i21,i22 );
       else  {
         n = m2;
@@ -1038,7 +1038,7 @@ PCResidue CMMDBCoorManager::GetResidue ( int           modelNo,
 }
 
 PCResidue CMMDBCoorManager::GetResidue ( int modelNo, int chainNo,
-                                         int seqNo, 
+                                         int seqNo,
                                          const InsCode insCode )  {
   if ((0<modelNo) && (modelNo<=nModels))  {
     if (Model[modelNo-1])
@@ -1425,7 +1425,7 @@ PCResidue res;
 }
 
 int  CMMDBCoorManager::GetNumberOfAtoms ( int modelNo, int chainNo,
-                                          int seqNo, 
+                                          int seqNo,
                                           const InsCode insCode )  {
 PCChain   chain;
 PCResidue res;
@@ -1542,13 +1542,13 @@ PCAtom    atm;
     return NULL;
   }
 
-  chn = mdl->GetChain ( chID );  
+  chn = mdl->GetChain ( chID );
   if (!chn)  {
     CoorIDCode = CID_NoChain;
     return NULL;
   }
 
-  res = chn->GetResidue ( seqNo,insCode );  
+  res = chn->GetResidue ( seqNo,insCode );
   if (!res)  {
     CoorIDCode = CID_NoResidue;
     return NULL;
@@ -1582,13 +1582,13 @@ PCAtom    atm;
     return NULL;
   }
 
-  chn = mdl->GetChain ( chID );  
+  chn = mdl->GetChain ( chID );
   if (!chn)  {
     CoorIDCode = CID_NoChain;
     return NULL;
   }
 
-  res = chn->GetResidue ( seqNo,insCode );  
+  res = chn->GetResidue ( seqNo,insCode );
   if (!res)  {
     CoorIDCode = CID_NoResidue;
     return NULL;
@@ -1625,14 +1625,14 @@ PCAtom    atm;
     return NULL;
   }
 
-  chn = mdl->GetChain ( chID );  
+  chn = mdl->GetChain ( chID );
   if (!chn)  {
     CoorIDCode = CID_NoChain;
     return NULL;
   }
 
   if ((0<=resNo) && (resNo<chn->nResidues))
-        res = chn->Residue[resNo];  
+        res = chn->Residue[resNo];
   else  res = NULL;
   if (!res)  {
     CoorIDCode = CID_NoResidue;
@@ -1666,14 +1666,14 @@ PCAtom    atm;
     return NULL;
   }
 
-  chn = mdl->GetChain ( chID );  
+  chn = mdl->GetChain ( chID );
   if (!chn)  {
     CoorIDCode = CID_NoChain;
     return NULL;
   }
 
   if ((0<=resNo) && (resNo<chn->nResidues))
-        res = chn->Residue[resNo];  
+        res = chn->Residue[resNo];
   else  res = NULL;
   if (!res)  {
     CoorIDCode = CID_NoResidue;
@@ -1720,7 +1720,7 @@ PCAtom    atm;
     return NULL;
   }
 
-  res = chn->GetResidue ( seqNo,insCode );  
+  res = chn->GetResidue ( seqNo,insCode );
   if (!res)  {
     CoorIDCode = CID_NoResidue;
     return NULL;
@@ -1762,7 +1762,7 @@ PCAtom    atm;
     return NULL;
   }
 
-  res = chn->GetResidue ( seqNo,insCode );  
+  res = chn->GetResidue ( seqNo,insCode );
   if (!res)  {
     CoorIDCode = CID_NoResidue;
     return NULL;
@@ -1808,7 +1808,7 @@ PCAtom    atm;
   }
 
   if ((0<=resNo) && (resNo<chn->nResidues))
-        res = chn->Residue[resNo];  
+        res = chn->Residue[resNo];
   else  res = NULL;
   if (!res)  {
     CoorIDCode = CID_NoResidue;
@@ -1851,7 +1851,7 @@ PCAtom    atm;
   }
 
   if ((0<=resNo) && (resNo<chn->nResidues))
-        res = chn->Residue[resNo];  
+        res = chn->Residue[resNo];
   else  res = NULL;
   if (!res)  {
     CoorIDCode = CID_NoResidue;
@@ -2497,7 +2497,7 @@ void  CMMDBCoorManager::GetBrickCoor ( realtype x, realtype y,
       (ny>=nbrick_y) || (nz>=nbrick_z))  nx = -1;
 }
 
-void  CMMDBCoorManager::GetBrickDimension ( 
+void  CMMDBCoorManager::GetBrickDimension (
                       int & nxmax, int & nymax, int & nzmax )  {
   if (!Brick)  {
     nxmax = 0;  nymax = 0;  nzmax = 0;
@@ -2645,7 +2645,7 @@ void  CMMDBCoorManager::GetMBrickCoor (
         (ny>=nmbrick_y) || (nz>=nmbrick_z))  nx = -nx-1;
 }
 
-void  CMMDBCoorManager::GetMBrickDimension ( 
+void  CMMDBCoorManager::GetMBrickDimension (
                       int & nxmax, int & nymax, int & nzmax )  {
   if (!Brick)  {
     nxmax = 0;  nymax = 0;  nzmax = 0;
@@ -2684,7 +2684,7 @@ PCAtom   A;
 
   //  find the range of coordinates
   x1 = MaxReal;
-  x2 = -x1; 
+  x2 = -x1;
   y1 = MaxReal;
   y2 = -y1;
   z1 = MaxReal;
@@ -2706,7 +2706,7 @@ PCAtom   A;
   if (x1<MaxReal)  {
     x1 -= Margin; x2 += Margin;
     y1 -= Margin; y2 += Margin;
-    z1 -= Margin; z2 += Margin; 
+    z1 -= Margin; z2 += Margin;
     dx = x2-x1;  nmbrick_x = mround(dx/mbrick_size+0.0001)+1;
     dy = y2-y1;  nmbrick_y = mround(dy/mbrick_size+0.0001)+1;
     dz = z2-z1;  nmbrick_z = mround(dz/mbrick_size+0.0001)+1;
@@ -2894,8 +2894,8 @@ PPCChain chain;
 
 
 void  GetEulerRotMatrix ( mat33 & erm,
-                          realtype alpha, 
-                          realtype beta, 
+                          realtype alpha,
+                          realtype beta,
                           realtype gamma )  {
 //  Calculates the Euler rotation matrix for rotation:
 //                   1) about z-axis by angle alpha (0..2*Pi)
@@ -2927,8 +2927,8 @@ realtype ca,cb,cg, sa,sb,sg;
 
 
 void  GetEulerTMatrix ( mat44 & erm,
-                        realtype alpha, 
-                        realtype beta, 
+                        realtype alpha,
+                        realtype beta,
                         realtype gamma,
                         realtype x0,
                         realtype y0,
@@ -2949,7 +2949,7 @@ mat33 m;
   erm[3][0] = 0.0;      erm[3][1] = 0.0;      erm[3][2] = 0.0;
 
   erm[3][3] = 1.0;
-  
+
   erm[0][3] = x0 - m[0][0]*x0 - m[0][1]*y0 - m[0][2]*z0;
   erm[1][3] = y0 - m[1][0]*x0 - m[1][1]*y0 - m[1][2]*z0;
   erm[2][3] = z0 - m[2][0]*x0 - m[2][1]*y0 - m[2][2]*z0;
@@ -2959,8 +2959,8 @@ mat33 m;
 
 void  EulerRotation ( PPCAtom  A,
                       int      nA,
-                      realtype alpha, 
-                      realtype beta, 
+                      realtype alpha,
+                      realtype beta,
                       realtype gamma,
                       realtype x0,
                       realtype y0,
@@ -2992,8 +2992,8 @@ int      i;
 
 
 void  GetVecRotMatrix ( mat33 & vrm,
-                        realtype alpha, 
-                        realtype vx, 
+                        realtype alpha,
+                        realtype vx,
                         realtype vy,
                         realtype vz )  {
 //   Calculates the rotation matrix for rotation by angle alpha about
@@ -3025,8 +3025,8 @@ realtype ca,sa, rx,ry,rz, vl;
 
 
 void  GetRotParameters ( mat33    & vrm,
-                         realtype & alpha, 
-                         realtype & vx, 
+                         realtype & alpha,
+                         realtype & vx,
                          realtype & vy,
                          realtype & vz )  {
 //    Given the rotation matrix vrm, GetRotParameters(..)
@@ -3066,8 +3066,8 @@ realtype ca,sa,vl;
 
 
 void  GetVecTMatrix ( mat44 & vrm,
-                      realtype alpha, 
-                      realtype vx, 
+                      realtype alpha,
+                      realtype vx,
                       realtype vy,
                       realtype vz,
                       realtype x0,
@@ -3087,7 +3087,7 @@ mat33 m;
   vrm[3][0] = 0.0;      vrm[3][1] = 0.0;      vrm[3][2] = 0.0;
 
   vrm[3][3] = 1.0;
-  
+
   vrm[0][3] = x0 - m[0][0]*x0 - m[0][1]*y0 - m[0][2]*z0;
   vrm[1][3] = y0 - m[1][0]*x0 - m[1][1]*y0 - m[1][2]*z0;
   vrm[2][3] = z0 - m[2][0]*x0 - m[2][1]*y0 - m[2][2]*z0;
@@ -3097,8 +3097,8 @@ mat33 m;
 
 void  VectorRotation ( PPCAtom  A,
                        int      nA,
-                       realtype alpha, 
-                       realtype vx, 
+                       realtype alpha,
+                       realtype vx,
                        realtype vy,
                        realtype vz,
                        realtype x0,
@@ -3130,7 +3130,7 @@ int      i;
 
 
 void  GetMassCenter ( PPCAtom    A,   int        nA,
-                      realtype & xmc, realtype & ymc, 
+                      realtype & xmc, realtype & ymc,
                       realtype & zmc )  {
 realtype w,mass;
 int      i,k;
@@ -3252,7 +3252,7 @@ int       i,j,k,n,m,nt, ic,jc,kc, is,js,ks;
           }
 
         }
-      }  
+      }
     }
 
   return nt;  // number of converted chains
@@ -3829,9 +3829,9 @@ Boolean   swap;
 
   if (((bricking & BRICK_READY)==0) || (!Brick))
     MakeBricks ( A2,l2,contDist*1.5 );
-    
+
   ncontacts = 0;
-  
+
   if (!Brick)  return;
 
   dn = (int)floor(contDist/brick_size)+1;
@@ -4261,7 +4261,7 @@ int      i,j,k,i1,i2,nat;
 
   //  4. Calculate transformation matrix (to be applied to A1)
 
-  det = A[1][1]*A[2][2]*A[3][3] + 
+  det = A[1][1]*A[2][2]*A[3][3] +
         A[1][2]*A[2][3]*A[3][1] +
         A[2][1]*A[3][2]*A[1][3] -
         A[1][3]*A[2][2]*A[3][1] -

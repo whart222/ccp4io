@@ -118,7 +118,7 @@ char *ccp4RCSDate(const char *rcs_string)
     tmpstr2[2] = '\0';
     if (strncmp(tmpstr1,"$Date: ",7) == 0) {
       /* Raw form of RCS string (not exported) i.e.:
-	 "$Date: 2011/11/07 13:17:27 $"
+	 "$Date$"
       */
       /* Build the date string in the form DD/MM/YY */
       strncpy(RCSDate,rcs_string+15,2);
@@ -149,7 +149,6 @@ char *ccp4RCSDate(const char *rcs_string)
 
    Set or print program time information
 */
-#if ! defined (_MSC_VER)
 void ccp4ProgramTime(int init)
 {
   static int elaps0=0;
@@ -169,7 +168,6 @@ void ccp4ProgramTime(int init)
   }
 
 }
-#endif
 
 /* ccp4VerbosityLevel
 
@@ -203,7 +201,7 @@ int ccp4VerbosityLevel(int level)
    ccp4SetCallback and ccp4InvokeCallback
  */
 int ccp4Callback(CCP4INTFUNCPTR mycallback, char *mode, int ierr,
-    const char *message)
+                 const char *message)
 {
   static CCP4INTFUNCPTR callback=ccp4NullCallback;
 

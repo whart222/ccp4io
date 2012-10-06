@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -97,7 +97,7 @@ extern void  PickOutNumber    ( cpstr S, pstr SV, int SLen, int & j );
 
 // =========================  CFile  ================================
 
-DefineClass(CFile);
+DefineClass(CFile)
 
 class  CFile  {
 
@@ -109,7 +109,7 @@ class  CFile  {
     // ---- control functions
     //   FileName allows for "stdin", "stdout" and "stderr" as
     // for standard UNIX streams.
-    void     assign      ( cpstr FileName,
+    void     assign      ( cpstr   FileName,
                            Boolean Text=False,
                            Boolean UniB=False,
                            byte    gzMode=GZM_NONE );
@@ -280,10 +280,10 @@ class  CFile  {
     Boolean  IOSuccess;
     int      ErrCode;
 
-    void  FreeBuffer     ();
-    void  _ReadColumns   ( int & DLen, pstr S, int SLen,
-                           rvector X, rvector Y, rvector Z,
-                           int xCol, int yCol, int zCol, int Shift );
+    void  FreeBuffer   ();
+    void  _ReadColumns ( int & DLen, pstr S, int SLen,
+                         rvector X, rvector Y, rvector Z,
+                         int xCol, int yCol, int zCol, int Shift );
 
   private :
     int      gzipIO;

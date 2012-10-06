@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -126,7 +126,7 @@ extern Boolean GetReal ( realtype & R, cpstr S, int M );
 //   The return is False if no integer number may be
 // recognized. In this case, N is assigned MinInt4 value,
 // "ins" just returns (M+1)th symbol of S (+terminating 0).
-extern Boolean  GetIntIns ( int & N, pstr ins, cpstr S, int M ); 
+extern Boolean  GetIntIns ( int & N, pstr ins, cpstr S, int M );
 
 //  Integer N is converted into ASCII string of length M
 // and pasted onto first M characters of string S. No
@@ -220,15 +220,15 @@ extern realtype TransformZ ( mat44 & T,
 extern char CIFErrorLocation[200];
 
 //  Returns ASCII string explaining the nature of
-// Error_xxxx error code. 
+// Error_xxxx error code.
 extern cpstr  GetErrorDescription ( int ErrorCode );
 
 
 
 //  ==============  CContainerClass  ====================
 
-DefineClass(CContainerClass);
-DefineStreamFunctions(CContainerClass);
+DefineClass(CContainerClass)
+DefineStreamFunctions(CContainerClass)
 
 class CContainerClass : public CStream  {
 
@@ -291,8 +291,8 @@ class CContainerClass : public CStream  {
 
 //  ==============  CContString  ====================
 
-DefineClass(CContString);
-DefineStreamFunctions(CContString);
+DefineClass(CContString)
+DefineStreamFunctions(CContString)
 
 class CContString : public CContainerClass  {
 
@@ -329,15 +329,15 @@ class CContString : public CContainerClass  {
 
 //  ==============  CClassContainer  ====================
 
-DefineClass(CClassContainer);
-DefineStreamFunctions(CClassContainer);
+DefineClass(CClassContainer)
+DefineStreamFunctions(CClassContainer)
 
 class CClassContainer : public CStream  {
 
   public :
 
     CClassContainer  ();
-    CClassContainer  ( RPCStream Object ); 
+    CClassContainer  ( RPCStream Object );
     ~CClassContainer ();
 
     void    FreeContainer     ();
@@ -369,8 +369,8 @@ class CClassContainer : public CStream  {
 
 //  ======================  ID parsers  ==========================
 
-DefineClass(CAtomPath);
-DefineStreamFunctions(CAtomPath);
+DefineClass(CAtomPath)
+DefineStreamFunctions(CAtomPath)
 
 #define APATH_ModelNo     0x00000001
 #define APATH_ChainID     0x00000002
@@ -441,7 +441,7 @@ class CAtomPath : public CStream  {
     //     :A      an atom with insertion code A
     //     5       residue number 5
     //     (GLU)   residue GLU
-    // 
+    //
     //   All spaces are ignored. SetPath(..) sets bit of isSet
     // for each element present. Any element may be a wildcard
     // '*'. Wildcard for model will set modelNo=0, for sequence
@@ -464,7 +464,7 @@ class CAtomPath : public CStream  {
 
 //  --------------------------------------------------------------
 
-DefineClass(CQuickSort);
+DefineClass(CQuickSort)
 
 class CQuickSort : public CStream  {
 

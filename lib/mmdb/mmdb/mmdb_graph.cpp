@@ -1155,6 +1155,46 @@ int         i,j,n,nrings,nv;
 
 }
 
+void CGraph::markConnected ( int vno, int cno )  {
+int i;
+
+  Vertex[vno]->type_ext = cno;
+  for (i=0;i<nVertices;i++)
+    if (graph[vno+1][i+1] && (!Vertex[i]->type_ext))
+      markConnected ( i,cno );
+
+}
+
+
+int  CGraph::IdentifyConnectedComponents()  {
+// Returns the number of connected components and sets
+// Vertex[]->type_ext equal to component number >=1.
+int nComponents,i;
+
+  nComponents = 0;
+
+  Build ( False );
+
+  for (i=0;i<nVertices;i++)
+    Vertex[i]->type_ext = 0;
+
+  i = 0;
+  while (i<nVertices)  {
+    while (i<nVertices)
+      if (Vertex[i]->type_ext)  i++;
+                          else  break;
+    if (i<nVertices)  {
+      nComponents++;
+      markConnected ( i,nComponents );
+    }
+  }
+
+  return nComponents;
+
+}
+
+
+
 void  CGraph::Print()  {
 int i;
 

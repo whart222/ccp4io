@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -47,14 +47,14 @@
 
 #define MMDB_MAJOR_VERSION    (1)
 #define MMDB_MINOR_VERSION    (24)
-#define MMDB_MICRO_VERSION    (1)
+#define MMDB_MICRO_VERSION    (2)
 
 
 //  =======================  types  =================================
 
 typedef  char         IDCode  [16];   // ID code of the entry
-typedef  IDCode *     PIDCode;        // pointer to ID code 
-typedef  PIDCode &    RPIDCode;       // ref-ce to pointer to ID code 
+typedef  IDCode *     PIDCode;        // pointer to ID code
+typedef  PIDCode &    RPIDCode;       // ref-ce to pointer to ID code
 typedef  char         Date    [12];   // date DD-MMM-YYYY
 typedef  char         RecName [7];    // name of PDB record
 
@@ -131,7 +131,7 @@ typedef  char     maxMMDBName[MaxMMDBNameLength];
 
 //  Error_SEQRES_serNum is returned by CSeqRes::ConvertPDBASCII() if
 //  serial numbers of SEQRES records do not increment by 1
-#define  Error_SEQRES_serNum         4 
+#define  Error_SEQRES_serNum         4
 
 //  Error_SEQRES_numRes is returned by CSeqRes::ConvertPDBASCII() if
 //  SEQRES records show different number of residues
@@ -245,11 +245,11 @@ typedef  char     maxMMDBName[MaxMMDBNameLength];
 
 //  =====================  classes  ===============================
 
-DefineClass(CAtom);
-DefineClass(CResidue);
-DefineClass(CChain);
-DefineClass(CModel);
-DefineClass(CMMDBManager);
+DefineClass(CAtom)
+DefineClass(CResidue)
+DefineClass(CChain)
+DefineClass(CModel)
+DefineClass(CMMDBManager)
 
 
 #endif

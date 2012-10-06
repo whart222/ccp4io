@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -86,9 +86,9 @@
 cpstr GetFPath ( pstr FilePath, int syskey )  {
 pstr P;
 
-  if (syskey==syskey_unix)     
+  if (syskey==syskey_unix)
     P = strrchr(FilePath,'/');
-  else if (syskey==syskey_win) 
+  else if (syskey==syskey_win)
     P = strrchr(FilePath,'\\');
   else if (syskey==syskey_all)  {
     P = strrchr(FilePath,'/');
@@ -108,9 +108,9 @@ pstr P;
 
 cpstr GetFName ( cpstr FilePath, int syskey )  {
 pstr P;
-  if (syskey==syskey_unix)     
+  if (syskey==syskey_unix)
     P = strrchr(FilePath,'/');
-  else if (syskey==syskey_win) 
+  else if (syskey==syskey_win)
     P = strrchr(FilePath,'\\');
   else if (syskey==syskey_all)  {
     P = strrchr(FilePath,'/');
@@ -194,7 +194,7 @@ CFile::~CFile()  {
 
 void  CFile::FreeBuffer ()  {
   if (IOBuf)  {
-    delete[] IOBuf;
+    if (!memIO)  delete[] IOBuf;
     IOBuf = NULL;
   }
   if (FName)  {
@@ -245,7 +245,7 @@ void  CFile::assign ( word poolSize, word sizeInc, pstr filePool )  {
   shut      ();
   FreeBuffer();
 
-  IOBuf    = filePool;
+  IOBuf    = (pstr)filePool;
   BufLen   = poolSize;
   FLength  = poolSize;
   BufInc   = sizeInc;
@@ -585,7 +585,7 @@ Boolean  CFile::seek ( long Position )  {
     if (Position<=(long)BufLen)  {
       BufCnt    = Position;
       IOSuccess = True;
-    } else 
+    } else
       IOSuccess = False;
     return IOSuccess;
   } else if (hFile==NULL)
@@ -967,7 +967,7 @@ Boolean    B;
   } else if (UniBin)  {
     word2UniBin ( ll,wUB );
     B = WriteFile ( wUB,sizeof(wordUniBin) );
-  } else 
+  } else
     B = WriteFile ( &ll,sizeof(ll) );
   if (B && (ll>0))  B = WriteFile ( Line,ll );
   return B;
@@ -983,7 +983,7 @@ byte       sl;
   } else if (UniBin)  {
     ReadFile    ( wUB,sizeof(wordUniBin) );
     UniBin2word ( wUB,ll );
-  } else 
+  } else
     ReadFile ( &ll,sizeof(ll) );
   if (ll>0)  ReadFile ( Line,ll );
   Line[ll] = char(0);
@@ -993,7 +993,7 @@ byte       sl;
 word  CFile::ReadFile ( void * Buffer, word Count )  {
 word  Cnt;
   if (memIO)  {
-    Cnt       = WMax(Count,FLength-BufCnt);
+    Cnt       = WMin(Count,FLength-BufCnt);
     if (Cnt>0)  {
       memcpy ( Buffer,&(IOBuf[BufCnt]),Cnt );
       BufCnt += Cnt;
@@ -1003,7 +1003,7 @@ word  Cnt;
     return  Cnt;
   } else if (hFile)  {
     Cnt       = (word)fread ( Buffer,1,Count,hFile );
-    EofFile   = (Cnt<Count) || 
+    EofFile   = (Cnt<Count) ||
                  ((gzipIO==ARCH_NONE) && (Position()==FLength));
     IOSuccess = (Cnt==Count);
     return  Cnt;
@@ -1210,7 +1210,7 @@ wordUniBin  wUB;
       return True;
     } else
       return False;
-  } else 
+  } else
     return ( ReadFile(W,sizeof(word))==sizeof(word) );
 }
 

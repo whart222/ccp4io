@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -101,7 +101,7 @@ ivector   SelType1;
   M->NewMask ( Mask,nSelections );
 
   i = 0;
-  while (i<nSelections) 
+  while (i<nSelections)
     if (!Mask[i])  break;
              else  i++;
 
@@ -153,7 +153,7 @@ int k;
   }
   return STYPE_INVALID;
 }
- 
+
 void  CMMDBSelManager::DeleteSelection ( int selHnd )  {
 int i,k;
   if ((selHnd>0) && (selHnd<=nSelections))  {
@@ -185,12 +185,35 @@ PCMask CMMDBSelManager::GetSelMask ( int selHnd )  {
 }
 
 void  CMMDBSelManager::DeleteAllSelections()  {
-int i;
+PCResidue res  ,res1;
+PCChain   chain,chain1;
+PCModel   model,model1;
+int       i;
+
   if (Mask)  {
+    res   = NULL;
+    chain = NULL;
+    model = NULL;
     if (Atom)
       for (i=0;i<nAtoms;i++)
-        if (Atom[i])
+        if (Atom[i])  {
           Atom[i]->ClearMask();
+          res1 = Atom[i]->GetResidue();
+          if (res1!=res)  {
+            res = res1;
+            res->ClearMask();
+            chain1 = res->GetChain();
+            if (chain1!=chain)  {
+              chain = chain1;
+              chain->ClearMask();
+              model1 = chain->GetModel();
+              if (model1!=model)  {
+                model = model1;
+                model->ClearMask();
+              }
+            }
+          }
+        }
     for (i=0;i<nSelections;i++)  {
       if (Mask     [i])  delete   Mask[i];
       if (Selection[i])  delete[] Selection[i];
@@ -200,11 +223,13 @@ int i;
     if (nSelItems) delete[] nSelItems;
     if (SelType)   delete[] SelType;
   }
+
   nSelections = 0;
   Mask        = NULL;
   Selection   = NULL;
   nSelItems   = NULL;
   SelType     = NULL;
+
 }
 
 void  CMMDBSelManager::SelectAtoms ( int selHnd, int iSer1, int iSer2,
@@ -774,7 +799,7 @@ void  CMMDBSelManager::SelectAtoms (
              realtype z0,    // reference z-point
              realtype d0,    // selection distance from the reference
                              // reference point; d0<=0.0 means
-                             // 'any distance" and values of 
+                             // 'any distance" and values of
                              // x0, y0 and z0 are ignored
              int  selKey     // selection key
                     )  {
@@ -827,7 +852,7 @@ void  CMMDBSelManager::Select (
              realtype z0,    // reference z-point
              realtype d0,    // selection distance from the reference
                              // reference point; d0<=0.0 means
-                             // 'any distance" and values of 
+                             // 'any distance" and values of
                              // x0, y0 and z0 are ignored
              int  selKey     // selection key
                     )  {
@@ -919,7 +944,7 @@ pstr      charge_l;
 
   if (m1>=0)
     m2 = m1+1;     // will take only this model
-  else  { 
+  else  {
     m1 = 0;        // will take
     m2 = nModels;  //   all models
   }
@@ -978,7 +1003,7 @@ pstr      charge_l;
                             dx  = atom->x - x0;
                             dy  = atom->y - y0;
                             dz  = atom->z - z0;
-                            Sel = Sel && ((dx*dx+dy*dy+dz*dz)<=d02);  
+                            Sel = Sel && ((dx*dx+dy*dy+dz*dz)<=d02);
                           }
                         } else
                           Sel = False;
@@ -1250,7 +1275,7 @@ pstr      aloc_l;
   m1      = iModel-1;
   if (m1>=0)
     m2 = m1+1;     // will take only this model
-  else  { 
+  else  {
     m1 = 0;        // will take
     m2 = nModels;  //   all models
   }
@@ -1444,7 +1469,7 @@ PCModel   model;
           res = (PCResidue)Selection[k2][i];
           if (res)
             switch (selType)  {
-	    case STYPE_ATOM  :   for (j=0;j<res->nAtoms;j++)  {
+              case STYPE_ATOM  : for (j=0;j<res->nAtoms;j++)  {
                                    atom = res->atom[j];
                                    if (atom)  {
                                      if (!atom->Ter)
@@ -1686,7 +1711,7 @@ Boolean   doSelect;
 }
 
 
-void CMMDBSelManager::SelectUDD ( 
+void CMMDBSelManager::SelectUDD (
              int    selHnd, // must be obtained from NewSelection()
              int   selType, // selection type STYPE_XXXXX
              int UDDhandle, // UDD handle
@@ -1817,10 +1842,10 @@ Boolean   selAND;
 
   MakeSelIndex ( selHnd,selType,nsel );
 
-}                          
+}
 
 
-void CMMDBSelManager::SelectUDD ( 
+void CMMDBSelManager::SelectUDD (
              int      selHnd, // must be obtained from NewSelection()
              int     selType, // selection type STYPE_XXXXX
              int   UDDhandle, // UDD handle
@@ -1952,7 +1977,7 @@ Boolean   selAND;
 
   MakeSelIndex ( selHnd,selType,nsel );
 
-}                          
+}
 
 
 Boolean selSUDD ( cpstr sudd, cpstr selStr, int cmpRule, int ssLen )  {
@@ -1991,7 +2016,7 @@ Boolean selSUDD ( cpstr sudd, cpstr selStr, int cmpRule, int ssLen )  {
 }
 
 
-void CMMDBSelManager::SelectUDD ( 
+void CMMDBSelManager::SelectUDD (
              int   selHnd,    // must be obtained from NewSelection()
              int   selType,   // selection type STYPE_XXXXX
              int   UDDhandle, // UDD handle
@@ -2122,7 +2147,7 @@ Boolean   selAND;
 
   MakeSelIndex ( selHnd,selType,nsel );
 
-}                          
+}
 
 
 void CMMDBSelManager::SelectSphere (
@@ -2200,12 +2225,12 @@ PCModel   model;
               if (dz<=r)  {
                 if (dx*dx+dy*dy+dz*dz<=r2)  {
                   ASel = True;
-                  SelectAtom ( A[i],k,sk,nsel ); 
+                  SelectAtom ( A[i],k,sk,nsel );
                 }
               }
             }
           }
-        } 
+        }
         if (!ASel)  A[i]->RemoveMask ( Mask[k] );
       }
 
@@ -2227,7 +2252,7 @@ PCModel   model;
                   atom = res->atom[i];
                   if (atom) {
                     ASel = False;
-                    if ((!atom->Ter) && 
+                    if ((!atom->Ter) &&
                         (atom->WhatIsSet & ASET_Coordinates))  {
                       dx = fabs(atom->x-x);
                       if (dx<=r)  {
@@ -2376,7 +2401,7 @@ PCModel   model;
           b2 = dx*dx + dy*dy + dz*dz;
           c1 = (c2-a2+b2)/dc;
           if ((0.0<=c1) && (c1<=c) && (b2-c1*c1<=r2))
-            SelectAtom ( A[i],k,sk,nsel ); 
+            SelectAtom ( A[i],k,sk,nsel );
           else if (sk==SKEY_AND)
             A[i]->RemoveMask ( Mask[k] );
         }
@@ -2399,7 +2424,7 @@ PCModel   model;
                 for (i=0;i<res->nAtoms;i++)  {
                   atom = res->atom[i];
                   if (atom) {
-                    if ((!atom->Ter) && 
+                    if ((!atom->Ter) &&
                         (atom->WhatIsSet & ASET_Coordinates))  {
                       dx = fabs(atom->x-x1);
                       dy = fabs(atom->y-y1);
@@ -2461,9 +2486,9 @@ void CMMDBSelManager::SelectSlab (
 //              a*x + b*y + c*z = d
 //
 //  is found as
-//  
+//
 //              h = (d-a*x0-b*y0-c*z0)/sqrt(a^2+b^2+c^2)
-//  
+//
 //  If |h|<d then point (x0,y0,z0) belongs to the slab.
 //
 int       i,k, nat,sk,nsel, im,ic,ir;
@@ -2525,7 +2550,7 @@ PCModel   model;
         if ((!A[i]->Ter) && (A[i]->WhatIsSet & ASET_Coordinates))  {
           h = fabs(d-a*A[i]->x-b*A[i]->y-c*A[i]->z)/v;
           if (h<=r)
-            SelectAtom ( A[i],k,sk,nsel ); 
+            SelectAtom ( A[i],k,sk,nsel );
           else if (sk==SKEY_AND)
             A[i]->RemoveMask ( Mask[k] );
         }
@@ -2548,7 +2573,7 @@ PCModel   model;
                 for (i=0;i<res->nAtoms;i++)  {
                   atom = res->atom[i];
                   if (atom) {
-                    if ((!atom->Ter) && 
+                    if ((!atom->Ter) &&
                         (atom->WhatIsSet & ASET_Coordinates))  {
                       h = fabs(d-a*A[i]->x-b*A[i]->y-c*A[i]->z)/v;
                       if (h<=r)  {
@@ -2723,7 +2748,7 @@ Boolean   ASel,resSel,chainSel,modelSel,selAND;
                 for (i=0;(i<res->nAtoms) && (!resSel);i++)  {
                   atom = res->atom[i];
                   if (atom) {
-                    if ((!atom->Ter) && 
+                    if ((!atom->Ter) &&
                         (atom->WhatIsSet & ASET_Coordinates))  {
                       GetBrickCoor ( atom,nx,ny,nz );
                       if (nx<0) nx++;

@@ -180,6 +180,7 @@ class CMMDBFile : public CUDData  {
                            byte gzipMode=GZM_CHECK );
     int   ReadCIFASCII1  ( cpstr CIFLFName,
                            byte gzipMode=GZM_CHECK );
+    int   ReadCIFASCII   ( RCFile f );
     int   ReadFromCIF    ( PCMMCIFData CIFD, Boolean fixSpaceGroup );
 
     // adds info from PDB file
@@ -193,6 +194,7 @@ class CMMDBFile : public CUDData  {
                            byte gzipMode=GZM_CHECK );
     int   ReadCoorFile1  ( cpstr CFName,
                            byte gzipMode=GZM_CHECK );
+    int   ReadCoorFile   ( RCFile f );
 
     int   WritePDBASCII  ( cpstr PDBFileName,
                            byte gzipMode=GZM_CHECK );
@@ -209,6 +211,7 @@ class CMMDBFile : public CUDData  {
                            byte gzipMode=GZM_CHECK );
     int   ReadMMDBF1     ( cpstr MMDBLFName,
                            byte gzipMode=GZM_CHECK );
+    int   ReadMMDBF      ( RCFile f );
     int   WriteMMDBF     ( cpstr MMDBFileName,
                            byte gzipMode=GZM_CHECK );
     int   WriteMMDBF1    ( cpstr MMDBLFName,
@@ -625,6 +628,7 @@ class CMMDBFile : public CUDData  {
 //         but of a wrong edition (i.e. produced by a lower
 //         version of MMDB).
 extern int isMMDBBIN ( cpstr FName, byte gzipMode=GZM_CHECK );
+extern int isMMDBBIN ( RCFile f );
 
 //  isPDB will return
 //    -1   if file FName does not exist
@@ -632,6 +636,7 @@ extern int isMMDBBIN ( cpstr FName, byte gzipMode=GZM_CHECK );
 //     1   if file FName is not a PDB file
 extern int isPDB ( cpstr FName, byte gzipMode=GZM_CHECK,
                    Boolean IgnoreBlankLines=False );
+extern int isPDB ( RCFile f, Boolean IgnoreBlankLines=False );
 
 #endif
 

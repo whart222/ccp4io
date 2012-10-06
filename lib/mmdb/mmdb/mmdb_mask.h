@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -51,8 +51,8 @@
 
 //  ====================  CMask  ========================
 
-DefineClass(CMask);
-DefineStreamFunctions(CMask);
+DefineClass(CMask)
+DefineStreamFunctions(CMask)
 
 class CMask : public CStream  {
 
@@ -75,6 +75,8 @@ class CMask : public CStream  {
 
     Boolean CheckMask ( PCMask Mask ); //  True if the bit is on
     Boolean isMask    ();              // true if any mask bit is on
+
+    inline int getLength() { return mlen; }
 
     pstr Print ( pstr S ); // returns binary string
 

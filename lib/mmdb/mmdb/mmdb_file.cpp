@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -287,7 +287,7 @@ Boolean      fixSpaceGroup,fend;
     } else  {
       RC = Title.ConvertPDBString(S);
       if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
-        RC = 0; 
+        RC = 0;
       if (RC)  break;
     }
     fend = f.FileEnd();
@@ -311,7 +311,7 @@ Boolean      fixSpaceGroup,fend;
     } else  {
       RC = crModel->ConvertPDBString ( S );
       if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
-        RC = 0; 
+        RC = 0;
       if (RC)  break;
     }
     fend = f.FileEnd();
@@ -326,7 +326,7 @@ Boolean      fixSpaceGroup,fend;
 
   // temporary solution: the rest of file is stored
   // in the form of strings
-  while (!f.FileEnd()          && 
+  while (!f.FileEnd()          &&
          strncmp(S,"CRYST" ,5) &&
          strncmp(S,"ORIGX" ,5) &&
          strncmp(S,"SCALE" ,5) &&
@@ -363,7 +363,7 @@ Boolean      fixSpaceGroup,fend;
   do {
     RC = Cryst.ConvertPDBString(S,fixSpaceGroup);
     if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
-      RC = 0; 
+      RC = 0;
     if (RC)  break;
     fend = f.FileEnd();
     if (!fend)  {
@@ -376,7 +376,7 @@ Boolean      fixSpaceGroup,fend;
   if (!RC)  {
     RC = Cryst.ConvertPDBString(S,fixSpaceGroup);
     if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
-      RC = Error_WrongSection; 
+      RC = Error_WrongSection;
   }
 
   Cryst.CalcCoordTransforms();
@@ -387,7 +387,7 @@ Boolean      fixSpaceGroup,fend;
 
   // temporary solution: the rest of file is stored
   // in the form of strings
-  while (!f.FileEnd()          && 
+  while (!f.FileEnd()          &&
          strncmp(S,"MODEL ",6) &&
          strncmp(S,"ATOM  ",6) &&
          strncmp(S,"SIGATM",6) &&
@@ -460,7 +460,25 @@ pstr FName;
 
 int  CMMDBFile::ReadCIFASCII ( cpstr CIFFileName, byte gzipMode )  {
 CFile f;
-int   W;
+int   rc;
+
+  //  open the file as ASCII for reading
+  //  opening it in pseudo-binary mode helps reading various
+  //  line terminators for files coming from different platforms
+  f.assign ( CIFFileName,False,False,gzipMode );
+
+  if (f.reset(True)) {
+    rc = ReadCIFASCII ( f );
+    f.shut();
+  } else
+    rc = Error_CantOpenFile;
+
+  return rc;
+
+}
+
+int  CMMDBFile::ReadCIFASCII ( RCFile f )  {
+int     W;
 Boolean fixSpaceGroup;
 
   //  remove previous data
@@ -475,45 +493,33 @@ Boolean fixSpaceGroup;
   allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
   enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
   fixSpaceGroup          = (Flags & MMDBF_FixSpaceGroup         ) != 0;
-  
-  //  open the file as ASCII for reading
-  //  opening it in pseudo-binary mode helps reading various
-  //  line terminators for files coming from different platforms
-  f.assign ( CIFFileName,False,False,gzipMode );
 
-  if (f.reset(True)) {
+  CIFErrorLocation[0] = char(0);  // CIF reading phase
 
-    CIFErrorLocation[0] = char(0);  // CIF reading phase
+  lcount = 0;  // line counter
+  S[0]   = char(0);
 
-    lcount = 0;  // line counter
-    S[0]   = char(0);
+  if (f.FileEnd())
+    return Error_EmptyFile;
 
-    if (f.FileEnd())  {
-      f.shut();
-      return Error_EmptyFile;
-    }
+  if (!CIF)  CIF = new CMMCIFData();
+  CIF->SetStopOnWarning  ( True );
+  CIF->SetPrintWarnings  ( (Flags & MMDBF_PrintCIFWarnings)!=0 );
+  W = CIF->ReadMMCIFData ( f,S,lcount );
 
-    if (!CIF)  CIF = new CMMCIFData();
-    CIF->SetStopOnWarning  ( True );
-    CIF->SetPrintWarnings  ( (Flags & MMDBF_PrintCIFWarnings)!=0 );
-    W = CIF->ReadMMCIFData ( f,S,lcount );
-    f.shut();
-    if (W)  {
-      if (W==CIFRC_NoDataLine)        return Error_NotACIFFile;
-      if (W & CIFW_UnrecognizedItems) return Error_UnrecognCIFItems;
-      if (W & CIFW_MissingField)      return Error_MissingCIFField;
-      if (W & CIFW_EmptyLoop)         return Error_EmptyCIFLoop;
-      if (W & CIFW_UnexpectedEOF)     return Error_UnexpEndOfCIF;
-      if (W & CIFW_LoopFieldMissing)  return Error_MissgCIFLoopField;
-      if (W & CIFW_NotAStructure)     return Error_NotACIFStructure;
-      if (W & CIFW_NotALoop)          return Error_NotACIFLoop;
-      return int(W);
-    }
+  if (W)  {
+    if (W==CIFRC_NoDataLine)        return Error_NotACIFFile;
+    if (W & CIFW_UnrecognizedItems) return Error_UnrecognCIFItems;
+    if (W & CIFW_MissingField)      return Error_MissingCIFField;
+    if (W & CIFW_EmptyLoop)         return Error_EmptyCIFLoop;
+    if (W & CIFW_UnexpectedEOF)     return Error_UnexpEndOfCIF;
+    if (W & CIFW_LoopFieldMissing)  return Error_MissgCIFLoopField;
+    if (W & CIFW_NotAStructure)     return Error_NotACIFStructure;
+    if (W & CIFW_NotALoop)          return Error_NotACIFLoop;
+    return int(W);
+  }
 
-    return ReadFromCIF ( CIF,fixSpaceGroup );
-
-  } else
-    return Error_CantOpenFile;
+  return ReadFromCIF ( CIF,fixSpaceGroup );
 
 }
 
@@ -622,6 +628,35 @@ Boolean IBL;
     return ReadPDBASCII ( CFName,gzipMode );
   if (isCIF(CFName,gzipMode)==0)
     return ReadCIFASCII ( CFName,gzipMode );
+
+  return Error_ForeignFile;
+
+}
+
+
+int CMMDBFile::ReadCoorFile ( RCFile f )  {
+// auto format recognition
+int     kin;
+Boolean IBL;
+
+  kin = isMMDBBIN ( f );
+  f.reset ( True );
+  if (kin==Error_EmptyFile)
+              return Error_EmptyFile;
+  if (kin<0)  return Error_CantOpenFile;
+
+  if (kin==0) return  ReadMMDBF ( f );
+
+  IBL = ((Flags & MMDBF_IgnoreBlankLines)!=0);
+  kin = isPDB ( f,IBL );
+  f.reset ( True );
+  if (kin==0)
+    return ReadPDBASCII ( f );
+
+  kin = isCIF ( f );
+  f.reset ( True );
+  if (kin==0)
+    return ReadCIFASCII ( f );
 
   return Error_ForeignFile;
 
@@ -769,7 +804,7 @@ Boolean   NewChain,Done,Solvent;
               }
             }
           }
-        }  
+        }
         c = 'A';
         if (CleanKey & PDBCLEAN_CHAIN_STRONG)  {
           // rename all chains through from A to Z
@@ -833,7 +868,7 @@ Boolean   NewChain,Done,Solvent;
               nal++;
             }
           }
-        }  
+        }
       }
     c = 'A';
     if (CleanKey & PDBCLEAN_ALTCODE_STRONG)
@@ -1493,7 +1528,7 @@ int k;
 
   if (!(Cryst.WhatIsSet & CSET_Transforms))
     return CRRDY_NoTransfMatrices;
- 
+
   if ((Cryst.WhatIsSet & CSET_CellParams)!=CSET_CellParams)
     return CRRDY_NoCell;
 
@@ -1660,7 +1695,7 @@ int         RC,i,index,nATS;
     if (RC && (RC!=Error_CIF_EmptyRow))  return RC;
   }
   if (Flags & MMDBF_AutoSerials)
-    PDBCleanup ( PDBCLEAN_SERIAL ); 
+    PDBCleanup ( PDBCLEAN_SERIAL );
 
   return 0;
 
@@ -1708,7 +1743,7 @@ int  CMMDBFile::PutAtom ( int            index,
 
 int i,kndex,RC;
 
-  kndex = index; 
+  kndex = index;
 
   if (kndex<0)  {  // the new atom is to be inserted
 
@@ -1719,7 +1754,7 @@ int i,kndex,RC;
     if (Atom[kndex-1]!=NULL)  { // the position is occupied
 
       // expand the array if necessary
-      if (nAtoms>=AtmLen)  
+      if (nAtoms>=AtmLen)
         ExpandAtomArray ( IMax(kndex,nAtoms)+1000-AtmLen );
 
       // now shift all atoms from (kndex-1)th to the end of array.
@@ -1729,7 +1764,7 @@ int i,kndex,RC;
         Atom[i] = Atom[i-1];
         Atom[i]->index = i+1;  // this is Ok because residues keep
                                // POINTERS rather than indices!
-      }  
+      }
       Atom[kndex-1] = NULL;
       nAtoms++;
 
@@ -1738,7 +1773,7 @@ int i,kndex,RC;
   }
 
   if (kndex==0)  kndex = nAtoms+1;
-	
+
   if (!crModel)  SwitchModel ( 1 );
 
 
@@ -1764,7 +1799,7 @@ int i,kndex,RC,sn;
 
   if (!A)  return -1;
 
-  kndex = index; 
+  kndex = index;
 
   if (kndex<0)  {  // the new atom is to be inserted
 
@@ -1776,7 +1811,7 @@ int i,kndex,RC,sn;
     if (Atom[kndex-1]!=NULL)  { // the position is occupied
 
       // expand the array if necessary
-      if (nAtoms>=AtmLen)  
+      if (nAtoms>=AtmLen)
         ExpandAtomArray ( IMax(kndex,nAtoms)+1000-AtmLen );
       // now shift all atoms from (kndex-1)th to the end of array.
       // note that this does not affect residues as they keep only
@@ -1820,7 +1855,7 @@ int i,kndex;
 
   if (!A)  return -1;
 
-  kndex = index; 
+  kndex = index;
 
   if (kndex<0)  {  // the new atom is to be inserted
 
@@ -1832,7 +1867,7 @@ int i,kndex;
     if (Atom[kndex-1]!=NULL)  { // the position is occupied
 
       // expand the array if necessary
-      if (nAtoms>=AtmLen)  
+      if (nAtoms>=AtmLen)
         ExpandAtomArray ( IMax(kndex,nAtoms)+1000-AtmLen );
       // now shift all atoms from (kndex-1)th to the end of array.
       // note that this does not affect residues as they keep only
@@ -1873,13 +1908,13 @@ int     i,j,k,k1,kndex;
   if (!A)  return -1;
 
   A1    = NULL;
-  kndex = index; 
+  kndex = index;
 
   if (kndex<0)  {  // the new atoms are to be inserted
 
     kndex = -kndex;
 
-    if (nAtoms+natms>=AtmLen)  
+    if (nAtoms+natms>=AtmLen)
       ExpandAtomArray ( IMax(kndex,nAtoms)+1000+natms-AtmLen );
 
     if (kndex<nAtoms)
@@ -2034,7 +2069,7 @@ InsCode  insCode;
 
   return AllocateAtom ( index ,chainID,resName,
                         seqNum,insCode,False );
- 
+
 }
 
 int CMMDBFile::CheckAtomPlace ( int index, PCMMCIFLoop Loop )  {
@@ -2048,8 +2083,8 @@ pstr     F;
   // Get the residue sequence number/insert code. They are
   // removed from the file after reading.
   k = index-1;
-  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,k)
-   || !CIFGetInteger1(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,k))
+//  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,k))
+  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,k))
     CIFGetString  ( insCode,Loop,CIFTAG_NDB_INS_CODE,k,
                     sizeof(InsCode),pstr("") );
   else  {
@@ -2069,13 +2104,9 @@ pstr     F;
   }
 
   // get chain/residue ID
-  RC = CIFGetString ( chainID,Loop,CIFTAG_AUTH_ASYM_ID,k,
+  CIFGetString ( chainID,Loop,CIFTAG_AUTH_ASYM_ID,k,
                  sizeof(ChainID),pstr("") );
-  if (RC)  CIFGetString ( chainID,Loop,CIFTAG_AUTH_SEQ_ID,k,
-                 sizeof(ChainID),pstr("") );
-  RC = CIFGetString ( resName,Loop,CIFTAG_AUTH_COMP_ID,k,
-                 sizeof(ResName),pstr("") );
-  if (RC) CIFGetString ( resName,Loop,CIFTAG_LABEL_COMP_ID,k,
+  CIFGetString ( resName,Loop,CIFTAG_AUTH_COMP_ID,k,
                  sizeof(ResName),pstr("") );
 
   if (!CIFGetInteger1(nM,Loop,CIFTAG_PDBX_PDB_MODEL_NUM,k))  {
@@ -2087,7 +2118,7 @@ pstr     F;
 
   return AllocateAtom ( index ,chainID,resName,
                         seqNum,insCode,False );
- 
+
 }
 
 
@@ -2185,7 +2216,7 @@ PPCAtom Atom1;
 int     i;
   AtmLen += inc;
   Atom1   = new PCAtom[AtmLen];
-  for (i=0;i<nAtoms;i++)      
+  for (i=0;i<nAtoms;i++)
     Atom1[i] = Atom[i];
   for (i=nAtoms;i<AtmLen;i++)
     Atom1[i] = NULL;
@@ -2203,7 +2234,7 @@ int     i;
   if (nAtoms+inc>AtmLen)  {
     AtmLen = nAtoms+inc;
     Atom1  = new PCAtom[AtmLen];
-    for (i=0;i<nAtoms;i++)      
+    for (i=0;i<nAtoms;i++)
       Atom1[i] = Atom[i];
     for (i=nAtoms;i<AtmLen;i++)
       Atom1[i] = NULL;
@@ -2331,27 +2362,35 @@ pstr FName;
 }
 
 int  CMMDBFile::ReadMMDBF ( cpstr MMDBFileName, byte gzipMode )  {
-char  Label[100];
-byte  Version;
 CFile f;
+int   rc;
 
   f.assign ( MMDBFileName,False,True,gzipMode );
   FType = MMDB_FILE_Binary;
   if (f.reset(True))  {
-    f.ReadFile ( Label,sizeof(MMDBFLabel) );
-    if (strncmp(Label,MMDBFLabel,sizeof(MMDBFLabel)))  {
-      f.shut();
-      return Error_ForeignFile;
-    }
-    f.ReadByte ( &Version );
-    if (Version>Edition)  {
-      f.shut();
-      return Error_WrongEdition;
-    }
-    read ( f );
+    rc = ReadMMDBF ( f );
     f.shut();
   } else
-    return Error_CantOpenFile;
+    rc = Error_CantOpenFile;
+
+  return rc;
+
+}
+
+int  CMMDBFile::ReadMMDBF ( RCFile f )  {
+char  Label[100];
+byte  Version;
+
+  FType = MMDB_FILE_Binary;
+  f.ReadFile ( Label,sizeof(MMDBFLabel) );
+  if (strncmp(Label,MMDBFLabel,sizeof(MMDBFLabel)))
+    return Error_ForeignFile;
+
+  f.ReadByte ( &Version );
+  if (Version>Edition)
+    return Error_WrongEdition;
+
+  read ( f );
 
   return 0;
 
@@ -2683,9 +2722,9 @@ int i;
         Model[i]->_copy ( MMDBFile->Model[i] );
       } else
         Model[i] = NULL;
-    } 
+    }
   }
- 
+
   SA      .Copy ( &MMDBFile->SA       );
   Footnote.Copy ( &MMDBFile->Footnote );
   SB      .Copy ( &MMDBFile->SB       );
@@ -2829,7 +2868,7 @@ byte Version;
         // model->chain below
       } else
         Atom[i] = NULL;
-    } 
+    }
   }
 
   f.ReadInt ( &nModels );
@@ -2843,7 +2882,7 @@ byte Version;
         Model[i]->read ( f );
       } else
         Model[i] = NULL;
-    } 
+    }
   }
 
   SA      .read ( f );
@@ -2859,114 +2898,131 @@ byte Version;
 MakeStreamFunctions(CMMDBFile)
 
 
-
 int isMMDBBIN ( cpstr FName, byte gzipMode )  {
-char  Label[100];
-byte  Version;
 CFile f;
+int   rc;
 
   f.assign ( FName,False,True,gzipMode );
   if (f.reset(True))  {
-    if (f.FileEnd())  {
-      f.shut();
-      return Error_EmptyFile;
-    }
-    f.ReadFile ( Label,sizeof(MMDBFLabel) );
-    if (strncmp(Label,MMDBFLabel,sizeof(MMDBFLabel)))  {
-      f.shut();
-      return 1;
-    }
-    f.ReadByte ( &Version );
+    rc = isMMDBBIN ( f );
     f.shut();
-    if (Version>Edition)  return 2;
-                    else  return 0;
   } else
-    return -1;
+    rc = -1;
+
+  return rc;
+
+}
+
+int isMMDBBIN ( RCFile f )  {
+char  Label[100];
+byte  Version;
+
+  if (f.FileEnd())
+    return Error_EmptyFile;
+
+  f.ReadFile ( Label,sizeof(MMDBFLabel) );
+  if (strncmp(Label,MMDBFLabel,sizeof(MMDBFLabel)))
+    return 1;
+
+  f.ReadByte ( &Version );
+
+  if (Version>Edition)  return 2;
+                  else  return 0;
 
 }
 
 
 int isPDB ( cpstr FName, byte gzipMode, Boolean IgnoreBlankLines )  {
-CFile   f;
+CFile f;
+int   rc;
+
+  f.assign ( FName,False,False,gzipMode );
+  if (f.reset(True))  {
+    //  opening it in pseudo-binary mode helps reading various
+    //  line terminators for files coming from different platforms
+    rc = isPDB ( f,IgnoreBlankLines );
+    f.shut();
+  } else
+    rc = -1;
+
+  return rc;
+
+}
+
+int isPDB ( RCFile f, Boolean IgnoreBlankLines )  {
 char    S[256];
 int     i;
 Boolean Done;
 
-  //  opening it in pseudo-binary mode helps reading various
-  //  line terminators for files coming from different platforms
-  f.assign ( FName,False,False,gzipMode );
-  if (f.reset(True))  {
-    if (f.FileEnd())  {
-      f.shut();
-      return Error_EmptyFile;
+  if (f.FileEnd())
+    return Error_EmptyFile;
+
+  do {
+    Done = True;
+    f.ReadLine ( S,sizeof(S)-1 );
+    if (IgnoreBlankLines)  {
+      i = 0;
+      while (S[i] && (S[i]==' '))  i++;
+      if (!S[i])  Done = False;
     }
-    do {
-      Done = True;
-      f.ReadLine ( S,sizeof(S)-1 );
-      if (IgnoreBlankLines)  {
-        i = 0;
-        while (S[i] && (S[i]==' '))  i++;
-        if (!S[i])  Done = False;
-      }
-    } while ((!f.FileEnd()) && (!Done));
-    f.shut();
-    PadSpaces  ( S,80 );
-    if (!strncasecmp(S,"HEADER",6))  return 0;
-    if (!strncasecmp(S,"OBSLTE",6))  return 0;
-    if (!strncasecmp(S,"TITLE ",6))  return 0;
-    if (!strncasecmp(S,"CAVEAT",6))  return 0;
-    if (!strncasecmp(S,"COMPND",6))  return 0;
-    if (!strncasecmp(S,"SOURCE",6))  return 0;
-    if (!strncasecmp(S,"KEYWDS",6))  return 0;
-    if (!strncasecmp(S,"EXPDTA",6))  return 0;
-    if (!strncasecmp(S,"AUTHOR",6))  return 0;
-    if (!strncasecmp(S,"REVDAT",6))  return 0;
-    if (!strncasecmp(S,"SPRSDE",6))  return 0;
-    if (!strncasecmp(S,"JRNL  ",6))  return 0;
-    if (!strncasecmp(S,"REMARK",6))  return 0;
-    if (!strncasecmp(S,"DBREF ",6))  return 0;
-    if (!strncasecmp(S,"SEQADV",6))  return 0;
-    if (!strncasecmp(S,"SEQRES",6))  return 0;
-    if (!strncasecmp(S,"MODRES",6))  return 0;
-    if (!strncasecmp(S,"HET   ",6))  return 0;
-    if (!strncasecmp(S,"HETNAM",6))  return 0;
-    if (!strncasecmp(S,"HETSYN",6))  return 0;
-    if (!strncasecmp(S,"FORMUL",6))  return 0;
-    if (!strncasecmp(S,"HELIX ",6))  return 0;
-    if (!strncasecmp(S,"SHEET ",6))  return 0;
-    if (!strncasecmp(S,"TURN  ",6))  return 0;
-    if (!strncasecmp(S,"SSBOND",6))  return 0;
-    if (!strncasecmp(S,"LINK  ",6))  return 0;
-    if (!strncasecmp(S,"HYDBND",6))  return 0;
-    if (!strncasecmp(S,"SLTBRG",6))  return 0;
-    if (!strncasecmp(S,"CISPEP",6))  return 0;
-    if (!strncasecmp(S,"SITE  ",6))  return 0;
-    if (!strncasecmp(S,"CRYST1",6))  return 0;
-    if (!strncasecmp(S,"CRYST ",6))  return 0;
-    if (!strncasecmp(S,"ORIGX1",6))  return 0;
-    if (!strncasecmp(S,"ORIGX2",6))  return 0;
-    if (!strncasecmp(S,"ORIGX3",6))  return 0;
-    if (!strncasecmp(S,"SCALE1",6))  return 0;
-    if (!strncasecmp(S,"SCALE2",6))  return 0;
-    if (!strncasecmp(S,"SCALE3",6))  return 0;
-    if (!strncasecmp(S,"MTRIX1",6))  return 0;
-    if (!strncasecmp(S,"MTRIX2",6))  return 0;
-    if (!strncasecmp(S,"MTRIX3",6))  return 0;
-    if (!strncasecmp(S,"TVECT ",6))  return 0;
-    if (!strncasecmp(S,"MODEL ",6))  return 0;
-    if (!strncasecmp(S,"ATOM  ",6))  return 0;
-    if (!strncasecmp(S,"SIGATM",6))  return 0;
-    if (!strncasecmp(S,"ANISOU",6))  return 0;
-    if (!strncasecmp(S,"SIGUIJ",6))  return 0;
-    if (!strncasecmp(S,"TER   ",6))  return 0;
-    if (!strncasecmp(S,"HETATM",6))  return 0;
-    if (!strncasecmp(S,"ENDMDL",6))  return 0;
-    if (!strncasecmp(S,"CONECT",6))  return 0;
-    if (!strncasecmp(S,"MASTER",6))  return 0;
-    if (!strncasecmp(S,"END   ",6))  return 0;
-    if (!strncasecmp(S,"USER  ",6))  return 0;
-    return  1;
-  } else
-    return -1;
+  } while ((!f.FileEnd()) && (!Done));
+
+  PadSpaces  ( S,80 );
+  if (!strncasecmp(S,"HEADER",6))  return 0;
+  if (!strncasecmp(S,"OBSLTE",6))  return 0;
+  if (!strncasecmp(S,"TITLE ",6))  return 0;
+  if (!strncasecmp(S,"CAVEAT",6))  return 0;
+  if (!strncasecmp(S,"COMPND",6))  return 0;
+  if (!strncasecmp(S,"SOURCE",6))  return 0;
+  if (!strncasecmp(S,"KEYWDS",6))  return 0;
+  if (!strncasecmp(S,"EXPDTA",6))  return 0;
+  if (!strncasecmp(S,"AUTHOR",6))  return 0;
+  if (!strncasecmp(S,"REVDAT",6))  return 0;
+  if (!strncasecmp(S,"SPRSDE",6))  return 0;
+  if (!strncasecmp(S,"JRNL  ",6))  return 0;
+  if (!strncasecmp(S,"REMARK",6))  return 0;
+  if (!strncasecmp(S,"DBREF ",6))  return 0;
+  if (!strncasecmp(S,"SEQADV",6))  return 0;
+  if (!strncasecmp(S,"SEQRES",6))  return 0;
+  if (!strncasecmp(S,"MODRES",6))  return 0;
+  if (!strncasecmp(S,"HET   ",6))  return 0;
+  if (!strncasecmp(S,"HETNAM",6))  return 0;
+  if (!strncasecmp(S,"HETSYN",6))  return 0;
+  if (!strncasecmp(S,"FORMUL",6))  return 0;
+  if (!strncasecmp(S,"HELIX ",6))  return 0;
+  if (!strncasecmp(S,"SHEET ",6))  return 0;
+  if (!strncasecmp(S,"TURN  ",6))  return 0;
+  if (!strncasecmp(S,"SSBOND",6))  return 0;
+  if (!strncasecmp(S,"LINK  ",6))  return 0;
+  if (!strncasecmp(S,"HYDBND",6))  return 0;
+  if (!strncasecmp(S,"SLTBRG",6))  return 0;
+  if (!strncasecmp(S,"CISPEP",6))  return 0;
+  if (!strncasecmp(S,"SITE  ",6))  return 0;
+  if (!strncasecmp(S,"CRYST1",6))  return 0;
+  if (!strncasecmp(S,"CRYST ",6))  return 0;
+  if (!strncasecmp(S,"ORIGX1",6))  return 0;
+  if (!strncasecmp(S,"ORIGX2",6))  return 0;
+  if (!strncasecmp(S,"ORIGX3",6))  return 0;
+  if (!strncasecmp(S,"SCALE1",6))  return 0;
+  if (!strncasecmp(S,"SCALE2",6))  return 0;
+  if (!strncasecmp(S,"SCALE3",6))  return 0;
+  if (!strncasecmp(S,"MTRIX1",6))  return 0;
+  if (!strncasecmp(S,"MTRIX2",6))  return 0;
+  if (!strncasecmp(S,"MTRIX3",6))  return 0;
+  if (!strncasecmp(S,"TVECT ",6))  return 0;
+  if (!strncasecmp(S,"MODEL ",6))  return 0;
+  if (!strncasecmp(S,"ATOM  ",6))  return 0;
+  if (!strncasecmp(S,"SIGATM",6))  return 0;
+  if (!strncasecmp(S,"ANISOU",6))  return 0;
+  if (!strncasecmp(S,"SIGUIJ",6))  return 0;
+  if (!strncasecmp(S,"TER   ",6))  return 0;
+  if (!strncasecmp(S,"HETATM",6))  return 0;
+  if (!strncasecmp(S,"ENDMDL",6))  return 0;
+  if (!strncasecmp(S,"CONECT",6))  return 0;
+  if (!strncasecmp(S,"MASTER",6))  return 0;
+  if (!strncasecmp(S,"END   ",6))  return 0;
+  if (!strncasecmp(S,"USER  ",6))  return 0;
+
+  return  1;
 
 }

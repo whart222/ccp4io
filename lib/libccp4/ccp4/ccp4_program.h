@@ -39,8 +39,8 @@ namespace CCP4 {
 extern "C" {
 #endif
 
-#define CCP4_VERSION_NO "6.2"
-#define CCP4_PATCH_LEVEL "6.2.992"
+#define CCP4_VERSION_NO "6.3"
+#define CCP4_PATCH_LEVEL "6.3.0"
 
 /* Maximum lengths of strings holding program names and versions */
 #define MAXLEN_PROGNAME    80
@@ -55,7 +55,7 @@ extern "C" {
 
 /* Define a type which is a pointer to a function taking an integer
    and a pointer to character, and returning an integer */
-typedef int (*CCP4INTFUNCPTR)(int, char *);
+typedef int (*CCP4INTFUNCPTR)(int, const char *);
 
 /*------------------------------------------------------------------*/
 
@@ -112,7 +112,7 @@ int ccp4VerbosityLevel(int level);
  * @return Result of the executed function (invoke mode)
  */
 int ccp4Callback(CCP4INTFUNCPTR mycallback, char *mode, int ierr,
-  const char *message);
+                 const char *message);
 
 /** Set a user-defined callback function
  * This is a wrapper to ccp4Callback - it stores a user-defined

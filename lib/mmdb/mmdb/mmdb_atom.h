@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -125,7 +125,7 @@ struct SAtomStat  {
 
     realtype GetMaxSize();
 
-  private : 
+  private :
     Boolean finished;
 
 };
@@ -211,7 +211,7 @@ class CAtom : public CUDData  {
     int   GetNBonds();
 
     //    This GetBonds(..) returns pointer to the CAtom's
-    //  internal Bond structure, IT MUST NOT BE DISPOSED. 
+    //  internal Bond structure, IT MUST NOT BE DISPOSED.
     void  GetBonds ( RPSAtomBond AtomBond, int & nAtomBonds );
     void  FreeBonds();
 
@@ -374,7 +374,7 @@ class CAtom : public CUDData  {
     // the only parameter, the atom ID, which is of the form:
     //    {name} {[element]} {:altcode}
     // Here {} means that the item may be omitted. Any item may be
-    // represented by a wildcard '*', which means 'any value'. Just 
+    // represented by a wildcard '*', which means 'any value'. Just
     // absence of an item means 'empty', which makes sense only for
     // alternate location code. Missing name or element therefore
     // mean 'any name' or 'any element', correspondingly (same as a
@@ -461,7 +461,7 @@ class CAtom : public CUDData  {
 #define SSE_Helix         6
 
 
-DefineFactoryFunctions(CResidue);
+DefineFactoryFunctions(CResidue)
 
 class CResidue : public CUDData  {
 
@@ -479,7 +479,7 @@ class CResidue : public CUDData  {
     int      nAtoms;   // number of atoms in the residue
     PPCAtom  atom;     // array of atoms
     byte     SSE;      // SSE type
-    
+
     CResidue ();
     CResidue ( PCChain Chain_Owner );
     CResidue ( PCChain Chain_Owner, const ResName resName,
@@ -705,7 +705,7 @@ class CResidue : public CUDData  {
 
     int      AtmLen;   // length of atom array
     Boolean  Exclude;  // used internally
-    
+
     void  InitResidue  ();
     void  FreeMemory   ();
     int   _AddAtom     ( PCAtom atm );

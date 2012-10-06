@@ -33,11 +33,6 @@
 #include "ccp4_unitcell.h"
 /* "$Id$" */
 
-// FIXME why is this necessary???
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
-
 /* stuff for error reporting */
 #define CMTZ_ERRNO(n) (CCP4_ERR_MTZ | (n))
 
