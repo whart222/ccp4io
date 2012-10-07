@@ -282,11 +282,11 @@
 	s##_len = size;
 
 #define FORTRAN_SUBR(NAME,name,p_sun,p_stardent,p_mvs) \
-    void name##_ p_sun
+    void NAME p_sun
 #define FORTRAN_CALL(NAME,name,p_sun,p_stardent,p_mvs) \
-    name##_ p_sun
+    NAME p_sun
 #define FORTRAN_FUN(val,NAME,name,p_sun,p_stardent,p_mvs) \
-    val name##_ p_sun
+    val NAME p_sun
 
 #else
 
@@ -306,7 +306,7 @@
     s##_len = size;
 
 #  define FORTRAN_SUBR(NAME,name,p_sun,p_stardent,p_mvs) \
-    void __stdcall name##_ p_mvs
+    void __stdcall NAME p_mvs
 #  define FORTRAN_CALL(NAME,name,p_sun,p_stardent,p_mvs) \
     NAME p_mvs
 #  define FORTRAN_FUN(val,NAME,name,p_sun,p_stardent,p_mvs) \
