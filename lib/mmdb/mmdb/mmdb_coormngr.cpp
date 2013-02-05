@@ -3838,73 +3838,75 @@ Boolean   swap;
 
   if (swap)  {
 
-    for (i=0;i<l1;i++)  {
-      // Find brick location
-      GetBrickCoor ( A1[i],nx,ny,nz );
-      if (nx>=0)  {
-        ix1 = IMax ( 0,nx-dn );
-        iy1 = IMax ( 0,ny-dn );
-        iz1 = IMax ( 0,nz-dn );
-        ix2 = IMin ( nbrick_x,nx+dn+1 );
-        iy2 = IMin ( nbrick_y,ny+dn+1 );
-        iz2 = IMin ( nbrick_z,nz+dn+1 );
-        for (ix=ix1;ix<ix2;ix++)
-          if (Brick[ix])
-            for (iy=iy1;iy<iy2;iy++)
-              if (Brick[ix][iy])
-                for (iz=iz1;iz<iz2;iz++)  {
-                  B = Brick[ix][iy][iz];
-                  if (B)
-                    for (j=0;j<B->nAtoms;j++)  {
-                      dx = A1[i]->x - B->Atom[j]->x;
-                      dy = A1[i]->y - B->Atom[j]->y;
-                      dz = A1[i]->z - B->Atom[j]->z;
-                      d2 = dx*dx + dy*dy + dz*dz;
-                      if (d2<=contDist2)  {
-                        contact[ncontacts].id1  = B->id[j];
-                        contact[ncontacts].id2  = i;
-                        contact[ncontacts].dist = d2;
-                        ncontacts++;
+    for (i=0;i<l1;i++)
+      if (A1[i])  {
+        // Find brick location
+        GetBrickCoor ( A1[i],nx,ny,nz );
+        if (nx>=0)  {
+          ix1 = IMax ( 0,nx-dn );
+          iy1 = IMax ( 0,ny-dn );
+          iz1 = IMax ( 0,nz-dn );
+          ix2 = IMin ( nbrick_x,nx+dn+1 );
+          iy2 = IMin ( nbrick_y,ny+dn+1 );
+          iz2 = IMin ( nbrick_z,nz+dn+1 );
+          for (ix=ix1;ix<ix2;ix++)
+            if (Brick[ix])
+              for (iy=iy1;iy<iy2;iy++)
+                if (Brick[ix][iy])
+                  for (iz=iz1;iz<iz2;iz++)  {
+                    B = Brick[ix][iy][iz];
+                    if (B)
+                      for (j=0;j<B->nAtoms;j++)  {
+                        dx = A1[i]->x - B->Atom[j]->x;
+                        dy = A1[i]->y - B->Atom[j]->y;
+                        dz = A1[i]->z - B->Atom[j]->z;
+                        d2 = dx*dx + dy*dy + dz*dz;
+                        if (d2<=contDist2)  {
+                          contact[ncontacts].id1  = B->id[j];
+                          contact[ncontacts].id2  = i;
+                          contact[ncontacts].dist = d2;
+                          ncontacts++;
+                        }
                       }
-                    }
-                }
+                  }
+        }
       }
-    }
 
   } else  {
 
-    for (i=0;i<l1;i++)  {
-      // Find brick location
-      GetBrickCoor ( A1[i],nx,ny,nz );
-      if (nx>=0)  {
-        ix1 = IMax ( 0,nx-dn );
-        iy1 = IMax ( 0,ny-dn );
-        iz1 = IMax ( 0,nz-dn );
-        ix2 = IMin ( nbrick_x,nx+dn+1 );
-        iy2 = IMin ( nbrick_y,ny+dn+1 );
-        iz2 = IMin ( nbrick_z,nz+dn+1 );
-        for (ix=ix1;ix<ix2;ix++)
-          if (Brick[ix])
-            for (iy=iy1;iy<iy2;iy++)
-              if (Brick[ix][iy])
-                for (iz=iz1;iz<iz2;iz++)  {
-                  B = Brick[ix][iy][iz];
-                  if (B)
-                    for (j=0;j<B->nAtoms;j++)  {
-                      dx = A1[i]->x - B->Atom[j]->x;
-                      dy = A1[i]->y - B->Atom[j]->y;
-                      dz = A1[i]->z - B->Atom[j]->z;
-                      d2 = dx*dx + dy*dy + dz*dz;
-                      if (d2<=contDist2)  {
-                        contact[ncontacts].id1  = i;
-                        contact[ncontacts].id2  = B->id[j];
-                        contact[ncontacts].dist = d2;
-                        ncontacts++;
+    for (i=0;i<l1;i++)
+      if (A1[i])  {
+        // Find brick location
+        GetBrickCoor ( A1[i],nx,ny,nz );
+        if (nx>=0)  {
+          ix1 = IMax ( 0,nx-dn );
+          iy1 = IMax ( 0,ny-dn );
+          iz1 = IMax ( 0,nz-dn );
+          ix2 = IMin ( nbrick_x,nx+dn+1 );
+          iy2 = IMin ( nbrick_y,ny+dn+1 );
+          iz2 = IMin ( nbrick_z,nz+dn+1 );
+          for (ix=ix1;ix<ix2;ix++)
+            if (Brick[ix])
+              for (iy=iy1;iy<iy2;iy++)
+                if (Brick[ix][iy])
+                  for (iz=iz1;iz<iz2;iz++)  {
+                    B = Brick[ix][iy][iz];
+                    if (B)
+                      for (j=0;j<B->nAtoms;j++)  {
+                        dx = A1[i]->x - B->Atom[j]->x;
+                        dy = A1[i]->y - B->Atom[j]->y;
+                        dz = A1[i]->z - B->Atom[j]->z;
+                        d2 = dx*dx + dy*dy + dz*dz;
+                        if (d2<=contDist2)  {
+                          contact[ncontacts].id1  = i;
+                          contact[ncontacts].id2  = B->id[j];
+                          contact[ncontacts].dist = d2;
+                          ncontacts++;
+                        }
                       }
-                    }
-                }
+                  }
+        }
       }
-    }
 
   }
 
@@ -3987,7 +3989,7 @@ int      ix,iy,iz;
 
 
 
-DefineClass(CSortContacts)
+DefineClass(CSortContacts);
 
 class CSortContacts : public CQuickSort  {
   public :

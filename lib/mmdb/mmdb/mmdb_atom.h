@@ -86,7 +86,7 @@ extern Boolean  ignoreNonCoorPDBErrors;
 extern Boolean  ignoreUnmatch;
 
 
-DefineStructure(SAtomStat);
+DefineStructure(SAtomStat)
 
 struct SAtomStat  {
 
@@ -131,7 +131,7 @@ struct SAtomStat  {
 };
 
 
-DefineStructure(SAtomBondI);
+DefineStructure(SAtomBondI)
 
 struct SAtomBondI  {
   int  index;  // bonded atom index
@@ -139,7 +139,7 @@ struct SAtomBondI  {
 };
 
 
-DefineStructure(SAtomBond);
+DefineStructure(SAtomBond)
 
 struct SAtomBond  {
   PCAtom atom;  // bonded atom pointer
@@ -147,7 +147,7 @@ struct SAtomBond  {
 };
 
 
-DefineFactoryFunctions(CAtom);
+DefineFactoryFunctions(CAtom)
 
 class CAtom : public CUDData  {
 

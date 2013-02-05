@@ -975,6 +975,7 @@ CCP4File *ccp4_file_open (const char *filename, const int flag)
       ccp4_signal(CCP4_ERRLEVEL(3) | CCP4_ERRNO(CIO_CantOpenFile),
                   "ccp4_file_open2", NULL);
       cfile->iostat = CIO_CantOpenFile;
+      free(cfile);
       return NULL; } 
 #if defined (__alpha) && defined (vms)
 (void) fflush (cfile->stream);
@@ -2094,7 +2095,7 @@ long ccp4_file_tell (CCP4File *cfile)
 
   if (cfile->buffered && cfile->stream) {
 #if !defined (_MSC_VER)
-    fflush (cfile->stream);
+    if ( cfile->last_op == WRITE_OP ) fflush (cfile->stream);
 #endif	
     result = (long) ftell(cfile->stream);
   } else

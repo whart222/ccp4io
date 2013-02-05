@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    29.01.10   <--  Date of Last Modification.
+//    16.01.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //                  CMMCIFData     ( mmCIF data block  )
 //                  CMMCIFFile     ( mmCIF file        )
 //
-//  (C) E. Krissinel 2000-2010
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -3584,6 +3584,34 @@ int  i1,i;
   return -nData; // the tag has been added on the top of array
 }
 
+
+int CMMCIFFile::DeleteMMCIFData ( cpstr DName )  {
+int dataNo = GetCIFDataNo ( DName );
+
+  if (dataNo>=0)  return DeleteMMCIFData ( dataNo );
+  return dataNo;
+
+}
+
+int CMMCIFFile::DeleteMMCIFData ( int dataNo )  {
+int i;
+
+  if ((0<=dataNo) && (dataNo<nData))  {
+
+    if (data[dataNo])  delete data[dataNo];
+    for (i=dataNo+1;i<nData;i++)
+      data[i-1] = data[i];
+    nData--;
+
+    Sort();
+
+    return 0;
+
+  }
+
+  return -nData;
+
+}
 
 void CMMCIFFile::Copy  ( PCMMCIFFile File )  {
 int i;

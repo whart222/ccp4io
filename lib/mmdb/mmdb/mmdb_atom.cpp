@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -22,18 +22,18 @@
 //
 //  =================================================================
 //
-//    04.02.09   <--  Date of Last Modification.
+//    14.11.12   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
 //  **** Module  :  MMDB_Atom  <implementation>
 //       ~~~~~~~~~
 //  **** Project :  MacroMolecular Data Base (MMDB)
-//       ~~~~~~~~~ 
+//       ~~~~~~~~~
 //  **** Classes :  CAtom    ( atom class    )
 //       ~~~~~~~~~  CResidue ( residue class )
 //
-//  Copyright (C) E. Krissinel 2000-2009
+//  Copyright (C) E. Krissinel 2000-2012
 //
 //  =================================================================
 //
@@ -145,11 +145,11 @@ void  CAtom::InitAtom()  {
   u11        = 0.0;        //
   u22        = 0.0;        // anisotropic
   u33        = 0.0;        //
-  u12        = 0.0;        //    temperature 
+  u12        = 0.0;        //    temperature
   u13        = 0.0;        //
   u23        = 0.0;        //        factors
   su11       = 0.0;        //
-  su22       = 0.0;        // standard  
+  su22       = 0.0;        // standard
   su33       = 0.0;        //    deviations of
   su12       = 0.0;        //       anisotropic
   su13       = 0.0;        //          temperature
@@ -177,7 +177,7 @@ int CAtom::GetNBonds()  {
 
 void CAtom::GetBonds ( RPSAtomBond AtomBond, int & nAtomBonds )  {
 //    This GetBonds(..) returns pointer to the CAtom's
-//  internal Bond structure, IT MUST NOT BE DISPOSED. 
+//  internal Bond structure, IT MUST NOT BE DISPOSED.
   nAtomBonds = nBonds & 0x000000FF;
   AtomBond   = Bond;
 }
@@ -288,7 +288,10 @@ char N[10];
     strcpy_n  ( &(S[72]),segID  ,4 );
     strcpy_nr ( &(S[76]),element,2 );
     if (WhatIsSet & ASET_Charge)  {
-      sprintf  ( N,"%+2i",mround(charge) );
+      if (charge>0)       sprintf ( N,"%1i+",mround(charge)  );
+      else if (charge<0)  sprintf ( N,"%1i-",mround(-charge) );
+                    else  strcpy  ( N,"  " );
+//      sprintf  ( N,"%+2i",mround(charge) );
       strcpy_n ( &(S[78]),N,2 );
     } else
       strcpy_n ( &(S[78]),"  ",2 );
@@ -410,7 +413,7 @@ Boolean      singleModel = True;
     Loop->AddLoopTag ( CIFTAG_CARTN_Z_ESD        ); // z-sigma
     Loop->AddLoopTag ( CIFTAG_OCCUPANCY_ESD      ); // occupancy-sigma
     Loop->AddLoopTag ( CIFTAG_B_ISO_OR_EQUIV_ESD ); // t-factor-sigma
-    Loop->AddLoopTag ( CIFTAG_PDBX_PDB_MODEL_NUM ); // model number 
+    Loop->AddLoopTag ( CIFTAG_PDBX_PDB_MODEL_NUM ); // model number
   }
 
   if (Ter)  {
@@ -434,7 +437,7 @@ Boolean      singleModel = True;
       Loop->AddNoData ( CIF_NODATA_DOT );
       Loop->AddNoData ( CIF_NODATA_DOT );
     }
-    
+
     for (i=0;i<13;i++)
       Loop->AddNoData ( CIF_NODATA_QUESTION );
 
@@ -505,7 +508,7 @@ Boolean      singleModel = True;
               else  Loop->AddInteger ( model->serNum       );
 
   if (WhatIsSet & ASET_Anis_tFac)  {
-   
+
     RC = CIF->AddLoop ( CIFCAT_ATOM_SITE_ANISOTROP,Loop );
     if (RC!=CIFRC_Ok)  {
       // the category was (re)created, provide tags
@@ -531,7 +534,7 @@ Boolean      singleModel = True;
 
     if (serNum>0)  Loop->AddInteger ( serNum );
              else  Loop->AddInteger ( index  );
-    
+
     Loop->AddReal ( u11 );
     Loop->AddReal ( u22 );
     Loop->AddReal ( u33 );
@@ -576,10 +579,10 @@ int CAtom::ConvertPDBATOM ( int ix, cpstr S )  {
   if (GetReal(tempFactor,&(S[60]),6))  WhatIsSet |= ASET_tempFactor;
 
   if (WhatIsSet & (ASET_CoordSigma | ASET_Anis_tFac |
-                   ASET_Anis_tFSigma))  
+                   ASET_Anis_tFSigma))
     // something was already submitted. check complience
     return CheckData ( S );
-  else  
+  else
     // first data submission. just take the data
     GetData ( S );
 
@@ -630,10 +633,10 @@ int CAtom::ConvertPDBSIGATM ( int ix, cpstr S )  {
   if (GetReal(sigTemp,&(S[60]),6))  WhatIsSet |= ASET_tFacSigma;
 
   if (WhatIsSet & (ASET_Coordinates | ASET_Anis_tFac |
-                   ASET_Anis_tFSigma))  
+                   ASET_Anis_tFSigma))
     // something was already submitted. check complience
     return CheckData ( S );
-  else  
+  else
     // first data submission. just take the data
     GetData ( S );
 
@@ -671,10 +674,10 @@ int CAtom::ConvertPDBANISOU ( int ix, cpstr S )  {
   WhatIsSet |= ASET_Anis_tFac;
 
   if (WhatIsSet & (ASET_Coordinates | ASET_CoordSigma |
-                   ASET_Anis_tFSigma))  
+                   ASET_Anis_tFSigma))
     // something was already submitted. check complience
     return CheckData ( S );
-  else  
+  else
     // first data submission. just take the data
     GetData ( S );
 
@@ -712,10 +715,10 @@ int CAtom::ConvertPDBSIGUIJ ( int ix, cpstr S )  {
   WhatIsSet |= ASET_Anis_tFSigma;
 
   if (WhatIsSet & (ASET_Coordinates | ASET_CoordSigma |
-                   ASET_Anis_tFac))  
+                   ASET_Anis_tFac))
     // something was already submitted. check complience
     return CheckData ( S );
-  else  
+  else
     // first data submission. just take the data
     GetData ( S );
 
@@ -732,7 +735,7 @@ int CAtom::ConvertPDBTER ( int ix, cpstr S )  {
 
   index = ix;
 
-  if (((S[6]>='0') && (S[6]<='9')) || (S[6]==' '))  { 
+  if (((S[6]>='0') && (S[6]<='9')) || (S[6]==' '))  {
     //   Although against strict PDB format, 'TER' is
     // actually allowed not to have a serial number.
     // This negative value implies that the number is
@@ -845,7 +848,7 @@ PCModel  CAtom::GetModel()  {
 int  CAtom::GetResidueNo()  {
   if (residue)  {
     if (residue->chain)
-         return  residue->chain->GetResidueNo ( 
+         return  residue->chain->GetResidueNo (
                           residue->seqNum,residue->insCode );
     else  return -2;
   } else
@@ -1117,7 +1120,7 @@ realtype dx1,dy1,dz1, dx2,dy2,dz2,r;
 void  CAtom::MakeTer()  {
   WhatIsSet |= ASET_Coordinates;
   Het        = False;
-  Ter        = True; 
+  Ter        = True;
 }
 
 
@@ -1139,7 +1142,11 @@ void  CAtom::SetElementName ( const Element elName )  {
 void  CAtom::SetCharge ( cpstr chrg )  {
 pstr p;
   charge = strtod ( chrg,&p );
-  if (p!=chrg)  WhatIsSet |= ASET_Charge;
+  if (p!=chrg)  {
+    WhatIsSet |= ASET_Charge;
+    if ((charge>0.0) && (*p=='-'))
+      charge = -charge;
+  }
 }
 
 void  CAtom::SetCharge ( realtype chrg )  {
@@ -1202,9 +1209,9 @@ char S[50];
     if (residue->chain)  {
       if (residue->chain->model)  {
         n = residue->chain->model->GetNumberOfModels();
-	if      (n<10)   strcpy ( S,"/%1i/" );
-	else if (n<100)  strcpy ( S,"/%2i/" );
-	else if (n<1000) strcpy ( S,"/%3i/" );
+    if      (n<10)   strcpy ( S,"/%1i/" );
+    else if (n<100)  strcpy ( S,"/%2i/" );
+    else if (n<1000) strcpy ( S,"/%3i/" );
                     else strcpy ( S,"/%i/"  );
         sprintf ( AtomID,S,residue->chain->model->GetSerNum() );
       } else
@@ -1224,7 +1231,7 @@ char S[50];
   strcat  ( AtomID,S );
   return AtomID;
 }
-  
+
 
 
 int CAtom::ConvertPDBHETATM ( int ix, cpstr S )  {
@@ -1242,7 +1249,7 @@ int RC;
 void CAtom::GetData ( cpstr S )  {
 pstr p;
 
-  if (((S[6]>='0') && (S[6]<='9')) || (S[6]==' '))  { 
+  if (((S[6]>='0') && (S[6]<='9')) || (S[6]==' '))  {
     //   Here we forgive cards with unreadable serial numbers
     // as we always have index (ix) for the card. For the sake
     // of strict PDB syntax we would have to return
@@ -1260,8 +1267,11 @@ pstr p;
   strcpy_ncss ( segID  ,&(S[72]),4 );
   GetString   ( element,&(S[76]),2 );
   charge = strtod ( &(S[78]),&p );
-  if ((charge!=0.0) && (p!=&(S[78])))
+  if ((charge!=0.0) && (p!=&(S[78])))  {
     WhatIsSet |= ASET_Charge;
+    if ((charge>0.0) && (*p=='-'))
+      charge = -charge;
+  }
 
   RestoreElementName();
 
@@ -1278,15 +1288,28 @@ realtype achrg;
   aloc[0] = S[16];
   if (aloc[0]==' ')  aloc[0] = char(0);
                else  aloc[1] = char(0);
+
   strcpy_ncss ( sID  ,&(S[72]),4 );
   GetString   ( elmnt,&(S[76]),2 );
-  if (ignoreCharge)  achrg = charge;
-               else  achrg = strtod ( &(S[78]),&p );
-  if (!(GetInteger(sN,&(S[6]),5)))  sN = index;
+
+  if (ignoreCharge)
+    achrg = charge;
+  else  {
+    achrg = strtod ( &(S[78]),&p );
+    if ((achrg!=0.0) && (p!=&(S[78])))  {
+      if ((achrg>0.0) && (*p=='-'))
+        achrg = -achrg;
+    }
+  }
+
+  if (!(GetInteger(sN,&(S[6]),5)))
+    sN = index;
+
   if (ignoreSegID)  {
     if (segID[0])  strcpy ( sID,segID );
              else  strcpy ( segID,sID );
   }
+
   if (ignoreElement)  {
     if (element[0])  strcpy ( elmnt,element );
                else  strcpy ( element,elmnt );
@@ -1298,7 +1321,7 @@ realtype achrg;
   // as we always have index (ix) for the card. For the sake
   // of strict PDB syntax we would have to return
   // Error_UnrecognizedInteger .
-  if ((sN!=serNum)                  || 
+  if ((sN!=serNum)                  ||
       (strcmp (altLoc ,aloc      )) ||
       (strncmp(name   ,&(S[12]),4)) ||
       (strcmp (segID  ,sID       )) ||
@@ -1308,17 +1331,17 @@ realtype achrg;
 char name1[100];
 strncpy ( name1,&(S[12]),4 );  name1[4] = char(0);
     printf ( "\n  serNum   %5i  %5i\n"
-             "  residue  '%s' '%s'\n" 
-             "  altLoc   '%s' '%s'\n" 
-             "  name     '%s' '%s'\n" 
-             "  segId    '%s' '%s'\n" 
-             "  element  '%s' '%s'\n" 
+             "  residue  '%s' '%s'\n"
+             "  altLoc   '%s' '%s'\n"
+             "  name     '%s' '%s'\n"
+             "  segId    '%s' '%s'\n"
+             "  element  '%s' '%s'\n"
              "  charge   '%s' '%s'\n",
              sN,serNum, res->name,residue->name,
              altLoc ,aloc,  name,name1,
-	     segID  ,sID,
+         segID  ,sID,
       element,elmnt,
-	     charge ,achrg );
+         charge ,achrg );
     if (res!=residue)  printf (" it's a residue\n" );
     */
     return Error_ATOM_Unmatch;
@@ -1349,11 +1372,11 @@ int  RC;
 
   RC = CIFGetInteger1 ( serNum,Loop,CIFTAG_ID,k );
   if (RC)  {
-    if (Ter) 
+    if (Ter)
       serNum = -1;
     else if (RC==Error_NoData)
       serNum = index;
-    else 
+    else
       return RC;
   }
 
@@ -1404,7 +1427,7 @@ int  RC;
     WhatIsSet |= ASET_OccSigma;
   if (!CIFGetReal1(sigTemp,Loop,CIFTAG_B_ISO_OR_EQUIV_ESD,k))
     WhatIsSet |= ASET_tFacSigma;
-  
+
   Loop->DeleteRow ( k );
 
   if (LoopAnis)  {
@@ -1781,7 +1804,7 @@ byte nb;
       f.WriteFloat ( &sigOcc );
     if ((WhatIsSet & ASET_tempFactor) &&
         (WhatIsSet & ASET_tFacSigma))
-      f.WriteFloat ( &sigTemp ); 
+      f.WriteFloat ( &sigTemp );
   }
 
   if (WhatIsSet & ASET_Anis_tFac)  {
@@ -1884,7 +1907,7 @@ byte nb,Version;
     else  sigOcc = 0.0;
     if ((WhatIsSet & ASET_tempFactor) &&
         (WhatIsSet & ASET_tFacSigma))
-          f.ReadFloat ( &sigTemp ); 
+          f.ReadFloat ( &sigTemp );
     else  sigTemp = 0.0;
   } else  {
     sigX    = 0.0;
@@ -2121,7 +2144,7 @@ void * CResidue::GetCoordHierarchy()  {
   return NULL;
 }
 
-void  CResidue::GetAltLocations ( int     & nAltLocs, 
+void  CResidue::GetAltLocations ( int     & nAltLocs,
                                   PAltLoc & aLoc,
                                   rvector & occupancy,
                                   int     & alflag )  {
@@ -2169,7 +2192,7 @@ bvector  alv;
             //   a) the data was not found wrong so far
             //   b) this atom name has not been checked before
             //   c) altcode is not the "empty"-altcode
-            if ((!(alflag & ALF_Mess)) && (!alv[i]) && 
+            if ((!(alflag & ALF_Mess)) && (!alv[i]) &&
                 (atom[i]->altLoc[0]))  {
               B    = False; // will be set True if "empty"-altcode
                             // is found for current atom name
@@ -2179,7 +2202,7 @@ bvector  alv;
                             // current atom name
               for (j=0;j<nAtoms;j++)
                 if (atom[j])  {
-                  if ((!atom[j]->Ter) && 
+                  if ((!atom[j]->Ter) &&
                       (!strcmp(atom[j]->name,atom[i]->name)))  {
                     if (atom[j]->WhatIsSet & ASET_Occupancy)
                       occ1 += atom[j]->occupancy;
@@ -2556,7 +2579,7 @@ int i;
       } else
         atom[i] = NULL;
   }
-  
+
 }
 
 
@@ -3209,7 +3232,7 @@ realtype absq,acsq,bcsq;
 
 }
 
-    
+
 void  CResidue::write ( RCFile f )  {
 int  i;
 byte Version=1;

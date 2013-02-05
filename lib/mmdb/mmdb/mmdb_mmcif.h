@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    29.01.10   <--  Date of Last Modification.
+//    16.01.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -36,7 +36,7 @@
 //                  CMMCIFData     ( mmCIF data block  )
 //                  CMMCIFFile     ( mmCIF file        )
 //
-//  (C) E. Krissinel 2000-2010
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -541,8 +541,8 @@ class CMMCIFStruct : public CMMCIFCategory  {
 
 //  ======================  CMMCIFLoop  ==============================
 
-DefineClass(CMMCIFLoop);
-DefineStreamFunctions(CMMCIFLoop);
+DefineClass(CMMCIFLoop)
+DefineStreamFunctions(CMMCIFLoop)
 
 /// \brief CMMCIFLoop represents mmCIF's \"loop\" category, which keeps
 ///        rows of data values associated with tags.
@@ -2089,6 +2089,8 @@ class CMMCIFFile : public CStream  {
     PCMMCIFData GetCIFData ( int   dataNo );  // 0..nData-1
     PCMMCIFData GetCIFData ( cpstr DName  );
     int   AddMMCIFData     ( cpstr DName  );
+    int   DeleteMMCIFData  ( cpstr DName  );
+    int   DeleteMMCIFData  ( int   dataNo );
     int   GetCIFDataNo     ( cpstr DName  );
 
     void  WriteMMCIF       ( RCFile f    );
