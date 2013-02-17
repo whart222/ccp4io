@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 //  **** Module  :  MMDB_Model  <implementation>
 //       ~~~~~~~~~
 //  **** Project :  MacroMolecular Data Base (MMDB)
-//       ~~~~~~~~~ 
+//       ~~~~~~~~~
 //  **** Classes :  CHetCompound  ( description of het compounds    )
 //       ~~~~~~~~~  CHetCompounds ( HETNAM, HETSYN, FORMULA records )
 //                  CSSContainer  ( container for helixes and turns )
@@ -659,6 +659,8 @@ int         i,l,k,RC;
     hetCompound[i]->wc = ' ';
   }
 
+//  CIF->DeleteLoop ( CIFCAT_CHEM_COMP );
+
   if (F)  delete[] F;
 
 }
@@ -807,7 +809,7 @@ UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
   RC = CIF->AddLoop ( CIFCAT_STRUCT_CONF,Loop );
-  if (RC!=CIFRC_Ok) 
+  if (RC!=CIFRC_Ok)
     // the category was (re)created, provide tags
     AddStructConfTags ( Loop );
   Loop->AddString  ( pstr(HelixTypeID) );
@@ -923,7 +925,7 @@ void  CHelix::Copy ( PCContainerClass Helix )  {
   strcpy ( endICode   ,PCHelix(Helix)->endICode    );
   CreateCopy ( comment,PCHelix(Helix)->comment );
 }
-    
+
 void  CHelix::write ( RCFile f )  {
 byte Version=1;
   f.WriteByte ( &Version    );
@@ -1054,13 +1056,13 @@ int         RC;
   Loop->AddString  ( initICode,True );
   Loop->AddString  ( endResName  );
   Loop->AddString  ( endChainID  );
-  Loop->AddInteger ( endSeqNum   ); 
+  Loop->AddInteger ( endSeqNum   );
   Loop->AddString  ( endICode ,True );
 
 }
 
 
-int CStrand::ConvertPDBASCII ( cpstr S )  { 
+int CStrand::ConvertPDBASCII ( cpstr S )  {
 
   GetInteger  ( strandNo   ,&(S[7])  ,3 );
   strcpy_ncss ( sheetID    ,&(S[11]) ,3 );
@@ -1090,7 +1092,7 @@ int CStrand::ConvertPDBASCII ( cpstr S )  {
 }
 
 int  CStrand::GetCIF ( PCMMCIFData CIF, cpstr sheet_id )  {
-PCMMCIFLoop Loop; 
+PCMMCIFLoop Loop;
 int         RC,l,i,sNo;
 pstr        F;
 
@@ -1159,7 +1161,7 @@ void  CStrand::Copy ( PCStrand Strand )  {
   strcpy ( prevChainID,Strand->prevChainID );
   strcpy ( prevICode  ,Strand->prevICode   );
 }
-    
+
 void  CStrand::write ( RCFile f )  {
 byte Version=1;
   f.WriteByte ( &Version    );
@@ -1248,7 +1250,7 @@ int i;
 void  CSheet::PDBASCIIDump ( RCFile f )  {
 char  S[100];
 int   i;
-  if (Strand)  
+  if (Strand)
     for (i=0;i<nStrands;i++)
       if (Strand[i])  {
         strcpy      ( S,"SHEET"           );
@@ -1301,7 +1303,7 @@ Boolean     isSense;
   }
 
   if (nStrands>1)  {
-  
+
     if (isSense)  {
       RC = CIF->AddLoop ( CIFCAT_STRUCT_SHEET_ORDER,Loop );
       if (RC!=CIFRC_Ok)  {
@@ -1401,8 +1403,8 @@ void  CSheet::TryStrand ( int strand_no )  {
 int       i,k;
 PPCStrand Strand1;
   k = -1;
-  for (i=0;(i<nStrands) && (k<0);i++)  
-    if (Strand[i]) 
+  for (i=0;(i<nStrands) && (k<0);i++)
+    if (Strand[i])
       if (Strand[i]->strandNo==strand_no)  k = i;
   if (k<0)  {
     Strand1 = new PCStrand[nStrands+1];
@@ -1490,7 +1492,7 @@ Boolean     Ok;
 
   //  Read each strand
   RC = 0;
-  for (i=0;(i<nStrands) && (!RC);i++) 
+  for (i=0;(i<nStrands) && (!RC);i++)
     RC = Strand[i]->GetCIF ( CIF,sheetID );
 
   if (RC)  return RC;
@@ -1537,7 +1539,7 @@ Boolean     Ok;
         return Error_WrongSheetOrder;
       }
     }
-  
+
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_SHEET_HBOND );
     if (Loop)  {
       Ok = True;
@@ -1636,7 +1638,7 @@ int i;
   }
   strcpy ( sheetID,Sheet->sheetID );
 }
-    
+
 void  CSheet::write ( RCFile f )  {
 int  i;
 byte Version=1;
@@ -1705,7 +1707,7 @@ int i;
 
 void  CSheets::PDBASCIIDump ( RCFile f )  {
 int i;
-  if (Sheet) 
+  if (Sheet)
     for (i=0;i<nSheets;i++)
       if (Sheet[i])  Sheet[i]->PDBASCIIDump ( f );
 }
@@ -1713,7 +1715,7 @@ int i;
 
 void  CSheets::MakeCIF ( PCMMCIFData CIF )  {
 int i;
-  if (Sheet) 
+  if (Sheet)
     for (i=0;i<nSheets;i++)
       if (Sheet[i])  Sheet[i]->MakeCIF ( CIF );
 }
@@ -1732,7 +1734,7 @@ PPCSheet Sheet1;
         k = i;
         break;
       }
-    }  
+    }
   if (k<0)  {
     Sheet1 = new PCSheet[nSheets+1];
     for (i=0;i<nSheets;i++)
@@ -1761,7 +1763,7 @@ PPCSheet    Sheet1;
         k = -1;
         j = 0;
         while ((j<nSheets) && (k<0))  {
-          if (Sheet[j])  { 
+          if (Sheet[j])  {
             if (!strcmp(F,Sheet[j]->sheetID))  k = j;
           }
           j++;
@@ -1775,7 +1777,7 @@ PPCSheet    Sheet1;
           Sheet[nSheets] = new CSheet();
           strcpy ( Sheet[nSheets]->sheetID,F );
           nSheets++;
-	}
+    }
       }
     }
   }
@@ -1785,7 +1787,7 @@ int CSheets::GetCIF ( PCMMCIFData CIF )  {
 int i,RC;
 
   FreeMemory();
-  
+
   //  First find all sheet names and create
   // the corresponding classes. The CIF fields
   // are not removed at this stage.
@@ -1919,7 +1921,7 @@ UNUSED_ARGUMENT(N);
 PCMMCIFLoop Loop;
 int         RC;
   RC = CIF->AddLoop ( CIFCAT_STRUCT_CONF,Loop );
-  if (RC!=CIFRC_Ok) 
+  if (RC!=CIFRC_Ok)
     // the category was (re)created, provide tags
     AddStructConfTags ( Loop );
   Loop->AddString  ( pstr(TurnTypeID) );
@@ -1944,10 +1946,10 @@ char L[100];
   strcpy_ncss  ( turnID     ,&(S[11]),3  );
   strcpy_ncss  ( initResName,&(S[15]),3  );
   strcpy_ncss  ( initChainID,&(S[19]),1  );
-  GetIntIns    ( initSeqNum,initICode,&(S[20]),4 ); 
+  GetIntIns    ( initSeqNum,initICode,&(S[20]),4 );
   strcpy_ncss  ( endResName ,&(S[26]),3  );
   strcpy_ncss  ( endChainID ,&(S[30]),1  );
-  GetIntIns    ( endSeqNum ,endICode ,&(S[31]),4 ); 
+  GetIntIns    ( endSeqNum ,endICode ,&(S[31]),4 );
   strcpy_ncss  ( L          ,&(S[40]),30 );
   CreateCopy   ( comment    ,L           );
   return 0;
@@ -2028,7 +2030,7 @@ void  CTurn::Copy ( PCContainerClass Turn )  {
   strcpy ( endICode   ,PCTurn(Turn)->endICode    );
   CreateCopy ( comment,PCTurn(Turn)->comment );
 }
-    
+
 void  CTurn::write ( RCFile f )  {
 byte Version=1;
   f.WriteByte ( &Version    );
@@ -2220,13 +2222,13 @@ int CLink::ConvertPDBASCII ( cpstr S )  {
   strcpy_ncss  ( aloc1   ,&(S[16]),1 );
   strcpy_ncss  ( resName1,&(S[17]),3 );
   strcpy_ncss  ( chainID1,&(S[21]),1 );
-  GetIntIns    ( seqNum1,insCode1,&(S[22]),4 ); 
+  GetIntIns    ( seqNum1,insCode1,&(S[22]),4 );
 
   GetString    ( atName2 ,&(S[42]),4 );
   strcpy_ncss  ( aloc2   ,&(S[46]),1 );
   strcpy_ncss  ( resName2,&(S[47]),3 );
   strcpy_ncss  ( chainID2,&(S[51]),1 );
-  GetIntIns    ( seqNum2,insCode2,&(S[52]),4 ); 
+  GetIntIns    ( seqNum2,insCode2,&(S[52]),4 );
 
   GetInteger   ( s1,&(S[59]),3 );
   GetInteger   ( i1,&(S[62]),1 );
@@ -2355,7 +2357,7 @@ void  CLink::Copy ( PCContainerClass Link )  {
   k2 = PCLink(Link)->k2;
 
 }
-    
+
 void  CLink::write ( RCFile f )  {
 byte Version=1;
 
@@ -2807,11 +2809,11 @@ int CCisPep::ConvertPDBASCII ( cpstr S )  {
 
   strcpy_ncss  ( pep1    ,&(S[11]),3 );
   strcpy_ncss  ( chainID1,&(S[15]),1 );
-  GetIntIns    ( seqNum1,icode1,&(S[17]),4 ); 
+  GetIntIns    ( seqNum1,icode1,&(S[17]),4 );
 
   strcpy_ncss  ( pep2    ,&(S[25]),3 );
   strcpy_ncss  ( chainID2,&(S[29]),1 );
-  GetIntIns    ( seqNum2,icode2,&(S[31]),4 ); 
+  GetIntIns    ( seqNum2,icode2,&(S[31]),4 );
 
   GetInteger   ( modNum  ,&(S[43]),3 );
   GetReal      ( measure ,&(S[53]),6 );
@@ -2839,7 +2841,7 @@ void  CCisPep::Copy ( PCContainerClass CisPep )  {
   measure = PCCisPep(CisPep)->measure;
 
 }
-    
+
 void  CCisPep::write ( RCFile f )  {
 byte Version=1;
 
@@ -3052,8 +3054,8 @@ int     i,k;
   Chain[nChains]->SetModel ( this );
   nChains++;
 
-  return Chain[nChains-1];  
-  
+  return Chain[nChains-1];
+
 }
 
 PCChain CModel::CreateChain ( const ChainID chID )  {
@@ -3071,7 +3073,7 @@ PCChain CModel::CreateChain ( const ChainID chID )  {
   Chain[nChains]->SetModel ( this );
   nChains++;
 
-  return Chain[nChains-1];  
+  return Chain[nChains-1];
 
 }
 
@@ -3143,7 +3145,7 @@ Boolean isChainID;
           return Chain[i]; // it is there; just return the pointer
       }
   }
-  return NULL;  
+  return NULL;
 }
 
 
@@ -3263,7 +3265,7 @@ PCResidue CModel::GetResidue ( const ChainID chainID, int seqNo,
                                const InsCode insCode )  {
 PCChain chain;
   chain = GetChain ( chainID );
-  if (chain)  
+  if (chain)
     return chain->GetResidue ( seqNo,insCode );
   return NULL;
 }
@@ -3301,7 +3303,7 @@ int CModel::GetResidueNo ( const ChainID chainID, int seqNo,
                            const InsCode insCode )  {
 PCChain chain;
   chain = GetChain ( chainID );
-  if (chain)  
+  if (chain)
     return chain->GetResidueNo ( seqNo,insCode );
   return -2;
 }
@@ -3481,7 +3483,7 @@ int  i,k;
   // find the chain
   k = -1;
   for (i=0;(i<nChains) && (k<0);i++)
-    if (!strcmp(chainID,Chain[i]->chainID)) 
+    if (!strcmp(chainID,Chain[i]->chainID))
       k = i;
 
   if (k>=0)  {
@@ -3608,10 +3610,10 @@ PCAtom  CModel::GetAtom ( const ChainID  chID,
                         )  {
 PCChain   chn;
 PCResidue res;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  {
-    res = chn->GetResidue ( seqNo,insCode );  
-    if (res) 
+    res = chn->GetResidue ( seqNo,insCode );
+    if (res)
       return res->GetAtom ( aname,elmnt,aloc );
   }
   return NULL;
@@ -3621,9 +3623,9 @@ PCAtom CModel::GetAtom ( const ChainID chID,    int seqNo,
                          const InsCode insCode, int   atomNo )  {
 PCChain   chn;
 PCResidue res;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  {
-    res = chn->GetResidue ( seqNo,insCode );  
+    res = chn->GetResidue ( seqNo,insCode );
     if (res)  {
       if ((0<=atomNo) && (atomNo<res->nAtoms))
         return res->atom[atomNo];
@@ -3639,10 +3641,10 @@ PCAtom CModel::GetAtom ( const ChainID  chID,
                          const AltLoc   aloc )  {
 PCChain   chn;
 PCResidue res;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  {
     if ((0<=resNo) && (resNo<chn->nResidues))  {
-      res = chn->Residue[resNo];  
+      res = chn->Residue[resNo];
       if (res)
         return res->GetAtom ( aname,elmnt,aloc );
     }
@@ -3653,10 +3655,10 @@ PCResidue res;
 PCAtom CModel::GetAtom ( const ChainID chID, int resNo, int atomNo )  {
 PCChain   chn;
 PCResidue res;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  {
     if ((0<=resNo) && (resNo<chn->nResidues))  {
-      res = chn->Residue[resNo];  
+      res = chn->Residue[resNo];
       if (res)  {
         if ((0<=atomNo) && (atomNo<res->nAtoms))
           return res->atom[atomNo];
@@ -3674,7 +3676,7 @@ PCAtom CModel::GetAtom ( int chNo, int seqNo,
 PCResidue res;
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])  {
-      res = Chain[chNo]->GetResidue ( seqNo,insCode );  
+      res = Chain[chNo]->GetResidue ( seqNo,insCode );
       if (res)
         return res->GetAtom ( aname,elmnt,aloc );
     }
@@ -3687,7 +3689,7 @@ PCAtom CModel::GetAtom ( int chNo, int seqNo, const InsCode insCode,
 PCResidue res;
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])  {
-      res = Chain[chNo]->GetResidue ( seqNo,insCode );  
+      res = Chain[chNo]->GetResidue ( seqNo,insCode );
       if (res)  {
         if ((0<=atomNo) && (atomNo<res->nAtoms))
           return res->atom[atomNo];
@@ -3705,7 +3707,7 @@ PCResidue res;
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])  {
       if ((0<=resNo) && (resNo<Chain[chNo]->nResidues))  {
-        res = Chain[chNo]->Residue[resNo];  
+        res = Chain[chNo]->Residue[resNo];
         if (res)
           return res->GetAtom ( aname,elmnt,aloc );
       }
@@ -3719,7 +3721,7 @@ PCResidue res;
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])  {
       if ((0<=resNo) && (resNo<Chain[chNo]->nResidues))  {
-        res = Chain[chNo]->Residue[resNo];  
+        res = Chain[chNo]->Residue[resNo];
         if (res)  {
           if ((0<=atomNo) && (atomNo<res->nAtoms))
             return res->atom[atomNo];
@@ -3854,16 +3856,16 @@ int  CModel::DeleteAtom ( const ChainID  chID,
                           const AltLoc   aloc
                         )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)
-    return  chn->DeleteAtom ( seqNo,insCode,aname,elmnt,aloc );  
+    return  chn->DeleteAtom ( seqNo,insCode,aname,elmnt,aloc );
   return 0;
 }
 
 int  CModel::DeleteAtom ( const ChainID chID,    int seqNo,
                           const InsCode insCode, int   atomNo )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->DeleteAtom ( seqNo,insCode,atomNo );
   return 0;
 }
@@ -3874,15 +3876,15 @@ int  CModel::DeleteAtom ( const ChainID  chID,
                           const Element  elmnt,
                           const AltLoc   aloc )  {
 PCChain chn;
-  chn = GetChain ( chID );  
-  if (chn)  return chn->DeleteAtom ( resNo,aname,elmnt,aloc );  
+  chn = GetChain ( chID );
+  if (chn)  return chn->DeleteAtom ( resNo,aname,elmnt,aloc );
   return 0;
 }
 
 int  CModel::DeleteAtom ( const ChainID chID, int resNo, int atomNo ) {
 PCChain chn;
-  chn = GetChain ( chID );  
-  if (chn)  return chn->DeleteAtom ( resNo,atomNo );  
+  chn = GetChain ( chID );
+  if (chn)  return chn->DeleteAtom ( resNo,atomNo );
   return 0;
 }
 
@@ -3894,7 +3896,7 @@ int  CModel::DeleteAtom ( int chNo, int seqNo,
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
       return Chain[chNo]->DeleteAtom ( seqNo,insCode,aname,
-                                       elmnt,aloc );  
+                                       elmnt,aloc );
   }
   return 0;
 }
@@ -3903,7 +3905,7 @@ int CModel::DeleteAtom ( int chNo, int seqNo, const InsCode insCode,
                          int atomNo )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return  Chain[chNo]->DeleteAtom ( seqNo,insCode,atomNo );  
+      return  Chain[chNo]->DeleteAtom ( seqNo,insCode,atomNo );
   }
   return 0;
 }
@@ -3914,7 +3916,7 @@ int CModel::DeleteAtom ( int chNo, int resNo,
                          const AltLoc   aloc )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->DeleteAtom ( resNo,aname,elmnt,aloc );  
+      return Chain[chNo]->DeleteAtom ( resNo,aname,elmnt,aloc );
   }
   return 0;
 }
@@ -3922,7 +3924,7 @@ int CModel::DeleteAtom ( int chNo, int resNo,
 int CModel::DeleteAtom ( int chNo, int resNo, int atomNo )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->DeleteAtom ( resNo,atomNo );  
+      return Chain[chNo]->DeleteAtom ( resNo,atomNo );
   }
   return 0;
 }
@@ -3930,21 +3932,21 @@ int CModel::DeleteAtom ( int chNo, int resNo, int atomNo )  {
 int CModel::DeleteAllAtoms ( const ChainID chID, int seqNo,
                              const InsCode insCode )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->DeleteAllAtoms ( seqNo,insCode );
   return 0;
 }
 
 int CModel::DeleteAllAtoms ( const ChainID chID, int resNo )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->DeleteAllAtoms ( resNo );
   return 0;
 }
 
 int CModel::DeleteAllAtoms ( const ChainID chID )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->DeleteAllAtoms();
   return 0;
 }
@@ -3953,7 +3955,7 @@ int CModel::DeleteAllAtoms ( int chNo, int seqNo,
                              const InsCode insCode )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->DeleteAllAtoms ( seqNo,insCode );  
+      return Chain[chNo]->DeleteAllAtoms ( seqNo,insCode );
   }
   return 0;
 }
@@ -3961,7 +3963,7 @@ int CModel::DeleteAllAtoms ( int chNo, int seqNo,
 int CModel::DeleteAllAtoms ( int chNo, int resNo )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->DeleteAllAtoms ( resNo );  
+      return Chain[chNo]->DeleteAllAtoms ( resNo );
   }
   return 0;
 }
@@ -3969,7 +3971,7 @@ int CModel::DeleteAllAtoms ( int chNo, int resNo )  {
 int CModel::DeleteAllAtoms ( int chNo )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->DeleteAllAtoms();  
+      return Chain[chNo]->DeleteAllAtoms();
   }
   return 0;
 }
@@ -4004,14 +4006,14 @@ int CModel::AddAtom ( const ChainID chID, int seqNo,
                       const InsCode insCode,
                       PCAtom atom )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->AddAtom ( seqNo,insCode,atom );
   return 0;
 }
 
 int CModel::AddAtom ( const ChainID chID, int resNo, PCAtom  atom )  {
 PCChain chn;
-  chn = GetChain ( chID );  
+  chn = GetChain ( chID );
   if (chn)  return chn->AddAtom ( resNo,atom );
   return 0;
 }
@@ -4020,7 +4022,7 @@ int CModel::AddAtom ( int chNo, int seqNo, const InsCode insCode,
                       PCAtom atom )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->AddAtom ( seqNo,insCode,atom );  
+      return Chain[chNo]->AddAtom ( seqNo,insCode,atom );
   }
   return 0;
 }
@@ -4028,7 +4030,7 @@ int CModel::AddAtom ( int chNo, int seqNo, const InsCode insCode,
 int CModel::AddAtom ( int chNo, int resNo, PCAtom atom )  {
   if ((0<=chNo) && (chNo<nChains))  {
     if (Chain[chNo])
-      return Chain[chNo]->AddAtom ( resNo,atom );  
+      return Chain[chNo]->AddAtom ( resNo,atom );
   }
   return 0;
 }
@@ -4225,7 +4227,7 @@ Boolean singleModel = True;
     PadSpaces   ( S,80 );
     f.WriteLine ( S );
   }
-    
+
 }
 
 
@@ -4391,7 +4393,7 @@ int i;
           Chain[i]->Copy ( Model->Chain[i] );
         } else
           Chain[i] = NULL;
-      } 
+      }
     }
 
     HetCompounds.Copy ( &(Model->HetCompounds) );
@@ -4450,7 +4452,7 @@ int i;
           Chain[i]->_copy ( Model->Chain[i] );
         } else
           Chain[i] = NULL;
-      } 
+      }
     }
 
     HetCompounds.Copy ( &(Model->HetCompounds) );
@@ -4491,7 +4493,7 @@ int i;
           Chain[i]->_copy ( Model->Chain[i],atom,atom_index );
         } else
           Chain[i] = NULL;
-      } 
+      }
     }
 
     HetCompounds.Copy ( &(Model->HetCompounds) );
@@ -4680,7 +4682,7 @@ int       ic,ir,ia;
       }
     }
   }
-  
+
 }
 
 
@@ -4941,8 +4943,8 @@ int  CModel::GetUDData ( int UDDhandle, pstr & sudd )  {
 int CModel::CalcSecStructure ( Boolean flagBulge, int aminoSelHnd )  {
 // This function is contributed by Liz Potterton, University of York
 //------------------------------------------------------------------
-// Define a secondary structure type of each amino acid residue in the 
-// structure.  
+// Define a secondary structure type of each amino acid residue in the
+// structure.
 // Procedure:
 // Find all amino acids
 // Find all pairs of amino acids which have inter-Ca distance  < 10.0A
@@ -4989,13 +4991,13 @@ int        i,j,k,l;
           Res[nres++] = chain->Residue[j];
       }
     }
-  
+
 
     if (nres<=0)  {
       delete[]  Res;
       return  SSERC_noResidues;
     }
- 
+
  }
 
   //  2. Get C-alphas of all aminoacids
@@ -5059,16 +5061,16 @@ int        i,j,k,l;
         k = 0;
         while ((hbonds[ir1][k]!=0) && (k<2))  k++;
         hbonds     [ir1][k]   = -irdif;
-	hbond_atoms[ir1][k]   = Res[ir1]->GetAtom ( "N" );
-	hbond_atoms[ir1][k+3] = Res[ir2]->GetAtom ( "O" );
+    hbond_atoms[ir1][k]   = Res[ir1]->GetAtom ( "N" );
+    hbond_atoms[ir1][k+3] = Res[ir2]->GetAtom ( "O" );
       }
       //  test if there is donor Hbond from residue ir2
-      if (Res[ir2]->isMainchainHBond(Res[ir1]))  {        
-	k = 0;
+      if (Res[ir2]->isMainchainHBond(Res[ir1]))  {
+    k = 0;
         while ((hbonds[ir2][k]!=0) && (k<2))  k++;
         hbonds     [ir2][k]   = irdif;
-	hbond_atoms[ir2][k]   = Res[ir2]->GetAtom ( "N" );
-	hbond_atoms[ir2][k+3] = Res[ir1]->GetAtom ( "O" );
+    hbond_atoms[ir2][k]   = Res[ir2]->GetAtom ( "N" );
+    hbond_atoms[ir2][k+3] = Res[ir1]->GetAtom ( "O" );
       }
     }
   }
@@ -5076,18 +5078,18 @@ int        i,j,k,l;
   //  6. Assign the turns - if there is bifurcated bond then the 4-turn
   //     takes precedence - read the paper to make sense of this
 
-  for (i=0;i<nres;i++)  { 
+  for (i=0;i<nres;i++)  {
     k = 0;
     while ((k<=2) && (hbonds[i][k]!=0))  {
       if (hbonds[i][k]==-5)  {
-	Res[i-1]->SSE = SSE_5Turn;
-	Res[i-2]->SSE = SSE_5Turn;
-	Res[i-3]->SSE = SSE_5Turn;
-	Res[i-4]->SSE = SSE_5Turn;
+    Res[i-1]->SSE = SSE_5Turn;
+    Res[i-2]->SSE = SSE_5Turn;
+    Res[i-3]->SSE = SSE_5Turn;
+    Res[i-4]->SSE = SSE_5Turn;
       }
       if (hbonds[i][k]==-3)  {
-	Res[i-1]->SSE = SSE_3Turn;
-	Res[i-2]->SSE = SSE_3Turn;
+    Res[i-1]->SSE = SSE_3Turn;
+    Res[i-2]->SSE = SSE_3Turn;
       }
       k++;
     }
@@ -5108,7 +5110,7 @@ int        i,j,k,l;
   //  7. Look for consecutive 4-turns which make alpha helix
 
   for (i=1;i<nres-3;i++) {
-    if (((Res[i  ]->SSE==SSE_Helix) || (Res[i  ]->SSE==SSE_4Turn)) && 
+    if (((Res[i  ]->SSE==SSE_Helix) || (Res[i  ]->SSE==SSE_4Turn)) &&
         ((Res[i+1]->SSE==SSE_Helix) || (Res[i+1]->SSE==SSE_4Turn)) &&
         ((Res[i+2]->SSE==SSE_Helix) || (Res[i+2]->SSE==SSE_4Turn)) &&
         ((Res[i+3]->SSE==SSE_Helix) || (Res[i+3]->SSE==SSE_4Turn)))
@@ -5121,7 +5123,7 @@ int        i,j,k,l;
     while ((k<=2) && (hbonds[i][k]!=0))  {
 
       irdif = hbonds[i][k];
-      // Test for 'close' hbond 
+      // Test for 'close' hbond
       j = i + irdif;
       l = 0;
       while ((l<=2) && (hbonds[j][l]!=0))  {
@@ -5162,7 +5164,7 @@ int        i,j,k,l;
           // Parallel strands
           if (hbonds[j][l]==-irdif-2)  {
             Res[i  ]->SSE = SSE_Strand;
-	    Res[j-1]->SSE = SSE_Strand;
+        Res[j-1]->SSE = SSE_Strand;
           }
           l++;
         }
@@ -5175,14 +5177,14 @@ int        i,j,k,l;
         while ((l<=2) && (hbonds[j][l]!=0))  {
           if (hbonds[j][l]==-irdif+1)  {
             if (flagBulge)  {
-	      if (Res[i  ]->SSE==SSE_None)  Res[i  ]->SSE = SSE_Bulge;
-	      if (Res[j+1]->SSE==SSE_None)  Res[j+1]->SSE = SSE_Bulge;
-	      if (Res[j  ]->SSE==SSE_None)  Res[j  ]->SSE = SSE_Bulge;
+          if (Res[i  ]->SSE==SSE_None)  Res[i  ]->SSE = SSE_Bulge;
+          if (Res[j+1]->SSE==SSE_None)  Res[j+1]->SSE = SSE_Bulge;
+          if (Res[j  ]->SSE==SSE_None)  Res[j  ]->SSE = SSE_Bulge;
             } else  {
               if (Res[i  ]->SSE==SSE_None)  Res[i  ]->SSE = SSE_Strand;
               if (Res[j+1]->SSE==SSE_None)  Res[j+1]->SSE = SSE_Strand;
               if (Res[j  ]->SSE==SSE_None)  Res[j  ]->SSE = SSE_Strand;
-            } 
+            }
           }
           l++;
         }
@@ -5205,7 +5207,7 @@ int        i,j,k,l;
             }
           } else if (hbonds[j][l]==-irdif-3)  {
             // and bulge in parallel strand
-	    if (flagBulge)  {
+        if (flagBulge)  {
               if (Res[i  ]->SSE==SSE_None)  Res[i  ]->SSE = SSE_Bulge;
               if (Res[j-1]->SSE==SSE_None)  Res[j-1]->SSE = SSE_Bulge;
               if (Res[j-2]->SSE==SSE_None)  Res[j-2]->SSE = SSE_Bulge;
@@ -5239,7 +5241,7 @@ int        i,j,k,l;
   if (Ca)      delete[] Ca;
 
   return  SSERC_Ok;
- 
+
 }
 
 
@@ -5252,7 +5254,7 @@ byte Version=3;
   f.WriteByte ( &Version );
 
   CProModel::write ( f );
-  
+
   f.WriteInt ( &serNum  );
   f.WriteInt ( &nChains );
 
@@ -5294,7 +5296,7 @@ byte Version;
         Chain[i]->SetModel ( this );
         Chain[i]->read ( f );
       }
-    } 
+    }
   }
 
   HetCompounds.read ( f );

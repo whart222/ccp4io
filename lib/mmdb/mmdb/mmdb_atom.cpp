@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    14.11.12   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CAtom    ( atom class    )
 //       ~~~~~~~~~  CResidue ( residue class )
 //
-//  Copyright (C) E. Krissinel 2000-2012
+//  Copyright (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -126,6 +126,7 @@ void  CAtom::InitAtom()  {
   serNum     = -1;         // serial number
   index      = -1;         // index in the file
   name[0]    = char(0);    // atom name
+  label_atom_id[0] = char(0); // assigned atom name (not aligned)
   altLoc[0]  = char(0);    // alternate location indicator
   residue    = NULL;       // reference to residue
   x          = 0.0;        // orthogonal x-coordinate in angstroms
@@ -277,11 +278,6 @@ char N[10];
     hy36encode ( 5,index,N );
     strcpy_n   ( &(S[6]),N,5 );
   }
-  /*
-  if (serNum>0)
-        PutInteger ( &(S[6]),serNum,5 );
-  else  PutInteger ( &(S[6]),index ,5 );
-  */
   if (!Ter)  {
     if (altLoc[0])  S[16] = altLoc[0];
     strcpy_n  ( &(S[12]),name   ,4 );
@@ -291,15 +287,12 @@ char N[10];
       if (charge>0)       sprintf ( N,"%1i+",mround(charge)  );
       else if (charge<0)  sprintf ( N,"%1i-",mround(-charge) );
                     else  strcpy  ( N,"  " );
-//      sprintf  ( N,"%+2i",mround(charge) );
       strcpy_n ( &(S[78]),N,2 );
     } else
       strcpy_n ( &(S[78]),"  ",2 );
   }
   strcpy_nr ( &(S[17]),residue->name,3 );
   strcpy_nr ( &(S[20]),residue->chain->chainID,2 );
-//  S[21] = residue->chain->chainID[0];
-//  if (!S[21])  S[21] = ' ';
   if (residue->seqNum>MinInt4)  {
     if ((-999<=residue->seqNum) && (residue->seqNum<=9999))
       PutIntIns  ( &(S[22]),residue->seqNum,4,residue->insCode );
@@ -376,136 +369,271 @@ char         N[10];
 int          i,j,RC;
 PCChain      chain       = NULL;
 PCModel      model       = NULL;
-Boolean      singleModel = True;
+//Boolean      singleModel = True;
 
   if (residue)  chain = residue->chain;
   if (chain)    model = PCModel(chain->model);
-  if (model)  {
-    if (model->manager)
-      singleModel = PCMMDBFile(model->manager)->nModels<=1;
-  }
+//  if (model)  {
+//    if (model->manager)
+//      singleModel = PCMMDBFile(model->manager)->nModels<=1;
+//  }
+
+/*
+
+loop_
+*0  _atom_site.group_PDB
+*1  _atom_site.id
+*2  _atom_site.type_symbol         <- chem elem
+-3  _atom_site.label_atom_id       <- atom name
+*4  _atom_site.label_alt_id        <- alt code
+=5  _atom_site.label_comp_id       <- res name ???
+=6  _atom_site.label_asym_id       <- chain id ???
+=7  _atom_site.label_entity_id     < ???
+=8  _atom_site.label_seq_id        <- poly seq id
++9  _atom_site.pdbx_PDB_ins_code   <- ins code
+-10 _atom_site.segment_id          <- segment id
+*11 _atom_site.Cartn_x
+*12 _atom_site.Cartn_y
+*13 _atom_site.Cartn_z
+*14 _atom_site.occupancy
+*15 _atom_site.B_iso_or_equiv
+*16 _atom_site.Cartn_x_esd
+*17 _atom_site.Cartn_y_esd
+*18 _atom_site.Cartn_z_esd
+*19 _atom_site.occupancy_esd
+*20 _atom_site.B_iso_or_equiv_esd
+*21 _atom_site.pdbx_formal_charge
++22 _atom_site.auth_seq_id          <- seq id we want
++23 _atom_site.auth_comp_id         <- res name we want
++24 _atom_site.auth_asym_id         <- ch id we want ?
+*25 _atom_site.auth_atom_id         <- atom name we want ?
++26 _atom_site.pdbx_PDB_model_num   <- model no
+
+'+' is read in CMMDBFile::CheckAtomPlace()
+'=' new in residue
+'-' new in atom
+
+
+*/
 
   RC = CIF->AddLoop ( CIFCAT_ATOM_SITE,Loop );
   if (RC!=CIFRC_Ok)  {
     // the category was (re)created, provide tags
+
     Loop->AddLoopTag ( CIFTAG_GROUP_PDB          ); // ATOM, TER etc.
     Loop->AddLoopTag ( CIFTAG_ID                 ); // serial number
-    Loop->AddLoopTag ( CIFTAG_AUTH_ATOM_ID       ); // atom name
+
+    Loop->AddLoopTag ( CIFTAG_TYPE_SYMBOL        ); // element symbol
+    Loop->AddLoopTag ( CIFTAG_LABEL_ATOM_ID      ); // atom name
     Loop->AddLoopTag ( CIFTAG_LABEL_ALT_ID       ); // alt location
-    Loop->AddLoopTag ( CIFTAG_AUTH_COMP_ID       ); // residue name
-    Loop->AddLoopTag ( CIFTAG_AUTH_ASYM_ID       ); // chain id
-    Loop->AddLoopTag ( CIFTAG_AUTH_SEQ_ID        ); // res seq number
-//    Loop->AddLoopTag ( CIFTAG_LABEL_ATOM_ID      ); // atom name
-//    Loop->AddLoopTag ( CIFTAG_LABEL_COMP_ID      ); // residue name
-//    Loop->AddLoopTag ( CIFTAG_LABEL_ASYM_ID      ); // chain ID
-//    Loop->AddLoopTag ( CIFTAG_LABEL_SEQ_ID       ); // res seq number
+    Loop->AddLoopTag ( CIFTAG_LABEL_COMP_ID      ); // residue name
+    Loop->AddLoopTag ( CIFTAG_LABEL_ASYM_ID      ); // chain ID
+    Loop->AddLoopTag ( CIFTAG_LABEL_ENTITY_ID    ); // entity ID
+    Loop->AddLoopTag ( CIFTAG_LABEL_SEQ_ID       ); // res seq number
     Loop->AddLoopTag ( CIFTAG_PDBX_PDB_INS_CODE  ); // insertion code
+    Loop->AddLoopTag ( CIFTAG_SEGMENT_ID         ); // segment ID
+
     Loop->AddLoopTag ( CIFTAG_CARTN_X            ); // x-coordinate
     Loop->AddLoopTag ( CIFTAG_CARTN_Y            ); // y-coordinate
     Loop->AddLoopTag ( CIFTAG_CARTN_Z            ); // z-coordinate
     Loop->AddLoopTag ( CIFTAG_OCCUPANCY          ); // occupancy
     Loop->AddLoopTag ( CIFTAG_B_ISO_OR_EQUIV     ); // temp factor
-    Loop->AddLoopTag ( CIFTAG_SEGMENT_ID         ); // segment ID
-    Loop->AddLoopTag ( CIFTAG_TYPE_SYMBOL        ); // element symbol
-    Loop->AddLoopTag ( CIFTAG_CHARGE             ); // charge on atom
+
     Loop->AddLoopTag ( CIFTAG_CARTN_X_ESD        ); // x-sigma
     Loop->AddLoopTag ( CIFTAG_CARTN_Y_ESD        ); // y-sigma
     Loop->AddLoopTag ( CIFTAG_CARTN_Z_ESD        ); // z-sigma
     Loop->AddLoopTag ( CIFTAG_OCCUPANCY_ESD      ); // occupancy-sigma
     Loop->AddLoopTag ( CIFTAG_B_ISO_OR_EQUIV_ESD ); // t-factor-sigma
+
+    Loop->AddLoopTag ( CIFTAG_PDBX_FORMAL_CHARGE ); // charge on atom
+
+    Loop->AddLoopTag ( CIFTAG_AUTH_SEQ_ID        ); // res seq number
+    Loop->AddLoopTag ( CIFTAG_AUTH_COMP_ID       ); // residue name
+    Loop->AddLoopTag ( CIFTAG_AUTH_ASYM_ID       ); // chain id
+    Loop->AddLoopTag ( CIFTAG_AUTH_ATOM_ID       ); // atom name
+
     Loop->AddLoopTag ( CIFTAG_PDBX_PDB_MODEL_NUM ); // model number
+
   }
 
-  if (Ter)  {
+  if (Ter)  {   // ter record
 
-    if (!(WhatIsSet & ASET_Coordinates))  return;
+    if (!(WhatIsSet & ASET_Coordinates))
+      return;
+
+    // (0)
     Loop->AddString  ( pstr("TER") );
+    // (1)
     if (serNum>0)  Loop->AddInteger ( serNum );
              else  Loop->AddInteger ( index  );
+    // (2,3,4)
+    Loop->AddNoData ( CIF_NODATA_QUESTION );  // no element symbol
     Loop->AddNoData ( CIF_NODATA_QUESTION );  // no atom name
-    Loop->AddNoData ( CIF_NODATA_QUESTION ); // no alt code
-    if (residue)   Loop->AddString ( residue->name       );
-            else   Loop->AddString ( NULL                );
-    if (chain)     Loop->AddString ( chain->chainID,True );
-          else     Loop->AddString ( NULL                );
+    Loop->AddNoData ( CIF_NODATA_QUESTION );  // no alt code
+    if (residue)  {
+      // (5)
+      Loop->AddString ( residue->label_comp_id );
+      // (6)
+      Loop->AddString ( residue->label_asym_id );
+      // (7)
+      if (residue->label_entity_id>0)
+           Loop->AddInteger ( residue->label_entity_id );
+      else Loop->AddNoData  ( CIF_NODATA_DOT           );
+      // (8)
+      if (residue->label_seq_id>MinInt4)
+           Loop->AddInteger ( residue->label_seq_id );
+      else Loop->AddNoData  ( CIF_NODATA_DOT        );
+      // (9)
+      Loop->AddString ( residue->insCode,True );
+    } else  {
+      // (5,6,7,8,9)
+      Loop->AddString ( NULL );
+      Loop->AddString ( NULL );
+      Loop->AddNoData ( CIF_NODATA_DOT );
+      Loop->AddNoData ( CIF_NODATA_DOT );
+      Loop->AddNoData ( CIF_NODATA_DOT );
+    }
+
+    // (10-21)
+    for (i=10;i<=21;i++)
+      Loop->AddNoData ( CIF_NODATA_QUESTION );
+
+    // (22,23)
     if (residue)  {
       if (residue->seqNum>MinInt4)
            Loop->AddInteger ( residue->seqNum  );
       else Loop->AddNoData  ( CIF_NODATA_DOT   );
-      Loop->AddString ( residue->insCode,True );
+      Loop->AddString ( residue->name );
+    } else  {
+      Loop->AddNoData ( CIF_NODATA_DOT );
+      Loop->AddString ( NULL           );
+    }
+
+    // (24)
+    if (chain)  Loop->AddString ( chain->chainID,True );
+          else  Loop->AddString ( NULL                );
+
+    // (25)
+    Loop->AddNoData ( CIF_NODATA_QUESTION );  // no atom name
+
+  } else if (WhatIsSet & (ASET_Coordinates | ASET_CoordSigma))  {
+    // normal atom record
+
+    if (!WhatIsSet)  return;
+
+    // (0)
+    if (Het)  Loop->AddString ( pstr("HETATM") );
+        else  Loop->AddString ( pstr("ATOM")   );
+    // (1)
+    if (serNum>0)  Loop->AddInteger ( serNum );
+             else  Loop->AddInteger ( index  );
+
+
+    if (WhatIsSet & ASET_Coordinates)  {
+
+      // (2)
+      strcpy_css ( el,element );
+      Loop->AddString ( el,True );
+      // (3)
+      Loop->AddString ( label_atom_id  );  // assigned atom name
+      // (4)
+      Loop->AddString  ( altLoc,True );  // alt code
+
+      if (residue)  {
+        // (5)
+        Loop->AddString ( residue->label_comp_id );
+        // (6)
+        Loop->AddString ( residue->label_asym_id );
+        // (7)
+        if (residue->label_entity_id>0)
+             Loop->AddInteger ( residue->label_entity_id );
+        else Loop->AddNoData  ( CIF_NODATA_DOT           );
+        // (8)
+        if (residue->label_seq_id>MinInt4)
+             Loop->AddInteger ( residue->label_seq_id );
+        else Loop->AddNoData  ( CIF_NODATA_DOT        );
+        // (9)
+        Loop->AddString ( residue->insCode,True );
+      } else  {
+        // (5,6,7,8,9)
+        Loop->AddString ( NULL );
+        Loop->AddString ( NULL );
+        Loop->AddNoData ( CIF_NODATA_DOT );
+        Loop->AddNoData ( CIF_NODATA_DOT );
+        Loop->AddNoData ( CIF_NODATA_DOT );
+      }
+
+      // (10)
+      Loop->AddString ( segID ,True );
+      // (11,12,13)
+      Loop->AddReal ( x );
+      Loop->AddReal ( y );
+      Loop->AddReal ( z );
+      // (14)
+      if (WhatIsSet & ASET_Occupancy)
+            Loop->AddReal   ( occupancy );
+      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
+      // (15)
+      if (WhatIsSet & ASET_tempFactor)
+            Loop->AddReal   ( tempFactor );
+      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
+
+      // (16,17,18)
+      if (WhatIsSet & ASET_CoordSigma)  {
+        Loop->AddReal ( sigX );
+        Loop->AddReal ( sigY );
+        Loop->AddReal ( sigZ );
+      } else  {
+        Loop->AddNoData ( CIF_NODATA_QUESTION );
+        Loop->AddNoData ( CIF_NODATA_QUESTION );
+        Loop->AddNoData ( CIF_NODATA_QUESTION );
+      }
+      // (19)
+      if ((WhatIsSet & ASET_OccSigma) && (WhatIsSet & ASET_Occupancy))
+            Loop->AddReal   ( sigOcc  );
+      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
+      // (20)
+      if ((WhatIsSet & ASET_tFacSigma) && (WhatIsSet & ASET_tempFactor))
+            Loop->AddReal   ( sigTemp );
+      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
+
+    } else
+      for (i=0;i<18;i++)
+        Loop->AddNoData ( CIF_NODATA_QUESTION );
+
+    // (21)
+    if (WhatIsSet & ASET_Charge)  {
+      sprintf ( N,"%+2i",mround(charge) );
+      Loop->AddString ( N,True );
+    } else
+      Loop->AddNoData ( CIF_NODATA_QUESTION );
+
+    if (residue)  {
+      // (22)
+      if (residue->seqNum>MinInt4)
+           Loop->AddInteger ( residue->seqNum  );
+      else Loop->AddNoData  ( CIF_NODATA_DOT   );
+      // (23)
+      Loop->AddString ( residue->name );
     } else  {
       Loop->AddNoData ( CIF_NODATA_DOT );
       Loop->AddNoData ( CIF_NODATA_DOT );
     }
 
-    for (i=0;i<13;i++)
-      Loop->AddNoData ( CIF_NODATA_QUESTION );
-
-  } else if (WhatIsSet & (ASET_Coordinates | ASET_CoordSigma))  {
-
-    if (!WhatIsSet)  return;
-    if (Het)  Loop->AddString ( pstr("HETATM") );
-        else  Loop->AddString ( pstr("ATOM")   );
-    if (serNum>0)  Loop->AddInteger ( serNum );
-             else  Loop->AddInteger ( index  );
-
-    if (WhatIsSet & ASET_Coordinates)  {
-      strcpy_css ( AtName,name );
-      Loop->AddString  ( AtName      );  // atom name
-      Loop->AddString  ( altLoc,True );  // alt code
-      if (residue)   Loop->AddString ( residue->name       );
-              else   Loop->AddNoData ( CIF_NODATA_DOT      );
-      if (chain)     Loop->AddString ( chain->chainID,True );
-            else     Loop->AddNoData ( CIF_NODATA_DOT      );
-      if (residue)  {
-        if (residue->seqNum>MinInt4)
-             Loop->AddInteger ( residue->seqNum  );
-        else Loop->AddNoData  ( CIF_NODATA_DOT   );
-        Loop->AddString ( residue->insCode,True );
-      } else  {
-        Loop->AddNoData ( CIF_NODATA_DOT );
-        Loop->AddString ( CIF_NODATA_DOT );
-      }
-      Loop->AddReal ( x );
-      Loop->AddReal ( y );
-      Loop->AddReal ( z );
-      if (WhatIsSet & ASET_Occupancy)
-            Loop->AddReal   ( occupancy );
-      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
-      if (WhatIsSet & ASET_tempFactor)
-            Loop->AddReal   ( tempFactor );
-      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
-      strcpy_css ( el,element );
-      Loop->AddString ( segID ,True );
-      Loop->AddString ( el    ,True );
-      if (WhatIsSet & ASET_Charge)
-            sprintf ( N,"%+2i",mround(charge) );
-      else  strcpy  ( N,"  " );
-      Loop->AddString ( N,True );
-    } else
-      for (i=0;i<14;i++)
-        Loop->AddNoData ( CIF_NODATA_QUESTION );
-
-    if (WhatIsSet & ASET_CoordSigma)  {
-      Loop->AddReal ( sigX );
-      Loop->AddReal ( sigY );
-      Loop->AddReal ( sigZ );
-      if ((WhatIsSet & ASET_OccSigma) &&
-          (WhatIsSet & ASET_Occupancy))
-            Loop->AddReal   ( sigOcc  );
-      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
-      if ((WhatIsSet & ASET_tFacSigma) &&
-          (WhatIsSet & ASET_tempFactor))
-            Loop->AddReal   ( sigTemp );
-      else  Loop->AddNoData ( CIF_NODATA_QUESTION );
-    } else
-      for (i=0;i<5;i++)
-        Loop->AddNoData ( CIF_NODATA_QUESTION );
+    // (24)
+    if (chain)  Loop->AddString ( chain->chainID,True );
+          else  Loop->AddNoData ( CIF_NODATA_DOT      );
+    // (25)
+    strcpy_css      ( AtName,name );
+    Loop->AddString ( AtName      );  // atom name
 
   }
 
-  if (singleModel)  Loop->AddNoData  ( CIF_NODATA_QUESTION );
-              else  Loop->AddInteger ( model->serNum       );
+  // (26)
+  if (!model)                Loop->AddNoData  ( CIF_NODATA_QUESTION );
+  else if (model->serNum>0)  Loop->AddInteger ( model->serNum       );
+                       else  Loop->AddNoData  ( CIF_NODATA_QUESTION );
+
 
   if (WhatIsSet & ASET_Anis_tFac)  {
 
@@ -598,9 +726,10 @@ void  CAtom::SetAtomName ( int            ix,
                            const Element  eName )  {
   index   = ix;
   serNum  = sN;
-  strcpy     ( name   ,aName );
-  strcpy_css ( altLoc ,pstr(aLoc)  );
-  strcpy_css ( segID  ,pstr(sID)   );
+  strcpy     ( name         ,aName      );
+  strcpy     ( label_atom_id,aName      );
+  strcpy_css ( altLoc       ,pstr(aLoc) );
+  strcpy_css ( segID        ,pstr(sID)  );
   if (!eName[0])  element[0] = char(0);
   else if (!eName[1])  {
     element[0] = ' ';
@@ -749,11 +878,12 @@ int CAtom::ConvertPDBTER ( int ix, cpstr S )  {
   if (WhatIsSet & ASET_Coordinates)
     return Error_ATOM_AlreadySet;
 
-  WhatIsSet |= ASET_Coordinates;
-  Het        = False;
-  Ter        = True;
-  name[0]    = char(0);
-  element[0] = char(0);
+  WhatIsSet       |= ASET_Coordinates;
+  Het              = False;
+  Ter              = True;
+  name[0]          = char(0);
+  label_atom_id[0] = char(0);
+  element[0]       = char(0);
 
   return 0;
 
@@ -776,8 +906,18 @@ pstr CAtom::GetChainID()  {
   return  pstr("");
 }
 
+pstr CAtom::GetLabelAsymID()  {
+  if (residue)  return residue->label_asym_id;
+          else  return pstr("");
+}
+
 pstr  CAtom::GetResName()  {
   if (residue)  return residue->name;
+          else  return pstr("");
+}
+
+pstr  CAtom::GetLabelCompID()  {
+  if (residue)  return residue->label_comp_id;
           else  return pstr("");
 }
 
@@ -810,6 +950,16 @@ realtype CAtom::GetOccupancy()  {
 int   CAtom::GetSeqNum()  {
   if (residue)  return residue->seqNum;
           else  return ATOM_NoSeqNum;
+}
+
+int   CAtom::GetLabelSeqID()  {
+  if (residue)  return residue->label_seq_id;
+          else  return ATOM_NoSeqNum;
+}
+
+int   CAtom::GetLabelEntityID()  {
+  if (residue)  return residue->label_entity_id;
+          else  return -1;
 }
 
 pstr  CAtom::GetInsCode()  {
@@ -1274,6 +1424,7 @@ pstr p;
   }
 
   RestoreElementName();
+  strcpy ( label_atom_id,name );
 
 }
 
@@ -1363,6 +1514,45 @@ int  RC;
   if (WhatIsSet & ASET_Coordinates)
     return Error_ATOM_AlreadySet;
 
+/*
+
+loop_
+*0  _atom_site.group_PDB
+*1  _atom_site.id
+*2  _atom_site.type_symbol         <- chem elem
+-3  _atom_site.label_atom_id       <- atom name
+*4  _atom_site.label_alt_id        <- alt code
+=5  _atom_site.label_comp_id       <- res name ???
+=6  _atom_site.label_asym_id       <- chain id ???
+=7  _atom_site.label_entity_id     < ???
+=8  _atom_site.label_seq_id        <- poly seq id
++9  _atom_site.pdbx_PDB_ins_code   <- ins code
+-10 _atom_site.segment_id          <- segment id
+*11 _atom_site.Cartn_x
+*12 _atom_site.Cartn_y
+*13 _atom_site.Cartn_z
+*14 _atom_site.occupancy
+*15 _atom_site.B_iso_or_equiv
+*16 _atom_site.Cartn_x_esd
+*17 _atom_site.Cartn_y_esd
+*18 _atom_site.Cartn_z_esd
+*19 _atom_site.occupancy_esd
+*20 _atom_site.B_iso_or_equiv_esd
+*21 _atom_site.pdbx_formal_charge
++22 _atom_site.auth_seq_id          <- seq id we want
++23 _atom_site.auth_comp_id         <- res name we want
++24 _atom_site.auth_asym_id         <- ch id we want ?
+*25 _atom_site.auth_atom_id         <- atom name we want ?
++26 _atom_site.pdbx_PDB_model_num   <- model no
+
+'+' read in CMMDBFile::CheckAtomPlace()
+'=' new in residue, read in CMMDBFile::CheckAtomPlace()
+'-' new in atom
+
+*/
+
+
+  // (0)
   k = ix-1;
   CIFGetString ( PDBGroup,Loop,CIFTAG_GROUP_PDB,k,
                  sizeof(PDBGroup),pstr("") );
@@ -1370,12 +1560,11 @@ int  RC;
   Ter = !strcmp(PDBGroup,pstr("TER")   );
   Het = !strcmp(PDBGroup,pstr("HETATM"));
 
+  // (1)
   RC = CIFGetInteger1 ( serNum,Loop,CIFTAG_ID,k );
   if (RC)  {
-    if (Ter)
-      serNum = -1;
-    else if (RC==Error_NoData)
-      serNum = index;
+    if (Ter)                    serNum = -1;
+    else if (RC==Error_NoData)  serNum = index;
     else
       return RC;
   }
@@ -1386,26 +1575,37 @@ int  RC;
     return 0;
   }
 
-  CIFGetString ( name  ,Loop,CIFTAG_AUTH_ATOM_ID,k,
+  // (25)
+  CIFGetString ( name,Loop,CIFTAG_AUTH_ATOM_ID,k,
                         sizeof(name)  ,pstr("") );
+  // (3)
+  CIFGetString ( label_atom_id,Loop,CIFTAG_LABEL_ATOM_ID,k,
+                        sizeof(label_atom_id),pstr("") );
+  // (4)
   CIFGetString ( altLoc,Loop,CIFTAG_LABEL_ALT_ID ,k,
                         sizeof(altLoc),pstr("") );
 
+  // (11,12,13)
   RC = CIFGetReal1 ( x,Loop,CIFTAG_CARTN_X,k );
   if (!RC) RC = CIFGetReal1 ( y,Loop,CIFTAG_CARTN_Y,k );
   if (!RC) RC = CIFGetReal1 ( z,Loop,CIFTAG_CARTN_Z,k );
   if (RC)  return Error_ATOM_Unrecognized;
   WhatIsSet |= ASET_Coordinates;
 
+  // (14)
   if (!CIFGetReal1(occupancy,Loop,CIFTAG_OCCUPANCY,k))
     WhatIsSet |= ASET_Occupancy;
+  // (15)
   if (!CIFGetReal1(tempFactor,Loop,CIFTAG_B_ISO_OR_EQUIV,k))
     WhatIsSet |= ASET_tempFactor;
 
+  // (10)
   CIFGetString ( segID,Loop,CIFTAG_SEGMENT_ID,k,
                        sizeof(segID) ,pstr("") );
-  if (!CIFGetReal1(charge,Loop,CIFTAG_CHARGE,k))
+  // (21)
+  if (!CIFGetReal1(charge,Loop,CIFTAG_PDBX_FORMAL_CHARGE,k))
     WhatIsSet |= ASET_Charge;
+  // (2)
   RC = CIFGetString ( element,Loop,CIFTAG_TYPE_SYMBOL,k,
                               sizeof(element),pstr("  ") );
   if (RC)
@@ -1416,6 +1616,7 @@ int  RC;
   MakePDBAtomName   ();
 //  printf ( "    '%s' '%s'\n",name,element );
 
+  // (16,17,18)
   RC = CIFGetReal1 ( sigX,Loop,CIFTAG_CARTN_X_ESD,k );
   if (!RC) RC = CIFGetReal1 ( sigY,Loop,CIFTAG_CARTN_Y_ESD,k );
   if (!RC) RC = CIFGetReal1 ( sigZ,Loop,CIFTAG_CARTN_Z_ESD,k );
@@ -1423,8 +1624,10 @@ int  RC;
     return RC;
   if (!RC) WhatIsSet |= ASET_CoordSigma;
 
+  // (19)
   if (!CIFGetReal1(sigOcc,Loop,CIFTAG_OCCUPANCY_ESD,k))
     WhatIsSet |= ASET_OccSigma;
+  // (20)
   if (!CIFGetReal1(sigTemp,Loop,CIFTAG_B_ISO_OR_EQUIV_ESD,k))
     WhatIsSet |= ASET_tFacSigma;
 
@@ -1684,11 +1887,12 @@ void  CAtom::Copy ( PCAtom atom )  {
   Ter        = atom->Ter;
   WhatIsSet  = atom->WhatIsSet;
 
-  strcpy ( name      ,atom->name       );
-  strcpy ( altLoc    ,atom->altLoc     );
-  strcpy ( segID     ,atom->segID      );
-  strcpy ( element   ,atom->element    );
-  strcpy ( energyType,atom->energyType );
+  strcpy ( name         ,atom->name          );
+  strcpy ( label_atom_id,atom->label_atom_id );
+  strcpy ( altLoc       ,atom->altLoc        );
+  strcpy ( segID        ,atom->segID         );
+  strcpy ( element      ,atom->element       );
+  strcpy ( energyType   ,atom->energyType    );
   charge = atom->charge;
 
 }
@@ -1751,7 +1955,7 @@ void  CAtom::SetShortBinary()  {
 
 void  CAtom::write ( RCFile f )  {
 int  i,k;
-byte Version=1;
+byte Version=2;
 byte nb;
 
   f.WriteWord ( &WhatIsSet );
@@ -1776,11 +1980,12 @@ byte nb;
 
   f.WriteInt     ( &serNum );
   f.WriteInt     ( &index  );
-  f.WriteTerLine ( name      ,False );
-  f.WriteTerLine ( altLoc    ,False );
-  f.WriteTerLine ( segID     ,False );
-  f.WriteTerLine ( element   ,False );
-  f.WriteTerLine ( energyType,False );
+  f.WriteTerLine ( name         ,False );
+  f.WriteTerLine ( label_atom_id,False );
+  f.WriteTerLine ( altLoc       ,False );
+  f.WriteTerLine ( segID        ,False );
+  f.WriteTerLine ( element      ,False );
+  f.WriteTerLine ( energyType   ,False );
   f.WriteFloat   ( &charge );
   f.WriteBool    ( &Het    );
   f.WriteBool    ( &Ter    );
@@ -1873,6 +2078,8 @@ byte nb,Version;
   f.ReadInt     ( &serNum );
   f.ReadInt     ( &index  );
   f.ReadTerLine ( name      ,False );
+  if (Version>1)
+    f.ReadTerLine ( label_atom_id,False );
   f.ReadTerLine ( altLoc    ,False );
   f.ReadTerLine ( segID     ,False );
   f.ReadTerLine ( element   ,False );
@@ -2085,15 +2292,20 @@ CResidue::~CResidue()  {
   if (chain)  chain->_ExcludeResidue ( name,seqNum,insCode );
 }
 
+
 void  CResidue::InitResidue()  {
-  strcpy ( name,"---"  );  // residue name
-  seqNum  = -MaxInt;       // residue sequence number
-  strcpy ( insCode,"" );   // residue insertion code
-  chain   = NULL;          // reference to chain
-  index   = -1;            // undefined index in chain
-  nAtoms  = 0;             // number of atoms in the residue
-  AtmLen  = 0;             // length of atom array
-  atom    = NULL;          // array of atoms
+  strcpy ( name         ,"---"  );  // residue name
+  strcpy ( label_comp_id,"---"  );  // assigned residue name
+  label_asym_id[0] = char(0);       // assigned chain Id
+  seqNum           = -MaxInt;       // residue sequence number
+  label_seq_id     = -MaxInt;       // assigned residue sequence number
+  label_entity_id  = 1;             // assigned entity id
+  strcpy ( insCode,"" );            // residue insertion code
+  chain   = NULL;                   // reference to chain
+  index   = -1;                     // undefined index in chain
+  nAtoms  = 0;                      // number of atoms in the residue
+  AtmLen  = 0;                      // length of atom array
+  atom    = NULL;                   // array of atoms
   Exclude = True;
   SSE     = SSE_None;
 }
@@ -2270,6 +2482,7 @@ void  CResidue::SetResID ( const ResName resName, int sqNum,
   strcpy_css ( name,pstr(resName) );
   seqNum = sqNum;
   strcpy_css ( insCode,pstr(ins) );
+  strcpy (label_comp_id,name );
 }
 
 void  CResidue::FreeMemory()  {
@@ -2479,12 +2692,16 @@ int        i;
 
   FreeMemory();
 
-  seqNum = res->seqNum;
-  index  = res->index;
-  AtmLen = res->nAtoms;
-  strcpy ( name   ,res->name    );
-  strcpy ( insCode,res->insCode );
-  SSE    = res->SSE;
+  seqNum          = res->seqNum;
+  label_seq_id    = res->label_seq_id;
+  label_entity_id = res->label_entity_id;
+  index           = res->index;
+  AtmLen          = res->nAtoms;
+  SSE             = res->SSE;
+  strcpy ( name         ,res->name          );
+  strcpy ( label_comp_id,res->label_comp_id );
+  strcpy ( label_asym_id,res->label_asym_id );
+  strcpy ( insCode      ,res->insCode       );
 
   if (AtmLen>0)  {
     atom   = new PCAtom[AtmLen];
@@ -2519,12 +2736,16 @@ PPCAtom A;
 
   FreeMemory();
 
-  seqNum = res->seqNum;
-  index  = res->index;
-  nAtoms = res->nAtoms;
-  strcpy ( name   ,res->name    );
-  strcpy ( insCode,res->insCode );
-  SSE    = res->SSE;
+  seqNum          = res->seqNum;
+  label_seq_id    = res->label_seq_id;
+  label_entity_id = res->label_entity_id;
+  index           = res->index;
+  nAtoms          = res->nAtoms;
+  SSE             = res->SSE;
+  strcpy ( name         ,res->name          );
+  strcpy ( label_comp_id,res->label_comp_id );
+  strcpy ( label_asym_id,res->label_asym_id );
+  strcpy ( insCode      ,res->insCode       );
 
   AtmLen = nAtoms;
   A      = NULL;
@@ -2558,12 +2779,16 @@ int i;
 
   FreeMemory();
 
-  seqNum = res->seqNum;
-  index  = res->index;
-  nAtoms = res->nAtoms;
-  strcpy ( name   ,res->name    );
-  strcpy ( insCode,res->insCode );
-  SSE    = res->SSE;
+  seqNum          = res->seqNum;
+  label_seq_id    = res->label_seq_id;
+  label_entity_id = res->label_entity_id;
+  index           = res->index;
+  nAtoms          = res->nAtoms;
+  SSE             = res->SSE;
+  strcpy ( name         ,res->name          );
+  strcpy ( label_comp_id,res->label_comp_id );
+  strcpy ( label_asym_id,res->label_asym_id );
+  strcpy ( insCode      ,res->insCode       );
 
   AtmLen = nAtoms;
   if (AtmLen>0)  {
@@ -2622,8 +2847,16 @@ pstr CResidue::GetChainID()  {
   return  pstr("");
 }
 
+pstr CResidue::GetLabelAsymID()  {
+  return label_asym_id;
+}
+
 pstr  CResidue::GetResName()  {
   return name;
+}
+
+pstr  CResidue::GetLabelCompID()  {
+  return label_comp_id;
 }
 
 int   CResidue::GetAASimilarity ( const ResName resName )  {
@@ -2644,6 +2877,14 @@ void  CResidue::SetResName ( const ResName resName )  {
 
 int   CResidue::GetSeqNum()  {
   return seqNum;
+}
+
+int   CResidue::GetLabelSeqID()  {
+  return label_seq_id;
+}
+
+int   CResidue::GetLabelEntityID()  {
+  return label_entity_id;
 }
 
 pstr  CResidue::GetInsCode()  {
@@ -3127,63 +3368,6 @@ int  CResidue::GetUDData ( int UDDhandle, pstr & sudd )  {
 }
 
 
-/*  commented on 18.03.2004,  to be deleted
-
-realtype  BondAngle ( PCAtom A, PCAtom B, PCAtom C )  {
-realtype abx,aby,abz;
-realtype acx,acy,acz;
-realtype bcx,bcy,bcz;
-realtype absq,acsq,bcsq;
-
-  abx = B->x - A->x;
-  aby = B->y - A->y;
-  abz = B->z - A->z;
-
-  acx = A->x - C->x;
-  acy = A->y - C->y;
-  acz = A->z - C->z;
-
-  bcx = C->x - B->x;
-  bcy = C->y - B->y;
-  bcz = C->z - B->z;
-
-  absq = abx*abx + aby*aby + abz*abz;
-  acsq = acx*acx + acy*acy + acz*acz;
-  bcsq = bcx*bcx + bcy*bcy + bcz*bcz;
-
-  return  acos ( (bcsq + absq - acsq)/(2.0*sqrt(bcsq*absq)) );
-
-}
-
-#define  NOmaxdist2   12.25
-
-Boolean CResidue::isMainchainHBond ( PCResidue res ) {
-//  Test if there is main chain Hbond between PCRes1 (donor) and
-//  PCRes2 (acceptor).
-//  As defined Kabsch & Sanders
-//  This probably need the option of supporting alternative criteria
-PCAtom   NAtom,OAtom,CAtom;
-realtype dx,dy,dz;
-
-  NAtom = GetAtom      ( "N" );
-  OAtom = res->GetAtom ( "O" );
-  CAtom = res->GetAtom ( "C" );
-
-  if (NAtom && OAtom && CAtom)  {
-     dx = fabs ( NAtom->x - OAtom->x );
-     dy = fabs ( NAtom->y - OAtom->y );
-     dz = fabs ( NAtom->z - OAtom->z );
-     return ((dx*dx+dy*dy+dz*dz<=NOmaxdist2) &&
-             (BondAngle(NAtom,OAtom,CAtom)>=Pi/2.0));
-  }
-
-  return  False;
-
-}
-
-*/
-
-
 #define  NOmaxdist2   12.25
 
 Boolean CResidue::isMainchainHBond ( PCResidue res ) {
@@ -3235,17 +3419,21 @@ realtype absq,acsq,bcsq;
 
 void  CResidue::write ( RCFile f )  {
 int  i;
-byte Version=1;
+byte Version=2;
 
   CUDData::write ( f );
 
-  f.WriteByte    ( &Version );
-  f.WriteInt     ( &seqNum  );
-  f.WriteInt     ( &index   );
-  f.WriteInt     ( &nAtoms  );
-  f.WriteByte    ( &SSE     );
-  f.WriteTerLine ( name   ,False );
-  f.WriteTerLine ( insCode,False );
+  f.WriteByte    ( &Version         );
+  f.WriteInt     ( &seqNum          );
+  f.WriteInt     ( &label_seq_id    );
+  f.WriteInt     ( &label_entity_id );
+  f.WriteInt     ( &index           );
+  f.WriteInt     ( &nAtoms          );
+  f.WriteByte    ( &SSE             );
+  f.WriteTerLine ( name         ,False );
+  f.WriteTerLine ( label_comp_id,False );
+  f.WriteTerLine ( label_asym_id,False );
+  f.WriteTerLine ( insCode      ,False );
   for (i=0;i<nAtoms;i++)
     f.WriteInt ( &(atom[i]->index) );
 
@@ -3264,10 +3452,18 @@ byte    Version;
 
   f.ReadByte    ( &Version );
   f.ReadInt     ( &seqNum  );
+  if (Version>1)  {
+    f.ReadInt ( &label_seq_id    );
+    f.ReadInt ( &label_entity_id );
+  }
   f.ReadInt     ( &index   );
   f.ReadInt     ( &nAtoms  );
   f.ReadByte    ( &SSE     );
-  f.ReadTerLine ( name   ,False );
+  f.ReadTerLine ( name,False );
+  if (Version>1)  {
+    f.ReadTerLine ( label_comp_id,False );
+    f.ReadTerLine ( label_asym_id,False );
+  }
   f.ReadTerLine ( insCode,False );
   AtmLen = nAtoms;
   A      = NULL;

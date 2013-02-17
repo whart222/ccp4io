@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    24.03.09   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CMMDBFile
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2009
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -94,6 +94,7 @@
 #define MMDBF_FixSpaceGroup           0x00008000
 #define MMDBF_EnforceAtomNames        0x00010000
 #define MMDBF_EnforceUniqueChainID    0x00020000
+#define MMDBF_DoNotProcessSpaceGroup  0x00040000
 
 // MMDBF_EnforceUniqueChainID   will make MMDB to rename chains on
 //         reading a file such as to maintain chains uniquesness. This
@@ -181,7 +182,7 @@ class CMMDBFile : public CUDData  {
     int   ReadCIFASCII1  ( cpstr CIFLFName,
                            byte gzipMode=GZM_CHECK );
     int   ReadCIFASCII   ( RCFile f );
-    int   ReadFromCIF    ( PCMMCIFData CIFD, Boolean fixSpaceGroup );
+    int   ReadFromCIF    ( PCMMCIFData CIFD        );
 
     // adds info from PDB file
     int   AddPDBASCII1   ( cpstr PDBLFName,
@@ -590,8 +591,12 @@ class CMMDBFile : public CUDData  {
     int   SwitchModel     ( int nM );
     int   AllocateAtom    ( int           index,
                             const ChainID chainID,
+                            const ChainID label_asym_id,
                             const ResName resName,
+                            const ResName label_comp_id,
                             int           seqNum,
+                            int           label_seq_id,
+                            int           label_entity_id,
                             const InsCode insCode,
                             Boolean       Replace );
     void  ExpandAtomArray ( int inc );

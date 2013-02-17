@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -32,7 +32,7 @@
 //       ~~~~~~~~~
 //
 //  **** Classes :   CSymOp  ( symmetry operator )
-//       ~~~~~~~~~   
+//       ~~~~~~~~~
 //
 //   (C) E. Krissinel 2000-2010
 //
@@ -338,7 +338,7 @@ realtype AV;
                                                       10,pstr("*") );
 
   strcat ( S,Axis );
-    
+
 }
 
 */
@@ -440,7 +440,7 @@ byte Version=1;
     for (j=0;j<4;j++)
       f.WriteReal ( &(T[i][j]) );
 }
-   
+
 void  CSymOp::read ( RCFile f )  {
 int  i,j;
 byte Version;
@@ -451,7 +451,7 @@ byte Version;
       f.ReadReal ( &(T[i][j]) );
 }
 
-MakeStreamFunctions(CSymOp)
+MakeStreamFunctions(CSymOp);
 
 
 
@@ -713,7 +713,7 @@ int      nlines,npops,ncops;
 }
 
 /*
-int  CSymOps::SetGroup ( cpstr SpaceGroup, 
+int  CSymOps::SetGroup ( cpstr SpaceGroup,
                          cpstr syminfo_lib )  {
 CFile  f;
 pstr   p;
@@ -937,7 +937,7 @@ byte Version=1;
   for (i=0;i<Nops;i++)
     StreamWrite ( f,SymOp[i] );
 }
-   
+
 void  CSymOps::read ( RCFile f )  {
 int  i;
 byte Version;

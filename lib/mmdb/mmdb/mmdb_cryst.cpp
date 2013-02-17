@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -22,20 +22,20 @@
 //
 //  =================================================================
 //
-//    29.01.10   <--  Date of Last Modification.
+//    05.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
 //  **** Module  :  MMDB_Cryst  <implementation>
 //       ~~~~~~~~~
 //  **** Project :  MacroMolecular Data Base (MMDB)
-//       ~~~~~~~~~ 
+//       ~~~~~~~~~
 //  **** Classes :  CCrystContainer ( container for cryst.  data    )
 //       ~~~~~~~~~  CNCSMatrix      ( non-cryst. symm. matrix class )
 //                  CTVect          ( translational vector class    )
 //                  CMMDBCryst      ( MMDB cryst. section class     )
 //
-//  (C) E. Krissinel 2000-2010
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -111,8 +111,8 @@ CNCSMatrix::~CNCSMatrix() {}
 
 void  CNCSMatrix::Init()  {
 int i,j;
-  serNum = -1;   
-  iGiven = -1;   
+  serNum = -1;
+  iGiven = -1;
   for (i=0;i<3;i++)  {
     for (j=0;j<3;j++)
       m[i][j] = 0.0;
@@ -128,7 +128,7 @@ Boolean  CNCSMatrix::PDBASCIIDump1 ( RCFile f )  {
 char S[100];
 int  i,j;
 
-  if ((WhatIsSet & NCSMSET_All)==NCSMSET_All)  
+  if ((WhatIsSet & NCSMSET_All)==NCSMSET_All)
     for (i=0;i<3;i++)  {
       sprintf   ( S,"MTRIX%1i %3i",i+1,serNum );
       PadSpaces ( S,80 );
@@ -285,7 +285,7 @@ char        Code[100];
     iGiven = 1;
   else
     iGiven = MinInt4;
-   
+
 
   if (CIFGetReal(m[0][0],Loop,CIFTAG_MATRIX11,Signal))  return;
   if (CIFGetReal(m[0][1],Loop,CIFTAG_MATRIX12,Signal))  return;
@@ -338,7 +338,7 @@ int i,j;
   WhatIsSet = PCNCSMatrix(NCSMatrix)->WhatIsSet;
 
 }
-    
+
 void  CNCSMatrix::write ( RCFile f )  {
 int  i,j;
 byte Version=1;
@@ -471,7 +471,7 @@ int i;
     t[i] = PCTVect(TVect)->t[i];
   CreateCopy ( comment,PCTVect(TVect)->comment );
 }
-    
+
 void  CTVect::write ( RCFile f )  {
 int  i;
 byte Version=1;
@@ -555,15 +555,17 @@ int i,j,k;
   alphas = 90.0;
   betas  = 90.0;
   gammas = 90.0;
-  
+
   for (k=0;k<6;k++)
     AC[k] = 0.0;
 
   NCode  = 0;
 
   if (fullInit)  {
-    syminfo_lib  = NULL;
-    ignoreScalei = False;   // flag to ignore SCALEi cards
+    syminfo_lib   = NULL;
+    ignoreScalei  = False;  // flag to ignore SCALEi cards
+    processSG     = True;   // flag to process space group at file read
+    fixSpaceGroup = True;   // flag to fix space group at file read
   }
 
 }
@@ -635,7 +637,7 @@ int  CMMDBCryst::FixSpaceGroup()  {
 //            however fix is not possible.  spaceGroupFix receives
 //            a copy of spaceGroup
 //    -2    - any checks are not possible because cell parameters
-//            are not found, spaceGroupFix receives a copy of 
+//            are not found, spaceGroupFix receives a copy of
 //            spaceGroup
 //
 realtype eps,m1,m2;
@@ -661,7 +663,7 @@ char     c;
     else {
       m1 = (a+b+c)/3.0;
       m2 = (alpha+beta+gamma)/3.0;
-      if ((fabs(a-m1)<=eps) && (fabs(b-m1)<=eps) && 
+      if ((fabs(a-m1)<=eps) && (fabs(b-m1)<=eps) &&
           (fabs(c-m1)<=eps) &&
           (fabs(alpha-m2)<=eps) && (fabs(beta-m2)<=eps) &&
           (fabs(gamma-m2)<=eps))
@@ -717,8 +719,7 @@ char     c;
 
 }
 
-int  CMMDBCryst::ConvertPDBString ( pstr PDBString,
-                                    Boolean fixSpaceGroup ) {
+int  CMMDBCryst::ConvertPDBString ( pstr PDBString )  {
 // Interprets the ASCII PDB line and fills the corresponding fields.
 //   Returns zero if the line was converted, otherwise returns a
 // non-negative value of Error_XXXX.
@@ -747,7 +748,7 @@ PCTVect     tVect;
     CutSpaces ( spaceGroup,SCUTKEY_BEGEND );
     if (fixSpaceGroup)  FixSpaceGroup();
                   else  strcpy ( spaceGroupFix,spaceGroup );
-    if (spaceGroupFix[0])  {
+    if (spaceGroupFix[0] && processSG)  {
       if (SymOps.SetGroup(spaceGroupFix,syminfo_lib)==SYMOP_Ok)
         WhatIsSet |= CSET_SpaceGroup;
     }
@@ -832,7 +833,7 @@ PCTVect     tVect;
     return RC;
 
   } else if (!strncmp(PDBString,"TVECT ",6))  {
-    
+
     tVect = new CTVect();
     RC = tVect->ConvertPDBASCII(PDBString);
     if (RC==0)  TVect.AddData ( tVect );
@@ -870,7 +871,7 @@ char S[100];
     f.WriteLine ( S );
   }
 
-  if ((WhatIsSet & CSET_OrigMatrix)==CSET_OrigMatrix)  
+  if ((WhatIsSet & CSET_OrigMatrix)==CSET_OrigMatrix)
     for (i=0;i<3;i++)  {
       sprintf   ( S,"ORIGX%1i",i+1);
       PadSpaces ( S,80 );
@@ -880,7 +881,7 @@ char S[100];
       f.WriteLine ( S );
     }
 
-  if ((WhatIsSet & CSET_ScaleMatrix)==CSET_ScaleMatrix) 
+  if ((WhatIsSet & CSET_ScaleMatrix)==CSET_ScaleMatrix)
     for (i=0;i<3;i++)  {
       sprintf   ( S,"SCALE%1i",i+1);
       PadSpaces ( S,80 );
@@ -896,7 +897,7 @@ char S[100];
 }
 
 
-int  CMMDBCryst::GetCIF ( PCMMCIFData CIF, Boolean fixSpaceGroup ) {
+int  CMMDBCryst::GetCIF ( PCMMCIFData CIF ) {
 PCMMCIFStruct Struct;
 int RC;
 
@@ -923,7 +924,7 @@ int RC;
     if (!RC) WhatIsSet |= CSET_ZValue;
 
   }
- 
+
   Struct = CIF->GetStructure ( CIFCAT_SYMMETRY );
   if (Struct)  {
     CIFGetString ( spaceGroup,Struct,CIFTAG_SPACE_GROUP_NAME_H_M,
@@ -939,11 +940,13 @@ int RC;
         strcpy ( spaceGroup,"C 1 2 1" );
     }
     */
-    if (SymOps.SetGroup(spaceGroupFix,syminfo_lib)==SYMOP_Ok)
-      WhatIsSet |= CSET_SpaceGroup;
+    if (spaceGroupFix[0] && processSG)  {
+      if (SymOps.SetGroup(spaceGroupFix,syminfo_lib)==SYMOP_Ok)
+        WhatIsSet |= CSET_SpaceGroup;
+    }
   }
 
-  if ((a*b*c*alpha*beta*gamma==0.0) || 
+  if ((a*b*c*alpha*beta*gamma==0.0) ||
       ((a==1.0)      && (b==1.0)     && (c==1.0)      &&
        (alpha==90.0) && (beta==90.0) && (gamma==90.0) &&
        (!strcmp(spaceGroup,"P 1"))))  {
@@ -1096,7 +1099,7 @@ int      i,j,k;
   if ((WhatIsSet & CSET_CellParams)==CSET_CellParams)  {
     //   The 'cryst1' card was supplied. Calculate
     // standard orthogonalizations.
-  
+
     CalcOrthMatrices();
     if (NCode<0)  NCode = 0;
 
@@ -1154,8 +1157,8 @@ int      i,j,k;
             }
           }
       }
-    
-      //   Correct inaccuracy of SCALEi input due to FORMAT, 
+
+      //   Correct inaccuracy of SCALEi input due to FORMAT,
       // replace RF,RO with RR[NCode][][] if possible.
 
       if (NCode>=0)  {
@@ -1185,7 +1188,7 @@ int      i,j,k;
     RFU[3][3] = 1.0;
     Mat4Inverse ( RFU,ROU );
 
-  } else  
+  } else
     CellCheck |= CCHK_NoCell;
 
 }
@@ -1212,7 +1215,7 @@ int i,j;
   } else
     printf ( "\n  $WARNING: NO CRYST CARDS READ$\n" );
 
-  if ((WhatIsSet & CSET_ScaleMatrix)!=CSET_ScaleMatrix) 
+  if ((WhatIsSet & CSET_ScaleMatrix)!=CSET_ScaleMatrix)
     printf ( "\n  $WARNING: NO SCALE CARDS READ$\n" );
 
 }
@@ -1242,7 +1245,7 @@ int      i,j,k;
   Vol  = 2.0*a*b*c*V;
 
   //  Precaution measure for erratic use of the library
-  if ((fabs(Alph)<1.0e-6) || (fabs(Bet)<1.0e-6) || 
+  if ((fabs(Alph)<1.0e-6) || (fabs(Bet)<1.0e-6) ||
                              (fabs(Gamm)<1.0e-6))  {
     as     = 0.0;
     bs     = 0.0;
@@ -1260,7 +1263,7 @@ int      i,j,k;
     }
     return;
   }
-  
+
   sinA   = sin(Alph);
   cosA   = cos(Alph);
   sinB   = sin(Bet);
@@ -1464,7 +1467,7 @@ int   i,j,k;
     return k;
   }
 
-  // transformation back to orthogonal coordinates    
+  // transformation back to orthogonal coordinates
   for (i=0;i<3;i++)  {
     for (j=0;j<4;j++)  {
       TMatrix[i][j] = 0.0;
@@ -1830,7 +1833,7 @@ int RC,l;
       strcpy ( spaceGroupFix,spaceGroup );
       if (spaceGroup[0])  {
         RC = SymOps.SetGroup ( spaceGroup,syminfo_lib );
-	//        RC = SymOps.SetGroup ( spGroup,syminfo_lib );
+    //        RC = SymOps.SetGroup ( spGroup,syminfo_lib );
         //      strncpy ( spaceGroup,spGroup,l );
         //      spaceGroup[l] = char(0);
         if (RC==SYMOP_Ok)  WhatIsSet |= CSET_SpaceGroup;
@@ -1877,7 +1880,7 @@ int i,j;
     RO[3][3] = 1.0;
 
     Mat4Inverse ( RO,RF );
-  
+
     WhatIsSet |= CSET_Transforms;
 
   } else
@@ -2218,7 +2221,7 @@ MakeStreamFunctions(CMMDBCryst)
 
 
 void  TestCryst() {
-//  reads from 'in.cryst', writes into 
+//  reads from 'in.cryst', writes into
 //  'out.cryst' and 'abin.cryst'
 CFile       f;
 char        S[81];
@@ -2230,7 +2233,7 @@ PCMMDBCryst Cryst;
   if (f.reset()) {
     while (!f.FileEnd()) {
       f.ReadLine ( S,sizeof(S) );
-      Cryst->ConvertPDBString ( S,False );
+      Cryst->ConvertPDBString ( S );
     }
     f.shut();
   } else {
@@ -2238,7 +2241,7 @@ PCMMDBCryst Cryst;
     delete Cryst;
     return;
   }
-   
+
   f.assign ( pstr("out.cryst"),True );
   if (f.rewrite()) {
     Cryst->PDBASCIIDump ( f );
@@ -2259,10 +2262,10 @@ PCMMDBCryst Cryst;
     delete Cryst;
     return;
   }
-  
+
   delete Cryst;
   printf ( "   Cryst deleted.\n" );
-  
+
   Cryst = new CMMDBCryst();
   if (f.reset()) {
     Cryst->read ( f );
@@ -2272,12 +2275,12 @@ PCMMDBCryst Cryst;
     delete Cryst;
     return;
   }
-   
+
   f.assign ( pstr("abin.cryst"),True );
   if (f.rewrite()) {
     Cryst->PDBASCIIDump ( f );
     f.shut();
-  } else 
+  } else
     printf ( " Can't open output file 'abin.cryst' \n" );
 
   delete Cryst;

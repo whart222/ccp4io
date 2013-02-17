@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    02.01.00   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //
 //      CIF Definitions
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -113,7 +113,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFCAT_SYMMETRY                    pstr("_symmetry")
 #define CIFCAT_OBSLTE                      pstr("_ndb_database_pdb_obs_spr")
 
-                                                                       
+
 #define CIFTAG_ANGLE_ALPHA                    pstr("angle_alpha")
 #define CIFTAG_ANGLE_BETA                     pstr("angle_beta")
 #define CIFTAG_ANGLE_GAMMA                    pstr("angle_gamma")
@@ -134,7 +134,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_CARTN_Y_ESD                    pstr("cartn_y_esd")
 #define CIFTAG_CARTN_Z                        pstr("cartn_z")
 #define CIFTAG_CARTN_Z_ESD                    pstr("cartn_z_esd")
-#define CIFTAG_CHARGE                         pstr("charge")
+#define CIFTAG_PDBX_FORMAL_CHARGE             pstr("pdbx_formal_charge")
 #define CIFTAG_CODE                           pstr("code")
 #define CIFTAG_CODE_NDB                       pstr("code_NDB")
 #define CIFTAG_CODE_PDB                       pstr("code_PDB")
@@ -170,11 +170,11 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_ID                             pstr("id")
 #define CIFTAG_INS_CODE                       pstr("ins_code")
 #define CIFTAG_LABEL_ALT_ID                   pstr("label_alt_id")
-//#define CIFTAG_LABEL_ATOM_ID                  pstr("label_atom_id")
-//#define CIFTAG_LABEL_ASYM_ID                  pstr("label_asym_id")
-//#define CIFTAG_LABEL_COMP_ID                  pstr("label_comp_id")
-//#define CIFTAG_LABEL_ENTITY_ID                pstr("label_entity_id")
-//#define CIFTAG_LABEL_SEQ_ID                   pstr("label_seq_id")
+#define CIFTAG_LABEL_ATOM_ID                  pstr("label_atom_id")
+#define CIFTAG_LABEL_ASYM_ID                  pstr("label_asym_id")
+#define CIFTAG_LABEL_COMP_ID                  pstr("label_comp_id")
+#define CIFTAG_LABEL_ENTITY_ID                pstr("label_entity_id")
+#define CIFTAG_LABEL_SEQ_ID                   pstr("label_seq_id")
 #define CIFTAG_LENGTH_A                       pstr("length_a")
 #define CIFTAG_LENGTH_B                       pstr("length_b")
 #define CIFTAG_LENGTH_C                       pstr("length_c")
@@ -199,7 +199,8 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_NDB_DB_ALIGN_BEG_INS_CODE      pstr("ndb_db_align_beg_ins_code")
 #define CIFTAG_NDB_DB_ALIGN_END_INS_CODE      pstr("ndb_db_align_end_ins_code")
 #define CIFTAG_NDB_END_LABEL_INS_CODE_PDB     pstr("ndb_end_label_ins_code_pdb")
-#define CIFTAG_NDB_INS_CODE                   pstr("ndb_ins_code")
+//#define CIFTAG_NDB_INS_CODE                   pstr("ndb_ins_code")
+#define CIFTAG_PDBX_PDB_INS_CODE              pstr("pdbx_PDB_ins_code")
 #define CIFTAG_NDB_HELIX_CLASS_PDB            pstr("ndb_helix_class_pdb")
 #define CIFTAG_NDB_KEYWORDS                   pstr("ndb_keywords")
 #define CIFTAG_NDB_LABEL_ALT_ID               pstr("ndb_label_alt_id")
@@ -282,7 +283,7 @@ extern pstr CIFName ( int NameID, int Mode );
 #define CIFTAG_SENSE                          pstr("sense")
 #define CIFTAG_SHEET_ID                       pstr("sheet_id")
 #define CIFTAG_SOURCE                         pstr("source")
-#define CIFTAG_SPACE_GROUP_NAME_H_M           pstr("space_group_name_h-m")
+#define CIFTAG_SPACE_GROUP_NAME_H_M           pstr("space_group_name_H-M")
 #define CIFTAG_TEXT                           pstr("text")
 #define CIFTAG_TITLE                          pstr("title")
 #define CIFTAG_TYPE                           pstr("type")

@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    15.07.10   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -32,10 +32,10 @@
 //       ~~~~~~~~~
 //  **** Classes :  CAtom     ( atom class    )
 //       ~~~~~~~~~  CResidue  ( residue class )
-//  **** Functions :  BondAngle
-//       ~~~~~~~~~~~
+//  **** Functions: BondAngle
+//       ~~~~~~~~~~
 //
-//  Copyright (C) E. Krissinel 2000-2010
+//  Copyright (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -134,16 +134,16 @@ struct SAtomStat  {
 DefineStructure(SAtomBondI)
 
 struct SAtomBondI  {
-  int  index;  // bonded atom index
-  byte order;  // bond order
+  int  index;  //!< bonded atom index
+  byte order;  //!< bond order
 };
 
 
 DefineStructure(SAtomBond)
 
 struct SAtomBond  {
-  PCAtom atom;  // bonded atom pointer
-  byte  order;  // bond order
+  PCAtom atom;  //!< bonded atom pointer
+  byte  order;  //!< bond order
 };
 
 
@@ -159,36 +159,37 @@ class CAtom : public CUDData  {
 
   public :
 
-    int        serNum;         // serial number
-    AtomName   name;           // atom name (ALIGNED)
-    AltLoc     altLoc;  // alternative location indicator ("" for none)
-    PCResidue  residue;        // reference to residue
-    realtype   x,y,z;          // orthogonal coordinates in angstroms
-    realtype   occupancy;      // occupancy
-    realtype   tempFactor;     // temperature factor
-    SegID      segID;          // segment identifier
-    Element    element;        // element symbol (ALIGNED TO RIGHT)
-    EnergyType energyType;     // energy type (without spaces)
-    realtype   charge;         // charge on the atom
-    realtype   sigX,sigY,sigZ; // standard deviations of the coords
-    realtype   sigOcc;         // standard deviation of occupancy
-    realtype   sigTemp;        // standard deviation of temp. factor
-    realtype   u11,u22,u33;    // anisotropic temperature
-    realtype   u12,u13,u23;    //    factors
-    realtype   su11,su22,su33; // standard deviations of
-    realtype   su12,su13,su23; //    anisotropic temperature factors
-    Boolean    Het;            // indicator of het atom
-    Boolean    Ter;            // chain terminator
+    int        serNum;         //!< serial number
+    AtomName   name;           //!< atom name (ALIGNED)
+    AtomName   label_atom_id;  //!< assigned atom name (not aligned)
+    AltLoc     altLoc; //!< alternative location indicator ("" for none)
+    SegID      segID;          //!< segment identifier
+    Element    element;        //!< element symbol (ALIGNED TO RIGHT)
+    EnergyType energyType;     //!< energy type (without spaces)
+    PCResidue  residue;        //!< reference to residue
+    realtype   x,y,z;          //!< orthogonal coordinates in angstroms
+    realtype   occupancy;      //!< occupancy
+    realtype   tempFactor;     //!< temperature factor
+    realtype   charge;         //!< charge on the atom
+    realtype   sigX,sigY,sigZ; //!< standard deviations of the coords
+    realtype   sigOcc;         //!< standard deviation of occupancy
+    realtype   sigTemp;        //!< standard deviation of temp. factor
+    realtype   u11,u22,u33;    //!< anisotropic temperature
+    realtype   u12,u13,u23;    ///    factors
+    realtype   su11,su22,su33; //!< standard deviations of
+    realtype   su12,su13,su23; ///    anisotropic temperature factors
+    Boolean    Het;            //!< indicator of het atom
+    Boolean    Ter;            //!< chain terminator
 
-    word       WhatIsSet;      //   mask      field
-                        //  0x0001   atomic coordinates
-                        //  0x0002   occupancy
-                        //  0x0004   temperature factor
-                        //  0x0010   coordinate standard deviations
-                        //  0x0020   deviation of occupancy
-                        //  0x0040   deviation of temperature factor
-                        //  0x0100   anisotropic temperature factors
-                        //  0x1000   anis. temp. fact-s st-d deviations
+    word       WhatIsSet;      //!<   mask      field
+                       ///  0x0001   atomic coordinates
+                       ///  0x0002   occupancy
+                       ///  0x0004   temperature factor
+                       ///  0x0010   coordinate standard deviations
+                       ///  0x0020   deviation of occupancy
+                       ///  0x0040   deviation of temperature factor
+                       ///  0x0100   anisotropic temperature factors
+                       ///  0x1000   anis. temp. fact-s st-d deviations
 
     CAtom ();
     CAtom ( PCResidue res    );
@@ -269,19 +270,23 @@ class CAtom : public CUDData  {
     void  SetCoordinates ( realtype xx,  realtype yy, realtype zz,
                            realtype occ, realtype tFac );
 
-    int   GetModelNum();
-    pstr  GetChainID ();
-    pstr  GetResName ();
-    int   GetAASimilarity ( const ResName resName );
-    int   GetAASimilarity ( PCAtom  A );
+    int   GetModelNum       ();
+    pstr  GetChainID        ();
+    pstr  GetLabelAsymID    ();
+    pstr  GetResName        ();
+    pstr  GetLabelCompID    ();
+    int   GetAASimilarity   ( const ResName resName );
+    int   GetAASimilarity   ( PCAtom  A );
     realtype GetAAHydropathy();
     realtype GetOccupancy   ();
-    int   GetSeqNum  ();
-    pstr  GetInsCode ();
-    int   GetSSEType ();  // works only after SSE calculations
-    pstr  GetAtomName   () { return name;    }
-    pstr  GetElementName() { return element; }
-    pstr  GetAtomCharge ( pstr chrg );
+    int   GetSeqNum         ();
+    int   GetLabelSeqID     ();
+    int   GetLabelEntityID  ();
+    pstr  GetInsCode        ();
+    int   GetSSEType        ();  // works only after SSE calculations
+    pstr  GetAtomName       () { return name;    }
+    pstr  GetElementName    () { return element; }
+    pstr  GetAtomCharge     ( pstr chrg );
 
     //   GetChainCalphas(...) is a specialized function for quick
     // access to C-alphas of chain which includes given atom.
@@ -471,14 +476,18 @@ class CResidue : public CUDData  {
 
   public :
 
-    ResName  name;     // residue name - all spaces cut
-    int      seqNum;   // residue sequence number
-    InsCode  insCode;  // residue insertion code
-    PCChain  chain;    // reference to chain
-    int      index;    // index in the chain
-    int      nAtoms;   // number of atoms in the residue
-    PPCAtom  atom;     // array of atoms
-    byte     SSE;      // SSE type
+    ResName  name;            //!< residue name - all spaces cut
+    ResName  label_comp_id;   //!< assigned residue name
+    ChainID  label_asym_id;   //!< assigned chain Id
+    InsCode  insCode;         //!< residue insertion code
+    PCChain  chain;           //!< reference to chain
+    PPCAtom  atom;            //!< array of atoms
+    int      seqNum;          //!< residue sequence number
+    int      label_seq_id;    //!< assigned residue sequence number
+    int      label_entity_id; //!< assigned entity id
+    int      index;           //!< index in the chain
+    int      nAtoms;          //!< number of atoms in the residue
+    byte     SSE;             //!< SSE type
 
     CResidue ();
     CResidue ( PCChain Chain_Owner );
@@ -498,17 +507,21 @@ class CResidue : public CUDData  {
     PCChain GetChain();
     PCModel GetModel();
 
-    int   GetModelNum ();
-    pstr  GetChainID  ();
-    pstr  GetResName  ();
+    int   GetModelNum   ();
+    pstr  GetChainID    ();
+    pstr  GetLabelAsymID();
+    pstr  GetResName    ();
+    pstr  GetLabelCompID();
     int   GetAASimilarity ( const ResName resName );
     int   GetAASimilarity ( PCResidue res );
     realtype GetAAHydropathy();
-    void  SetResName  ( const ResName resName );
-    int   GetSeqNum   ();
-    pstr  GetInsCode  ();
-    int   GetResidueNo();
-    int   GetCenter   ( realtype & x, realtype & y, realtype & z );
+    void  SetResName      ( const ResName resName );
+    int   GetSeqNum       ();
+    int   GetLabelSeqID   ();
+    int   GetLabelEntityID();
+    pstr  GetInsCode      ();
+    int   GetResidueNo    ();
+    int   GetCenter       ( realtype & x, realtype & y, realtype & z );
     void * GetCoordHierarchy();  // PCMMDBFile
 
     void  GetAtomStatistics  ( RSAtomStat AS );

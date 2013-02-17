@@ -4,7 +4,7 @@
 //   CCP4 Coordinate Library: support of coordinate-related
 //   functionality in protein crystallography applications.
 //
-//   Copyright (C) Eugene Krissinel 2000-2008.
+//   Copyright (C) Eugene Krissinel 2000-2013.
 //
 //    This library is free software: you can redistribute it and/or
 //    modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    16.01.13   <--  Date of Last Modification.
+//    07.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -91,143 +91,6 @@ int  i,k,l,l1,l2;
     index[l2] = k;
   }
 }
-
-
-/*  -----------   commented SortTags to be deleted after
-                  no bugs are discovered
-
-void  SortTags ( psvector tag, int len, ivector index )  {
-//   The idea is, the tags are created already sorted and
-// SortTags(..) should serve only in special cases, occasionally.
-// The bubble sorting should perform best in this situation
-// because of its N-complexity for sorted arrays.
-//   Note: index must contain valid indices on input.
-int     i,i1,i2;
-Boolean Done;
-//  for (i=0;i<len;i++)
-//    index[i] = i;
-  do  {
-    Done = True;
-    i1 = index[0];
-    for (i=1;i<len;i++)  {
-      i2 = index[i];
-      if (strcmp(tag[i1],tag[i2])>0)  {
-        index[i-1] = i2;
-        index[i]   = i1;
-        Done       = False;
-      } else
-        i1 = i2;
-    }
-  } while (!Done);
-}
-*/
-
-/*  ----------------------------------------------------------------
-    ANACHRONISM
-void  SortTags ( psvector tag, int len, ivector index )  {
-int i,j,k;
-  for (i=0;i<len;i++)
-    index[i] = i;
-  for (i=0;i<len-1;i++)
-    for (j=i+1;j<len;j++)
-      if (strcmp(tag[index[i]],tag[index[j]])>0)  {
-        k = index[i];
-        index[i] = index[j];
-        index[j] = k;
-      }
-}
-------------------------------------------------------------------- */
-
-
-/*  -----------------------------------------------------------------
-    THESE VERSIONS OF HEAPSORT FROM NUMERICAL RECIPIES DO NOT WORK!
-
-void  SortTags ( psvector tag, int len, ivector index )  {
-//   Sorts tags by alphabetical order. index[] will return
-// indices of ordered tags; it must come allocated. tag[]
-// does not change; ordered tags are then obtained as
-// tag[index[i]].
-int i,j,k,l,N;
-  for (i=0;i<len;i++)
-    index[i] = i;
-  if (len>1)  {
-    l = (len >> 1)+1;
-    k = len;
-    for (;;)  {
-      if (l>1) {
-        l--;
-        N = index[l-1];
-      } else  {
-        k--;
-        N = index[k];
-        index[k] = index[0];
-        if (k==1)  {
-          index[0] = N;
-          return;
-        }
-      }
-      i = l;
-      j = l+1;
-      while (j<=k)  {
-        if (j<k)  {
-          if (strcmp(tag[index[j-1]],tag[index[j]])<0)
-            j++;
-        }
-        if (strcmp(tag[N],tag[index[j-1]])<0)  {
-          index[i-1] = index[j-1];
-          i   = j;
-          j <<= 1;
-        } else
-          j = k+1;
-      }
-      index[i-1] = N;
-    }
-  }
-}
-
-void  SortTags ( psvector tag, int len, ivector index )  {
-//   Sorts tags by alphabetical order. index[] will return
-// indices of ordered tags; it must come allocated. tag[]
-// does not change; ordered tags are then obtained as
-// tag[index[i]].
-int i,j,k,l,N;
-  for (i=0;i<len;i++)
-    index[i] = i;
-  if (len>1)  {
-    l = len >> 1;
-    k = len-1;
-    for (;;)  {
-      if (l>0)
-        N = index[--l];
-      else  {
-        N = index[k];
-        index[k--] = index[0];
-        if (!k)  {
-          index[0] = N;
-          break;
-        }
-      }
-      i = l;
-      j = l+1;
-      while (j<=k)  {
-        if (j<k)  {
-          if (strcmp(tag[index[j]],tag[index[j+1]])<0)
-            j++;
-        }
-        if (strcmp(tag[N],tag[index[j]])<0)  {
-          index[i] = index[j];
-          i   = j;
-          j <<= 1;
-          j++;
-        } else
-          break;
-      }
-      index[i] = N;
-    }
-  }
-}
-
-------------------------------------------------------------------- */
 
 
 
@@ -493,7 +356,7 @@ int i;
   f.CreateReadVector ( index,0 );
 }
 
-MakeStreamFunctions(CMMCIFCategory)
+MakeStreamFunctions(CMMCIFCategory);
 
 
 
@@ -554,8 +417,7 @@ psvector f1;
   }
 }
 
-void CMMCIFStruct::AddField ( cpstr F, cpstr T,
-                              Boolean Concatenate )  {
+void CMMCIFStruct::AddField ( cpstr F, cpstr T, Boolean Concatenate )  {
 psvector field1;
 int      i,nAT;
 pstr     nf;
@@ -774,21 +636,34 @@ CFile f;
     return False;
 }
 
+#define _max_output_line_width 256
+
 void CMMCIFStruct::WriteMMCIF ( RCFile f )  {
 int   i,j,k,l,m,n;
 pstr  F;
+
+  // calculate maximal length of tags
   l = 0;
   for (i=0;i<nTags;i++)
     l = IMax(l,strlen(tag[i]));
-  l += 1;
-  m  = 76-l;
+  l += 1;  // add one space separator
+
+  // calculate maximal space left for data
+  m  = _max_output_line_width - l;
+  // subtract category name width
   if (name[0]!=char(1))  m -= strlen(name);
+
+  // start outout
   f.LF();
-  for (i=0;i<nTags;i++)  {
+  for (i=0;i<nTags;i++)  {  // for each tag
+
+    // print category name, if not hidden, and dot
     if (name[0]!=char(1))  {
       f.Write ( name      );
       f.Write ( pstr(".") );
     }
+
+    // print tag, checking for duplicate tag flag
     F = strchr ( tag[i],'\1' );
     if (F)  {
       *F = char(0);
@@ -796,7 +671,9 @@ pstr  F;
       *F = '\1';
     } else
       f.Write ( tag[i] );
-    if (field[i])  {
+
+    // print field
+    if (field[i])  {  // field is defined
       F = field[i];
       if (strchr(F,'\n') || strstr(F,"\" "))  {
         f.Write ( pstr("\n;")   );
@@ -804,7 +681,7 @@ pstr  F;
         f.Write ( pstr("\n;\n") );
       } else {
         n = strlen(F);
-        if (n>m)
+        if (n>m)  // wrap around if field is too long
           f.Write ( pstr("\n ") );
         else {
           k = l-strlen(tag[i]);
@@ -823,13 +700,18 @@ pstr  F;
         } else
           f.WriteLine ( field[i] );
       }
-    } else  {
+
+    } else  {  // field if not defined, put question mark
+
       k = l-strlen(tag[i]);
       for (j=0;j<k;j++)
         f.Write ( pstr(" ") );
       f.WriteLine ( NODATA_Q );
+
     }
+
   }
+
 }
 
 void CMMCIFStruct::Copy ( PCMMCIFCategory Struct )  {
@@ -864,7 +746,7 @@ int i;
 }
 
 
-MakeStreamFunctions(CMMCIFStruct)
+MakeStreamFunctions(CMMCIFStruct);
 
 
 
@@ -1536,7 +1418,10 @@ void CMMCIFLoop::WriteMMCIF ( RCFile f )  {
 int     i,j,k,m,n;
 ivector l;
 pstr    F;
+
+  // write loop keyword
   f.Write ( pstr("\nloop_\n") );
+
   GetVectorMemory ( l,nTags,0 );
   k = 0;
   for (i=0;i<nTags;i++)  {
@@ -1570,7 +1455,7 @@ pstr    F;
       }
     l[i] = IMax(l[i],1);
     k += l[i]+1;
-    if (k>76)  {
+    if (k>_max_output_line_width)  {
       l[i] = -l[i];
       k = 0;
     }
@@ -1583,7 +1468,7 @@ pstr    F;
       k = l[j];   // length of the field
       if (k<0)  k = -k;
       m += k+1;
-      if (m>76)  {
+      if (m>_max_output_line_width)  {
         f.LF();
         m = k+1;
       } else

@@ -6,13 +6,13 @@
 //
 //   Copyright (C) Eugene Krissinel 2000-2008.
 //
-//    This library is free software: you can redistribute it and/or 
-//    modify it under the terms of the GNU Lesser General Public 
-//    License version 3, modified in accordance with the provisions 
+//    This library is free software: you can redistribute it and/or
+//    modify it under the terms of the GNU Lesser General Public
+//    License version 3, modified in accordance with the provisions
 //    of the license to address the requirements of UK law.
 //
-//    You should have received a copy of the modified GNU Lesser 
-//    General Public License along with this library. If not, copies 
+//    You should have received a copy of the modified GNU Lesser
+//    General Public License along with this library. If not, copies
 //    may be downloaded from http://www.ccp4.ac.uk/ccp4license.php
 //
 //    This program is distributed in the hope that it will be useful,
@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    08.07.08   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -35,7 +35,7 @@
 //                  CTVect          ( translation vector class      )
 //                  CMMDBCryst      ( MMDB cryst. section class     )
 //
-//  (C) E. Krissinel 2000-2008
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -63,8 +63,8 @@
 
 //  ====================  CCrystContainer  ======================
 
-DefineClass(CCrystContainer);
-DefineStreamFunctions(CCrystContainer);
+DefineClass(CCrystContainer)
+DefineStreamFunctions(CCrystContainer)
 
 class CCrystContainer : public CClassContainer  {
 
@@ -72,7 +72,7 @@ class CCrystContainer : public CClassContainer  {
 
     CCrystContainer () : CClassContainer() {}
     CCrystContainer ( RPCStream Object )
-                       : CClassContainer ( Object ) {} 
+                       : CClassContainer ( Object ) {}
     ~CCrystContainer() {}
 
     PCContainerClass MakeContainerClass ( int ClassID );
@@ -89,8 +89,8 @@ class CCrystContainer : public CClassContainer  {
 #define NCSMSET_Matrix3  0x00000004
 #define NCSMSET_All      0x00000007
 
-DefineClass(CNCSMatrix);
-DefineStreamFunctions(CNCSMatrix);
+DefineClass(CNCSMatrix)
+DefineStreamFunctions(CNCSMatrix)
 
 class CNCSMatrix : public CContainerClass  {
 
@@ -112,7 +112,7 @@ class CNCSMatrix : public CContainerClass  {
     int     ConvertPDBASCII ( cpstr S );
     void    MakeCIF         ( PCMMCIFData CIF, int N );
     void    GetCIF          ( PCMMCIFData CIF, int & Signal );
-    
+
     int     GetClassID      () { return ClassID_NCSMatrix; }
 
     void    SetNCSMatrix    ( int serialNum,
@@ -129,7 +129,7 @@ class CNCSMatrix : public CContainerClass  {
                       //   0x0001    MTRIX1 was converted
                       //   0x0002    MTRIX2 was converted
                       //   0x0004    MTRIX3 was converted
-    
+
     void  Init();
 
 };
@@ -137,8 +137,8 @@ class CNCSMatrix : public CContainerClass  {
 
 //  ==================  CTVect  ========================
 
-DefineClass(CTVect);
-DefineStreamFunctions(CTVect);
+DefineClass(CTVect)
+DefineStreamFunctions(CTVect)
 
 class CTVect : public CContainerClass  {
 
@@ -165,7 +165,7 @@ class CTVect : public CContainerClass  {
     void  read  ( RCFile f );
 
   protected :
-    
+
     void  Init();
 
 };
@@ -226,7 +226,7 @@ class CMMDBCryst : public CStream  {
     int       Z;                // Z-value
 
     mat33     o;                // orthogonal transformation matrix
-    vect3     t;                // translation orthogonal vector 
+    vect3     t;                // translation orthogonal vector
     mat33     s;                // scale matrix
     vect3     u;                // translation part of the scale matrix
 
@@ -240,6 +240,9 @@ class CMMDBCryst : public CStream  {
                                 // 0x1000 - the check was not done
     word      WhatIsSet;        // indicator of the fields set
     Boolean   ignoreScalei;     // flag to ignore SCALEi cards
+    Boolean   processSG;        // flag to process space group at file
+                                // read
+    Boolean   fixSpaceGroup;    // flag to fix space group at file read
 
     CMMDBCryst ();
     CMMDBCryst ( RPCStream Object );
@@ -253,7 +256,7 @@ class CMMDBCryst : public CStream  {
     // successfully converted, otherwise returns a non-negative value
     // of Error_XXXX.
     //   PDBString must be not shorter than 81 characters.
-    int   ConvertPDBString ( pstr PDBString, Boolean fixSpaceGroup );
+    int   ConvertPDBString ( pstr PDBString );
 
     //   RWBROOKReadPrintout() may be invoked after reading PDB file
     // for simulating the old RWBROOK messages and warnings
@@ -307,7 +310,7 @@ class CMMDBCryst : public CStream  {
     // A PDB ASCII dump
     void  PDBASCIIDump ( RCFile f );
 
-    int   GetCIF  ( PCMMCIFData CIF, Boolean fixSpaceGroup );
+    int   GetCIF  ( PCMMCIFData CIF );
     void  MakeCIF ( PCMMCIFData CIF );
 
     Boolean areMatrices();  // returns True if the orthogonal-to-
@@ -451,7 +454,7 @@ class CMMDBCryst : public CStream  {
 extern cpstr getOrthCodeName ( int NCode );
 
 /*
-extern void  TestCryst();  //  reads from 'in.cryst', writes into 
+extern void  TestCryst();  //  reads from 'in.cryst', writes into
                            //  'out.cryst' and 'abin.cryst'
 */
 

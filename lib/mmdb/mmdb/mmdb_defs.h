@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    29.01.10   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //
 //      Definition of types, constants and important classes.
 //
-//  (C) E. Krissinel 2000-2010
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -46,8 +46,8 @@
 #endif
 
 #define MMDB_MAJOR_VERSION    (1)
-#define MMDB_MINOR_VERSION    (24)
-#define MMDB_MICRO_VERSION    (2)
+#define MMDB_MINOR_VERSION    (25)
+#define MMDB_MICRO_VERSION    (0)
 
 
 //  =======================  types  =================================

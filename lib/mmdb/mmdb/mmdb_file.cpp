@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    29.01.10   <--  Date of Last Modification.
+//    06.02.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -33,7 +33,7 @@
 //  **** Classes :  CMMDBFile  ( macromolecular data file class )
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2000-2010
+//  (C) E. Krissinel 2000-2013
 //
 //  =================================================================
 //
@@ -173,24 +173,28 @@ void CMMDBFile::ResetManager() {
 
 void CMMDBFile::SetFlag ( word Flag )  {
   Flags |= Flag;
-  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
-  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
-  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
-  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
-  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
-  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID            ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement          ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge           ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors ) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch          ) != 0;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID       ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID   ) != 0;
+  Cryst.processSG        = (Flags & MMDBF_DoNotProcessSpaceGroup ) == 0;
+  Cryst.fixSpaceGroup    = (Flags & MMDBF_FixSpaceGroup          ) != 0;
 }
 
 void CMMDBFile::RemoveFlag ( word Flag )  {
   Flags &= ~Flag;
-  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
-  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
-  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
-  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
-  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
-  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
+  ignoreSegID            = (Flags & MMDBF_IgnoreSegID            ) != 0;
+  ignoreElement          = (Flags & MMDBF_IgnoreElement          ) != 0;
+  ignoreCharge           = (Flags & MMDBF_IgnoreCharge           ) != 0;
+  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors ) != 0;
+  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch          ) != 0;
+  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID       ) != 0;
+  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID   ) != 0;
+  Cryst.processSG        = (Flags & MMDBF_DoNotProcessSpaceGroup ) == 0;
+  Cryst.fixSpaceGroup    = (Flags & MMDBF_FixSpaceGroup          ) != 0;
 }
 
 
@@ -255,22 +259,14 @@ int  CMMDBFile::ReadPDBASCII ( RCFile f )  {
 PCContString ContString;
 word         cleanKey;
 int          RC,modNum;
-Boolean      fixSpaceGroup,fend;
+Boolean      fend;
 
   //  remove previous data
   ResetManager  ();
   FreeFileMemory();
 
   FType = MMDB_FILE_PDB;
-  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
-  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
-  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
-  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
-  ignoreRemarks          = False;
-  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
-  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
-  fixSpaceGroup          = (Flags & MMDBF_FixSpaceGroup         ) != 0;
+  SetFlag ( 0 );
 
   if (f.FileEnd())  return Error_EmptyFile;
 
@@ -361,7 +357,7 @@ Boolean      fixSpaceGroup,fend;
 
   // read crystallographic information section
   do {
-    RC = Cryst.ConvertPDBString(S,fixSpaceGroup);
+    RC = Cryst.ConvertPDBString ( S );
     if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
       RC = 0;
     if (RC)  break;
@@ -374,7 +370,7 @@ Boolean      fixSpaceGroup,fend;
   } while (!fend);
 
   if (!RC)  {
-    RC = Cryst.ConvertPDBString(S,fixSpaceGroup);
+    RC = Cryst.ConvertPDBString ( S );
     if ((RC!=Error_WrongSection) && ignoreNonCoorPDBErrors)
       RC = Error_WrongSection;
   }
@@ -478,21 +474,14 @@ int   rc;
 }
 
 int  CMMDBFile::ReadCIFASCII ( RCFile f )  {
-int     W;
-Boolean fixSpaceGroup;
+int  W;
 
   //  remove previous data
   ResetManager  ();
   FreeFileMemory();
   FType = MMDB_FILE_CIF;
-  ignoreSegID            = (Flags & MMDBF_IgnoreSegID           ) != 0;
-  ignoreElement          = (Flags & MMDBF_IgnoreElement         ) != 0;
-  ignoreCharge           = (Flags & MMDBF_IgnoreCharge          ) != 0;
-  ignoreNonCoorPDBErrors = (Flags & MMDBF_IgnoreNonCoorPDBErrors) != 0;
-  ignoreUnmatch          = (Flags & MMDBF_IgnoreUnmatch         ) != 0;
-  allowDuplChID          = (Flags & MMDBF_AllowDuplChainID      ) != 0;
-  enforceUniqueChID      = (Flags & MMDBF_EnforceUniqueChainID  ) != 0;
-  fixSpaceGroup          = (Flags & MMDBF_FixSpaceGroup         ) != 0;
+
+  SetFlag ( 0 );
 
   CIFErrorLocation[0] = char(0);  // CIF reading phase
 
@@ -519,13 +508,18 @@ Boolean fixSpaceGroup;
     return int(W);
   }
 
-  return ReadFromCIF ( CIF,fixSpaceGroup );
+  W = ReadFromCIF ( CIF );
+  if (CIF)  {
+    delete CIF;
+    CIF = NULL;
+  }
+
+  return W;
 
 }
 
 
-int CMMDBFile::ReadFromCIF ( PCMMCIFData CIFD,
-                             Boolean fixSpaceGroup )  {
+int CMMDBFile::ReadFromCIF ( PCMMCIFData CIFD )  {
 PCMMCIFLoop  Loop1,Loop2;
 pstr         F,FC;
 word         cleanKey;
@@ -546,7 +540,7 @@ int          RC,i,l,j,n,retc;
     return RC;
   }
 
-  RC = Cryst.GetCIF ( CIFD,fixSpaceGroup );
+  RC = Cryst.GetCIF ( CIFD );
   if (RC)  {
     CIFD->Optimize();
     return RC;
@@ -1442,7 +1436,7 @@ PCContString ContString;
   if (RC!=Error_WrongSection)  return RC;
 
   // belongs to the crystallographic information section?
-  RC = Cryst.ConvertPDBString ( S,False );
+  RC = Cryst.ConvertPDBString ( S );
   if (RC!=Error_WrongSection)  {
 //    if (RC==0)  Cryst.CalcCoordTransforms();
     return RC;
@@ -1777,7 +1771,8 @@ int i,kndex,RC;
   if (!crModel)  SwitchModel ( 1 );
 
 
-  RC = AllocateAtom ( kndex,chainID,resName,seqNum,insCode,True );
+  RC = AllocateAtom ( kndex,chainID,chainID,resName,resName,
+                      seqNum,seqNum,1,insCode,True );
   if (!RC)
     Atom[kndex-1]->SetAtomName ( kndex,serNum,atomName,altLoc,
                                  segID,element );
@@ -1833,8 +1828,11 @@ int i,kndex,RC,sn;
   if (kndex==0)  kndex = nAtoms+1;
 
 
-  RC = AllocateAtom ( kndex,A->GetChainID(),A->GetResName(),
-                      A->GetSeqNum(),A->GetInsCode(),True );
+  RC = AllocateAtom ( kndex,A->GetChainID(),A->GetLabelAsymID(),
+                            A->GetResName(),A->GetLabelCompID(),
+                            A->GetSeqNum (),A->GetLabelSeqID (),
+                            A->GetLabelEntityID(),A->GetInsCode(),
+                            True );
 
   if (serNum<=0)  sn = kndex;
             else  sn = serNum;
@@ -2067,16 +2065,16 @@ InsCode  insCode;
     insCode[1] = char(0);
   }
 
-  return AllocateAtom ( index ,chainID,resName,
-                        seqNum,insCode,False );
+  return AllocateAtom ( index ,chainID,chainID,resName,resName,
+                        seqNum,seqNum,1,insCode,False );
 
 }
 
 int CMMDBFile::CheckAtomPlace ( int index, PCMMCIFLoop Loop )  {
 //   Version of CheckAtomPlace(..) for reading from CIF file.
-ResName  resName;
-int      seqNum,RC,k,nM;
-ChainID  chainID;
+ResName  resName,label_comp_id;
+int      seqNum ,label_seq_id,label_entity_id,RC,k,nM;
+ChainID  chainID,label_asym_id;
 InsCode  insCode;
 pstr     F;
 
@@ -2085,14 +2083,14 @@ pstr     F;
   k = index-1;
 //  if (!CIFGetInteger1(seqNum,Loop,CIFTAG_LABEL_SEQ_ID,k))
   if (!CIFGetInteger1(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,k))
-    CIFGetString  ( insCode,Loop,CIFTAG_NDB_INS_CODE,k,
+    CIFGetString  ( insCode,Loop,CIFTAG_NDB_HELIX_CLASS_PDB,k,
                     sizeof(InsCode),pstr("") );
   else  {
     F = Loop->GetString ( CIFTAG_GROUP_PDB,k,RC );
     if ((!F) || (RC)) return  Error_CIF_EmptyRow;
     if (strcmp(F,"TER"))  {
       seqNum = MinInt4;  // only at reading CIF we allow this
-      CIFGetString ( insCode,Loop,CIFTAG_NDB_INS_CODE,k,
+      CIFGetString ( insCode,Loop,CIFTAG_NDB_HELIX_CLASS_PDB,k,
                      sizeof(InsCode),pstr("") );
     } else  { // we allow for empty TER card here
       seqNum     = 0;
@@ -2103,10 +2101,18 @@ pstr     F;
     }
   }
 
+  CIFGetInteger1 ( label_seq_id   ,Loop,CIFTAG_LABEL_SEQ_ID   ,k );
+  CIFGetInteger1 ( label_entity_id,Loop,CIFTAG_LABEL_ENTITY_ID,k );
+
   // get chain/residue ID
   CIFGetString ( chainID,Loop,CIFTAG_AUTH_ASYM_ID,k,
                  sizeof(ChainID),pstr("") );
   CIFGetString ( resName,Loop,CIFTAG_AUTH_COMP_ID,k,
+                 sizeof(ResName),pstr("") );
+
+  CIFGetString ( label_asym_id,Loop,CIFTAG_LABEL_ASYM_ID,k,
+                 sizeof(ChainID),pstr("") );
+  CIFGetString ( label_comp_id,Loop,CIFTAG_LABEL_COMP_ID,k,
                  sizeof(ResName),pstr("") );
 
   if (!CIFGetInteger1(nM,Loop,CIFTAG_PDBX_PDB_MODEL_NUM,k))  {
@@ -2116,16 +2122,21 @@ pstr     F;
       SwitchModel ( nM );
   }
 
-  return AllocateAtom ( index ,chainID,resName,
-                        seqNum,insCode,False );
+  return AllocateAtom ( index ,chainID,label_asym_id,resName,
+                        label_comp_id,seqNum,label_seq_id,
+                        label_entity_id,insCode,False );
 
 }
 
 
 int  CMMDBFile::AllocateAtom ( int           index,
                                const ChainID chainID,
+                               const ChainID label_asym_id,
                                const ResName resName,
+                               const ResName label_comp_id,
                                int           seqNum,
+                               int           label_seq_id,
+                               int           label_entity_id,
                                const InsCode insCode,
                                Boolean       Replace )  {
 
@@ -2187,6 +2198,11 @@ int  CMMDBFile::AllocateAtom ( int           index,
                                       Flags & MMDBF_IgnoreDuplSeqNum );
     if (!crRes)  return  Error_DuplicateSeqNum;
   }
+
+  strcpy ( crRes->label_asym_id,label_asym_id );
+  strcpy ( crRes->label_comp_id,label_comp_id );
+  crRes->label_seq_id    = label_seq_id;
+  crRes->label_entity_id = label_entity_id;
 
   // now check if there is place in the Atom array
   if (index>AtmLen)
