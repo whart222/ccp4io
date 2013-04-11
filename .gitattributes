@@ -128,14 +128,13 @@ lib/mmdb/mmdb/random_n.cpp svneol=native#text/plain
 lib/mmdb/mmdb/random_n.h svneol=native#text/plain
 lib/mmdb/mmdb/stream_.cpp svneol=native#text/plain
 lib/mmdb/mmdb/stream_.h svneol=native#text/plain
-lib/ssm/ss_csia.cpp svneol=native#text/plain
-lib/ssm/ss_csia.h svneol=native#text/plain
 lib/ssm/ss_vxedge.cpp svneol=native#text/plain
 lib/ssm/ss_vxedge.h svneol=native#text/plain
 lib/ssm/ssm_align.cpp svneol=native#text/plain
 lib/ssm/ssm_align.h svneol=native#text/plain
 lib/ssm/ssm_csia.cpp -text
 lib/ssm/ssm_csia.h -text
+lib/ssm/ssm_defs.h -text
 lib/ssm/ssm_graph.cpp -text
 lib/ssm/ssm_graph.h -text
 lib/ssm/ssm_superpose.cpp svneol=native#text/plain
