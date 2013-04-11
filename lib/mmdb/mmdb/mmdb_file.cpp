@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    06.02.13   <--  Date of Last Modification.
+//    11.04.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -2114,6 +2114,8 @@ pstr     F;
                  sizeof(ChainID),pstr("") );
   CIFGetString ( label_comp_id,Loop,CIFTAG_LABEL_COMP_ID,k,
                  sizeof(ResName),pstr("") );
+
+  if (!resName[0])  strcpy ( resName,label_comp_id );
 
   if (!CIFGetInteger1(nM,Loop,CIFTAG_PDBX_PDB_MODEL_NUM,k))  {
     if (crModel)  {

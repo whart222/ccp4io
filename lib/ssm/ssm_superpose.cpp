@@ -24,13 +24,13 @@
 //  =================================================================
 
 
-Boolean SSpAtom::CompatibleSSE ( RSSpAtom a )  {
+Boolean ssm::SpAtom::CompatibleSSE ( RSpAtom a )  {
   if (sse==V_HELIX)   return  (a.sse==V_HELIX);
   return (a.sse!=V_HELIX);
 }
 
 
-void SSectionDist::Copy ( RSSectionDist D )  {
+void ssm::SectionDist::Copy ( RSectionDist D )  {
   dist      = D.dist;
   rmsd      = D.rmsd;
   cosine    = D.cosine;
@@ -50,7 +50,7 @@ void SSectionDist::Copy ( RSSectionDist D )  {
 
 //  ==================================================================
 
-void SSSEDesc::Transform ( mat44 & T )  {
+void ssm::SSEDesc::Transform ( mat44 & T )  {
   x1 = T[0][0]*xs1 + T[0][1]*ys1 + T[0][2]*zs1 + T[0][3];
   y1 = T[1][0]*xs1 + T[1][1]*ys1 + T[1][2]*zs1 + T[1][3];
   z1 = T[2][0]*xs1 + T[2][1]*ys1 + T[2][2]*zs1 + T[2][3];
@@ -59,7 +59,7 @@ void SSSEDesc::Transform ( mat44 & T )  {
   z2 = T[2][0]*xs2 + T[2][1]*ys2 + T[2][2]*zs2 + T[2][3];
 }
 
-void SSSEDesc::CalcScore ( RSSSEDesc D )  {
+void ssm::SSEDesc::CalcScore ( RSSEDesc D )  {
 // Don't change this procedure without appropriate changing
 // ChooseFirstRotation().
 realtype dx,dy,dz;
@@ -142,10 +142,10 @@ int      i;
   dl2 = dl2*dl2*vl2;
 
   return  dr2 + dl2;
-  
+
 }
 
-realtype SSSEDesc::Cosine ( RSSSEDesc D )  {
+realtype ssm::SSEDesc::Cosine ( RSSEDesc D )  {
 realtype dx1,dy1,dz1, dx2,dy2,dz2, d1,d2,r;
 
   dx1 = x2 - x1;
@@ -164,7 +164,7 @@ realtype dx1,dy1,dz1, dx2,dy2,dz2, d1,d2,r;
 
 }
 
-void SSSEDesc::Copy ( RSSSEDesc D )  {
+void ssm::SSEDesc::Copy ( RSSEDesc D )  {
   x1  = D.x1;    y1  = D.y1;    z1  = D.z1;
   x2  = D.x2;    y2  = D.y2;    z2  = D.z2;
   xs1 = D.xs1;   ys1 = D.ys1;   zs1 = D.zs1;
@@ -185,7 +185,7 @@ void SSSEDesc::Copy ( RSSSEDesc D )  {
 
 //  ==================================================================
 
-CSuperpose::CSuperpose()  {
+ssm::Superpose::Superpose()  {
   InitSuperpose();
   GetMatrixMemory ( A  ,3,3,1,1 );
   GetMatrixMemory ( U  ,3,3,1,1 );
@@ -194,7 +194,7 @@ CSuperpose::CSuperpose()  {
   GetVectorMemory ( RV1,3,1     );
 }
 
-CSuperpose::~CSuperpose()  {
+ssm::Superpose::~Superpose()  {
   FreeMemory();
   FreeMatrixMemory ( A  ,3,1,1 );
   FreeMatrixMemory ( U  ,3,1,1 );
@@ -209,7 +209,7 @@ CSuperpose::~CSuperpose()  {
 
 
 
-void CSuperpose::InitSuperpose()  {
+void ssm::Superpose::InitSuperpose()  {
 
   Rmsd0         = 3.0;   // quality optimization parameter
   minContact    = 3.0;   // minimal Calpha-pair contact parameter
@@ -271,7 +271,7 @@ void CSuperpose::InitSuperpose()  {
 
 }
 
-void CSuperpose::FreeMemory()  {
+void ssm::Superpose::FreeMemory()  {
 int i;
 
   if (a1)  {
@@ -315,46 +315,46 @@ int i;
 
 }
 
-void CSuperpose::SetAllowMC ( Boolean allowMisconnections )  {
+void ssm::Superpose::SetAllowMC ( Boolean allowMisconnections )  {
   allowMC = allowMisconnections;
 }
 
-void CSuperpose::SetIterationLimits ( int iter_max, int iter_min,
+void ssm::Superpose::SetIterationLimits ( int iter_max, int iter_min,
                                       int max_hollow )  {
   iterMax     = iter_max;
   iterMin     = iter_min;
   maxHollowIt = max_hollow;
 }
 
-void  CSuperpose::SetCaSelections ( pstr selection1,
-                                    pstr selection2 )  {
+void  ssm::Superpose::SetCaSelections ( cpstr selection1,
+                                        cpstr selection2 )  {
   CreateCopy ( selString1,selection1 );
   CreateCopy ( selString2,selection2 );
 }
 
-void  CSuperpose::GetTMatrix ( mat44 & TMat )  {
+void  ssm::Superpose::GetTMatrix ( mat44 & TMat )  {
 int i,j;
   for (i=0;i<4;i++)
     for (j=0;j<4;j++)
       TMat[i][j] = TMatrix[i][j];
 }
 
-mat44 * CSuperpose::GetTMatrix()  {
+mat44 * ssm::Superpose::GetTMatrix()  {
   return &TMatrix;
 }
 
-realtype CSuperpose::GetRMSD()  {
+realtype ssm::Superpose::GetRMSD()  {
   if (a1 && a2)  return rmsd_achieved;
            else  return -1.0;
 }
 
-int  CSuperpose::GetNAlign()  {
+int  ssm::Superpose::GetNAlign()  {
   if (a1 && a2)  return nalgn;
            else  return -1;
 }
 
 
-void  CSuperpose::GetSuperposition ( ivector  & Ca1  ,
+void  ssm::Superpose::GetSuperposition ( ivector  & Ca1  ,
                                      rvector  & dist1,
                                      int      & nCa1 ,
                                      ivector  & Ca2  ,
@@ -424,44 +424,44 @@ int i,j;
 }
 
 
-void CSuperpose::GetCalphas1 ( PPCAtom & Calpha, int & numRes )  {
+void ssm::Superpose::GetCalphas1 ( PPCAtom & Calpha, int & numRes )  {
   Calpha = Calpha1;
   numRes = nres1;
 }
 
-void CSuperpose::GetCalphas2 ( PPCAtom & Calpha, int & numRes )  {
+void ssm::Superpose::GetCalphas2 ( PPCAtom & Calpha, int & numRes )  {
   Calpha = Calpha2;
   numRes = nres2;
 }
 
 
-void CSuperpose::GetSSEDesc1 ( RPSSSEDesc SSEDesc, int & numSSEs )  {
+void ssm::Superpose::GetSSEDesc1 ( RPSSEDesc sseDesc, int & numSSEs )  {
 int i;
-  if (SSEDesc)  delete[] SSEDesc;
-  SSEDesc = new SSSEDesc[nSSEs1];
+  if (sseDesc)  delete[] sseDesc;
+  sseDesc = new SSEDesc[nSSEs1];
   for (i=0;i<nSSEs1;i++)
-    SSEDesc[i].Copy ( SSED1[i] );
+    sseDesc[i].Copy ( SSED1[i] );
   numSSEs = nSSEs1;
 }
 
-PSSSEDesc CSuperpose::GetSSEDesc1()  {
+ssm::PSSEDesc ssm::Superpose::GetSSEDesc1()  {
   return SSED1;
 }
 
-void CSuperpose::GetSSEDesc2 ( RPSSSEDesc SSEDesc, int & numSSEs )  {
+void ssm::Superpose::GetSSEDesc2 ( RPSSEDesc sseDesc, int & numSSEs )  {
 int i;
-  if (SSEDesc)  delete[] SSEDesc;
-  SSEDesc = new SSSEDesc[nSSEs2];
+  if (sseDesc)  delete[] sseDesc;
+  sseDesc = new SSEDesc[nSSEs2];
   for (i=0;i<nSSEs2;i++)
-    SSEDesc[i].Copy ( SSED2[i] );
+    sseDesc[i].Copy ( SSED2[i] );
   numSSEs = nSSEs2;
 }
 
-PSSSEDesc CSuperpose::GetSSEDesc2()  {
+ssm::PSSEDesc ssm::Superpose::GetSSEDesc2()  {
   return SSED2;
 }
 
-void CSuperpose::GetSuperposedSSEs ( ivector v1, ivector v2,
+void ssm::Superpose::GetSuperposedSSEs ( ivector v1, ivector v2,
                                      int & nSupSSEs )  {
 int i;
   nSupSSEs = 0;
@@ -473,11 +473,11 @@ int i;
     }
 }
 
-int  CSuperpose::CalculateTMatrix()  {
+int  ssm::Superpose::CalculateTMatrix()  {
 realtype det,B;
 int      i,j,k;
 
-  det = A[1][1]*A[2][2]*A[3][3] + 
+  det = A[1][1]*A[2][2]*A[3][3] +
         A[1][2]*A[2][3]*A[3][1] +
         A[2][1]*A[3][2]*A[1][3] -
         A[1][3]*A[2][2]*A[3][1] -
@@ -592,13 +592,13 @@ int        i,j,k;
   }
 }
 
-int  CSuperpose::SuperposeSSGraphs ( PCSSGraph G1, ivector F1,
-                                     PCSSGraph G2, ivector F2,
-                                     int matchlen )  {
+int  ssm::Superpose::SuperposeSSGraphs ( PGraph G1, ivector F1,
+                                         PGraph G2, ivector F2,
+                                         int matchlen )  {
 PCBFGSMin  BFGS;
 SMinTFunc  SMTF;
-PCSSVertex Vx;
-mat33      erm,trm;
+PVertex    Vx;
+//mat33      erm,trm;
 vect3      v1,v2;
 realtype   T[7],TypT[7];
 realtype   B,B1, x01,y01,z01, x02,y02,z02, mass,mass1,mass2;
@@ -741,6 +741,7 @@ Boolean    AddEdges1,AddEdges2;
 
   SMTF.Dispose();
 
+  /*
   GetEulerRotMatrix ( erm,T[4],T[5],T[6] );
 
   for (i=0;i<3;i++)
@@ -750,6 +751,7 @@ Boolean    AddEdges1,AddEdges2;
         B += erm[i][k]*TMatrix[k][j];
       trm[i][j] = B;
     }
+*/
 
   TMatrix[0][3] = x02 - TMatrix[0][0]*x01 - TMatrix[0][1]*y01 -
                         TMatrix[0][2]*z01 - T[1];
@@ -766,10 +768,10 @@ Boolean    AddEdges1,AddEdges2;
 }
 
 
-void CSuperpose::SelectCalphas ( PCMMDBManager MMDB, PCSSGraph G,
-                                 PPCAtom & Calpha, PSSpAtom & a,
-                                 int & nres, int & selHnd,
-                                 int selInclHnd, pstr selString )  {
+void ssm::Superpose::SelectCalphas ( PCMMDBManager MMDB, PGraph G,
+                                     PPCAtom & Calpha, PSpAtom & a,
+                                     int & nres, int & selHnd,
+                                     int selInclHnd, cpstr selString ) {
 int i;
 
   if (a && (driverID!=2))  {
@@ -784,7 +786,7 @@ int i;
 
   if (nres>0)  {
     if (!a)  {
-      a = new SSpAtom[nres];
+      a = new SpAtom[nres];
       for (i=0;i<nres;i++)  {
         strcpy ( a[i].chID,Calpha[i]->GetChainID() );
         a[i].sse   = V_UNKNOWN;
@@ -810,18 +812,18 @@ int i;
 }
 
 
-void CSuperpose::MapSSEs ( PPCAtom Calpha, PSSpAtom a, int nres,
-                           PCSSGraph G, RPSSSEDesc SSED,
-                           int & nSSEs )  {
+void ssm::Superpose::MapSSEs ( PPCAtom Calpha, PSpAtom a, int nres,
+                               PGraph G, RPSSEDesc SSED,
+                               int & nSSEs )  {
 //  Returns vector SSED.pos containing the origin of SSE sequences in
 //  array a, and vector SSED.len containing the SSEs' lengths.
 //  nSSEs returns the number of SSEs.
-PCSSVertex V;
-ChainID    chID;
-int        initSeqNum,endSeqNum,seqNum;
-InsCode    initICode,endICode;
-pstr       iCode;
-int        i,j,vtype,k, p1,p2, c1,c2;
+PVertex  V;
+ChainID  chID;
+int      initSeqNum,endSeqNum,seqNum;
+InsCode  initICode,endICode;
+pstr     iCode;
+int      i,j,vtype,k, p1,p2, c1,c2;
 
   if (SSED && (driverID!=2))  {
     delete[] SSED;
@@ -833,8 +835,8 @@ int        i,j,vtype,k, p1,p2, c1,c2;
 
   if (!SSED)  {
 
-    SSED = new SSSEDesc[nSSEs];
-  
+    SSED = new SSEDesc[nSSEs];
+
     for (i=1;i<=nSSEs;i++)  {
       G->GetVertexRange ( i,chID,initSeqNum,initICode,
                                  endSeqNum,endICode );
@@ -851,7 +853,7 @@ int        i,j,vtype,k, p1,p2, c1,c2;
           iCode  = Calpha[j]->GetInsCode();
           if ((p1<0) && (initSeqNum==seqNum) &&
               (!strcmp(initICode,iCode)))    p1 = j;
-          if ((p2<0) && (endSeqNum==seqNum) && 
+          if ((p2<0) && (endSeqNum==seqNum) &&
               (!strcmp(endICode,iCode)))     p2 = j;
         }
       }
@@ -922,10 +924,10 @@ int        i,j,vtype,k, p1,p2, c1,c2;
 }
 
 
-void  CSuperpose::IdentifyUnmatchedSSEs ( ivector & FH, int & nFH,
+void  ssm::Superpose::IdentifyUnmatchedSSEs ( ivector & FH, int & nFH,
                                           ivector & FS, int & nFS,
                                           ivector F, int mlen,
-                                          PCSSGraph G )  {
+                                          PGraph G )  {
 int i,j,k,nSSEs;
 
   FreeVectorMemory ( FH,1 );
@@ -951,8 +953,8 @@ int i,j,k,nSSEs;
 }
 
 
-void  CSuperpose::CalcDistance ( int SSE1, int SSE2,
-                                 RSSectionDist D )  {
+void  ssm::Superpose::CalcDistance ( int SSE1, int SSE2,
+                                 RSectionDist D )  {
 //    Calculates the minimal distance between SSEs number SSE1
 //  and SSE2 from pos1 to pos1+len1-1 and pos2 to pos2+len2-1,
 //  as given in the SSE description arrays, SSED1 and SSED2,
@@ -1073,7 +1075,7 @@ int      p1,p2;
 }
 
 
-void  CSuperpose::AlignSSEs ( RSSectionDist D, int unmap )  {
+void  ssm::Superpose::AlignSSEs ( RSectionDist D, int unmap )  {
 //    Makes correspondence between sections of atoms in arrays Calpha1
 //  and Calpha2 from pos1 to pos1+len1-1 and pos2 to pos2+len2-1,
 //  respectively using data obtained from calcDistance.
@@ -1140,7 +1142,7 @@ int  i1,i2, c1;
 
 }
 
-Boolean  CSuperpose::isMC ( int pos1, int pos2 )  {
+Boolean  ssm::Superpose::isMC ( int pos1, int pos2 )  {
 //   Returns True if matching the Calpha pair in the positions
 // (pos1,pos2) of the chains would contradict to the already
 // aligned pairs and allowMC is set False.
@@ -1176,7 +1178,7 @@ int i;
 
 }
 
-void  CSuperpose::CorrespondSSEs ( ivector F1, int nF1,
+void  ssm::Superpose::CorrespondSSEs ( ivector F1, int nF1,
                                    ivector F2, int nF2,
                                    realtype rmsd_est )  {
 realtype rmsd,rmsd2;
@@ -1194,7 +1196,7 @@ int      i,j, k1,k2, i1,j1;
           (SSED1[k1].classID==SSED2[k2].classID) &&
           (!isMC(SSED1[k1].pos,SSED2[k2].pos)))  {
         CalcDistance ( F1[i],F2[j],SDist[i1][j1] );
-        if ((SDist[i1][j1].na<=0) || 
+        if ((SDist[i1][j1].na<=0) ||
             (SDist[i1][j1].cosine<minCosine) ||
             (SDist[i1][j1].rmsd>rmsd2))
           SDist[i1][j1].rmsd = -1.0;
@@ -1227,7 +1229,7 @@ int      i,j, k1,k2, i1,j1;
 }
 
 
-void  CSuperpose::ExpandContact ( RSContact c, int & ip, int & im,
+void  ssm::Superpose::ExpandContact ( RSContact c, int & ip, int & im,
                                   realtype maxDist2 )  {
 //  ip expands contact (c.id1,c.id2) in positive direction of indices
 //  im expands contact (c.id1,c.id2) in negative direction of indices
@@ -1241,7 +1243,7 @@ int      i1,i2;
     i2 = c.id2 + ip;
     if (!isMC(i1,i2))  {
       while ((i1<nres1) && (i2<nres2))
-        if ((a1[i1].c<0) && (a2[i2].c<0) && 
+        if ((a1[i1].c<0) && (a2[i2].c<0) &&
              a1[i1].CompatibleSSE(a2[i2])) {
           dist = Calpha1[i1]->GetDist2 ( Calpha2[i2] );
           if (dist<maxDist2)  {
@@ -1290,7 +1292,7 @@ int      i1,i2;
 
 
 
-void  CSuperpose::CorrespondContacts ( PCMMDBManager M1,
+void  ssm::Superpose::CorrespondContacts ( PCMMDBManager M1,
                                        realtype rmsd_est )  {
 //  Find the closest contacts between yet unmapped atoms
 //  and gradually expand them
@@ -1409,8 +1411,8 @@ int       ncontacts,i,j,m1,m2,n1,n2,i1,i2;
 }
 
 
-void  CSuperpose::RecoverGaps ( PPCAtom Ca1, PSSpAtom at1, int nat1,
-                                PPCAtom Ca2, PSSpAtom at2, int nat2,
+void  ssm::Superpose::RecoverGaps ( PPCAtom Ca1, PSpAtom at1, int nat1,
+                                PPCAtom Ca2, PSpAtom at2, int nat2,
                                 realtype thresh )  {
 //   Checks if additional mappings may be made when moving
 // from sides of gaps to their centers.
@@ -1534,14 +1536,14 @@ Boolean  B1,B2;
 
     }
 
-  }     
+  }
 
 }
 
 
 
-void  CSuperpose::CleanShortSections ( PSSpAtom at1, int nat1,
-                                       PSSpAtom at2 )  {
+void  ssm::Superpose::CleanShortSections ( PSpAtom at1, int nat1,
+                                       PSpAtom at2 )  {
 //    Checks if continuous mapped sections of sequences c1 and c2
 //  follow the same direction (along protein section) and are
 //  long enough to be significant. If sections are too short
@@ -1558,13 +1560,13 @@ int  i,j,j2,k,shortSect;
       if (k<0)  k = i;  // begining of a continuous section
       else if (at1[i].c<=at1[i-1].c)  {
         // a misdirection has been found
-        nmisdr++; 
+        nmisdr++;
         if (i-k<=shortSect)  {
           // the previous section is too short to be significant;
           // waste it:
           for (j=k;j<i;j++)  {
             j2 = at1[j].c;
-            if ((at1[j ].unmap1!=UNMAP_NO) && 
+            if ((at1[j ].unmap1!=UNMAP_NO) &&
                 (at2[j2].unmap1!=UNMAP_NO))  {
               at2[j2].c = -1;
               at1[j ].c = -1;
@@ -1579,7 +1581,7 @@ int  i,j,j2,k,shortSect;
         // the section is too short - dispose of it:
         for (j=k;j<i;j++)  {
           j2 = at1[j].c;
-          if ((at1[j ].unmap1!=UNMAP_NO) && 
+          if ((at1[j ].unmap1!=UNMAP_NO) &&
               (at2[j2].unmap1!=UNMAP_NO))  {
             at2[j2].c = -1;
             at1[j ].c = -1;
@@ -1595,7 +1597,7 @@ int  i,j,j2,k,shortSect;
       // the section is too short - dispose of it:
       for (j=k;j<nat1;j++)  {
         j2 = at1[j].c;
-        if ((at1[j ].unmap1!=UNMAP_NO) && 
+        if ((at1[j ].unmap1!=UNMAP_NO) &&
             (at2[j2].unmap1!=UNMAP_NO))  {
           at2[j2].c = -1;
           at1[j ].c = -1;
@@ -1607,7 +1609,7 @@ int  i,j,j2,k,shortSect;
 }
 
 
-void CSuperpose::CalcNGaps ( PSSpAtom a, int nres,
+void ssm::Superpose::CalcNGaps ( PSpAtom a, int nres,
                              int & Ng, int & Nm )  {
 int  i,k,m;
 
@@ -1636,8 +1638,8 @@ int  i,k,m;
 
 }
 
-realtype CSuperpose::CalcNCombs ( PCSSGraph G, PSSSEDesc SSED,
-                                  int nSSEs, PSSpAtom  a, int nres ) {
+realtype ssm::Superpose::CalcNCombs ( PGraph G, PSSEDesc SSED,
+                                  int nSSEs, PSpAtom  a, int nres ) {
 UNUSED_ARGUMENT(nres);
 ivector  F;
 realtype nc;
@@ -1679,7 +1681,7 @@ Boolean  matched;
 
 //  -----------------------------------------------------------------
 
-int CSortDist::Compare ( int i, int j )  {
+int ssm::SortDist::Compare ( int i, int j )  {
 //  sort by decreasing: rd[i+1]<=rd[i]
 
   if ((sd[i].unmap1<=sd[j].index) &&
@@ -1694,7 +1696,7 @@ int CSortDist::Compare ( int i, int j )  {
 
 }
 
-void CSortDist::Swap ( int i, int j )  {
+void ssm::SortDist::Swap ( int i, int j )  {
 realtype r;
 int      k;
   r = sd[i].dist;   sd[i].dist   = sd[j].dist;   sd[j].dist   = r;
@@ -1704,17 +1706,17 @@ int      k;
 }
 
 
-void CSortDist::Sort ( PSSortDistData sdata, int len )  {
+void ssm::SortDist::Sort ( PSortDistData sdata, int len )  {
   sd = sdata;
   CQuickSort::Sort ( sdata,len );
 }
 
 //  -----------------------------------------------------------------
 
-void CSuperpose::GetSSESpseCenters ( RSSSEDesc Q1, RSSSEDesc Q2,
-                                     RSSSEDesc T1, RSSSEDesc T2,
-                                     realtype & qc1, realtype & qc2,
-                                     realtype & tc1, realtype & tc2 ) {
+void ssm::Superpose::GetSSESpseCenters ( RSSEDesc Q1, RSSEDesc Q2,
+                                         RSSEDesc T1, RSSEDesc T2,
+                                         realtype & qc1, realtype & qc2,
+                                         realtype & tc1, realtype & tc2 ) {
 realtype d2, dq,dt, quality,quality0;
 int      iq1,pq1,eq1,lq1, it1,pt1,et1, l1;
 int      iq2,pq2,eq2,lq2, it2,pt2,et2, l2;
@@ -1777,7 +1779,7 @@ int      i,j;
 }
 
 
-int  CSuperpose::FirstGuess ( ivector F1, ivector F2, int mlen )  {
+int  ssm::Superpose::FirstGuess ( ivector F1, ivector F2, int mlen )  {
 rvector  c1,c2;
 realtype xc1,yc1,zc1, xc2,yc2,zc2, r1,r2;
 vect3    vc1,vc2;
@@ -1833,7 +1835,7 @@ int      i,j, i1,i2, j1,j2, l, na;
   xc2 = 0.0;
   yc2 = 0.0;
   zc2 = 0.0;
-  for (i=1;i<=mlen;i++)  {  
+  for (i=1;i<=mlen;i++)  {
     i1 = F1[i] - 1;
     i2 = F2[i] - 1;
     SSED1[i1].m = F2[i];
@@ -1872,7 +1874,7 @@ int      i,j, i1,i2, j1,j2, l, na;
   xc2 /= na;
   yc2 /= na;
   zc2 /= na;
-  
+
   //  3.  Calculate the correlation matrix
 
   for (i=1;i<=3;i++)
@@ -1899,11 +1901,11 @@ int      i,j, i1,i2, j1,j2, l, na;
 
   if (CalculateTMatrix())  return 2;
 
-  TMatrix[0][3] = xc2 - TMatrix[0][0]*xc1 - 
+  TMatrix[0][3] = xc2 - TMatrix[0][0]*xc1 -
                         TMatrix[0][1]*yc1 - TMatrix[0][2]*zc1;
-  TMatrix[1][3] = yc2 - TMatrix[1][0]*xc1 - 
+  TMatrix[1][3] = yc2 - TMatrix[1][0]*xc1 -
                         TMatrix[1][1]*yc1 - TMatrix[1][2]*zc1;
-  TMatrix[2][3] = zc2 - TMatrix[2][0]*xc1 - 
+  TMatrix[2][3] = zc2 - TMatrix[2][0]*xc1 -
                         TMatrix[2][1]*yc1 - TMatrix[2][2]*zc1;
 
   return 0;
@@ -1912,7 +1914,7 @@ int      i,j, i1,i2, j1,j2, l, na;
 
 
 
-void  CSuperpose::ChooseFirstRotation ( int rotSSE1, int rotSSE2 )  {
+void  ssm::Superpose::ChooseFirstRotation ( int rotSSE1, int rotSSE2 )  {
 //  In case when only one SSE is matched, the initial rotation
 // matrix is defined only up to rotation about that SSE.
 // Given that matched SSE from 1st structure, this procedure
@@ -2046,22 +2048,27 @@ int       ia1,ia2,nrot,i,j,k,l,ncontacts,na,na0, i1,i2;
 }
 
 
-realtype  CSuperpose::MatchQuality ( int Nalign, realtype Rmsd )  {
+realtype  ssm::Superpose::MatchQuality ( int Nalign, realtype Rmsd )  {
   if (Nalign==0)  return 0.0;
   return MatchQuality2 ( Nalign,Rmsd*Rmsd*Nalign );
 }
 
-realtype  CSuperpose::MatchQuality2 ( int Nalign, realtype dist2 )  {
+realtype  ssm::Superpose::MatchQuality2 ( int Nalign, realtype dist2 )  {
 realtype  NormN,Na2,NormR;
+
+  if (Nalign<=0)  return 0.0;
+
   NormN = nres1*nres2;
   if (NormN<=0.0) return 0.0;
   Na2   = Nalign*Nalign;
   NormR = dist2/(Nalign*Rmsd0*Rmsd0);
+
   return  Na2/((1.0+NormR)*NormN);
+
 }
 
 
-void CSuperpose::UnmapExcluded ( PSSpAtom a1, PSSpAtom a2,
+void ssm::Superpose::UnmapExcluded ( PSpAtom a1, PSpAtom a2,
                                  int nres1 )  {
 int i;
   for (i=0;i<nres1;i++)
@@ -2072,9 +2079,9 @@ int i;
 }
 
 
-int  CSuperpose::OptimizeNalign()  {
+int  ssm::Superpose::OptimizeNalign()  {
 //  Finds maximal Nalign such that RMSD does not exceed the given Rmsd
-SSectionDist D;
+SectionDist D;
 vect3        vc1,vc2;
 realtype     xc1,yc1,zc1, xc2,yc2,zc2, B;
 realtype     dist2,Q,Q1,maxRMSD2, contDist;
@@ -2162,7 +2169,7 @@ Boolean      Done;
 
     //   1.7  Unmap atoms for optimizing the quality function
     if ((nl>0) && (na>3))  {
-      SortDist.Sort ( sdata,nl );
+      sortDist.Sort ( sdata,nl );
       i = 0;
       if (dist2<=na*maxRMSD2)  {
         Q1 = MatchQuality2 ( na,dist2 );
@@ -2254,7 +2261,7 @@ Boolean      Done;
       nalgn = na;
     }
 
-    Done = (na<=0) || (iter>iterMax) || 
+    Done = (na<=0) || (iter>iterMax) ||
            ((iter>iterMin) && (nobetter_cnt>maxHollowIt));
 
     if (!Done)  {
@@ -2266,7 +2273,7 @@ Boolean      Done;
       xc2 /= na;
       yc2 /= na;
       zc2 /= na;
-  
+
       for (i=1;i<=3;i++)
         for (j=1;j<=3;j++)
           A[i][j] = 0.0;
@@ -2291,11 +2298,11 @@ Boolean      Done;
       else  {
 
         //  5.3.e add translation
-        TMatrix[0][3] = xc2 - TMatrix[0][0]*xc1 - 
+        TMatrix[0][3] = xc2 - TMatrix[0][0]*xc1 -
                         TMatrix[0][1]*yc1 - TMatrix[0][2]*zc1;
-        TMatrix[1][3] = yc2 - TMatrix[1][0]*xc1 - 
+        TMatrix[1][3] = yc2 - TMatrix[1][0]*xc1 -
                         TMatrix[1][1]*yc1 - TMatrix[1][2]*zc1;
-        TMatrix[2][3] = zc2 - TMatrix[2][0]*xc1 - 
+        TMatrix[2][3] = zc2 - TMatrix[2][0]*xc1 -
                         TMatrix[2][1]*yc1 - TMatrix[2][2]*zc1;
 
       }
@@ -2317,7 +2324,7 @@ Boolean      Done;
 }
 
 
-void  CSuperpose::CalcQScore ( RSSSEDesc SSE1 )  {
+void  ssm::Superpose::CalcQScore ( RSSEDesc SSE1 )  {
 //  Calculates Q-score of overlaping SSE1 with matched SSE
 realtype  NormN,dist2;
 int       p1,p2,na,i;
@@ -2363,9 +2370,9 @@ int       p1,p2,na,i;
 }
 
 
-int  CSuperpose::SuperposeCalphas (
-            PCSSGraph     G1,   //  SSE graph of 1st structure
-            PCSSGraph     G2,   //  SSE graph of 2nd structure
+int  ssm::Superpose::SuperposeCalphas (
+            PGraph     G1,   //  SSE graph of 1st structure
+            PGraph     G2,   //  SSE graph of 2nd structure
             ivector       F1,   //  matched vertices of G1 [1..mlen]
             ivector       F2,   //  matched vertices of G2 [1..mlen]
             int         mlen,   //  length of match (F1,F2)
@@ -2394,7 +2401,7 @@ int  selHnd1,selHnd2;
 
   FreeMemory();
 
-  if ((!G1) || (!G2) || 
+  if ((!G1) || (!G2) ||
       (!F1) || (!F2) || (mlen<=0) ||
       (!M1) || (!M2))  return SPOSE_BadData;
 
@@ -2451,9 +2458,9 @@ int  selHnd1,selHnd2;
 }
 
 
-//  -----------------------  SSuperposeData  -----------------------
+//  -----------------------  ssm::SuperposeData  -----------------------
 
-void SSuperposeData::Init()  {
+void ssm::SuperposeData::Init()  {
   G          = NULL;
   M          = NULL;
   a          = NULL;
@@ -2466,7 +2473,7 @@ void SSuperposeData::Init()  {
   nSSEs      = 0;
 }
 
-void SSuperposeData::Dispose()  {
+void ssm::SuperposeData::Dispose()  {
 //   This DOES NOT dispose the graph and MMDB instance, however
 //  selected C-alphas are deselected
 
@@ -2484,12 +2491,12 @@ void SSuperposeData::Dispose()  {
 
 }
 
-void  SSuperposeData::DeselectCalphas()  {
+void  ssm::SuperposeData::DeselectCalphas()  {
   if (M && (selHnd>0))  M->DeleteSelection ( selHnd );
   selHnd = 0;
 }
 
-void  SSuperposeData::SelectCalphas()  {
+void  ssm::SuperposeData::SelectCalphas()  {
   if (G && M && (selHnd<=0))  {
     G->SelectCalphas ( M,selHnd,selstring );
     M->GetSelIndex   ( selHnd,Calpha,nres );
@@ -2498,9 +2505,9 @@ void  SSuperposeData::SelectCalphas()  {
 
 //  ----------------------------------------------------------------
 
-int  CSuperpose::SuperposeCalphas (
-           PSSuperposeData SD1,  // superposition data of 1st structure
-           PSSuperposeData SD2,  // superposition data of 2nd structure
+int  ssm::Superpose::SuperposeCalphas (
+           PSuperposeData SD1,  // superposition data of 1st structure
+           PSuperposeData SD2,  // superposition data of 2nd structure
            ivector          F1,  // matched vertices of SD1.G [1..mlen]
            ivector          F2,  // matched vertices of SD2.G [1..mlen]
            int            mlen   // length of match (F1,F2)
@@ -2524,7 +2531,7 @@ int  i,j, rc;
 
   FreeMemory();
 
-  if ((!SD1->G) || (!SD2->G) || 
+  if ((!SD1->G) || (!SD2->G) ||
       (!SD1->M) || (!SD2->M) ||
       (!F1) || (!F2) || (mlen<=0))
     return SPOSE_BadData;
@@ -2578,8 +2585,8 @@ int  i,j, rc;
 
 
   //  4. Prevent external data from being lost
-  //     NOTE that "CSuperpose::GetSuperposition()" and 
-  //     "CSuperpose::GetSSEDescX();" do not work with this driver.
+  //     NOTE that "ssm::Superpose::GetSuperposition()" and
+  //     "ssm::Superpose::GetSSEDescX();" do not work with this driver.
   //     The superposition data are to be read directly from
   //     returned SD's
 
@@ -2597,7 +2604,7 @@ int  i,j, rc;
 }
 
 
-void  CSuperpose::_superpose ( PCSSGraph G1, PCSSGraph G2,
+void  ssm::Superpose::_superpose ( PGraph G1, PGraph G2,
                                int & rc )  {
 mat44 TMx0;
 int   i,j,i1,i2,AD_alloc;
@@ -2607,7 +2614,7 @@ int   i,j,i1,i2,AD_alloc;
 
   //  3. Allocate memory for corresponding atoms and shortest contacts
 
-  sdata = new SSortDistData[nres1];
+  sdata = new SortDistData[nres1];
 
   GetVectorMemory ( cax0,nres1,0 );
   GetVectorMemory ( cay0,nres1,0 );
@@ -2631,9 +2638,9 @@ int   i,j,i1,i2,AD_alloc;
   SDistAlloc = IMax ( nFH1,nFS1 );
   j          = IMax ( nFH2,nFS2 );
   if ((SDistAlloc>0) && (j>0))  {
-    SDist = new PSSectionDist[SDistAlloc];
+    SDist = new PSectionDist[SDistAlloc];
     for (i=0;i<SDistAlloc;i++)
-      SDist[i] = new SSectionDist[j];
+      SDist[i] = new SectionDist[j];
   }
 
 

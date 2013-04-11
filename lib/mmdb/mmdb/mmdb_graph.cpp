@@ -264,7 +264,7 @@ int Version;
 
 void  CVertex::mem_write ( pstr S, int & l )  {
 byte Version=2;
-  ::mem_write_byte ( Version ,S,l );
+  ::mem_write_byte ( Version,S,l );
   ::mem_write ( name    ,S,l );
   ::mem_write ( type    ,S,l );
   ::mem_write ( property,S,l );
@@ -275,7 +275,7 @@ byte Version=2;
 
 void  CVertex::mem_read ( cpstr S, int & l )  {
 byte Version;
-  ::mem_read_byte ( Version ,S,l );
+  ::mem_read_byte ( Version,S,l );
   ::mem_read ( name    ,S,l );
   ::mem_read ( type    ,S,l );
   ::mem_read ( property,S,l );
@@ -393,7 +393,7 @@ int Version;
 
 void  CEdge::mem_write ( pstr S, int & l )  {
 byte Version=1;
-  ::mem_write_byte ( Version ,S,l );
+  ::mem_write_byte ( Version,S,l );
   ::mem_write ( v1      ,S,l );
   ::mem_write ( v2      ,S,l );
   ::mem_write ( type    ,S,l );
@@ -402,7 +402,7 @@ byte Version=1;
 
 void  CEdge::mem_read ( cpstr S, int & l )  {
 byte Version;
-  ::mem_read_byte ( Version ,S,l );
+  ::mem_read_byte ( Version,S,l );
   ::mem_read ( v1      ,S,l );
   ::mem_read ( v2      ,S,l );
   ::mem_read ( type    ,S,l );

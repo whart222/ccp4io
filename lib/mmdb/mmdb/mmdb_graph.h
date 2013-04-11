@@ -172,10 +172,10 @@ class CEdge : public CStream  {
     void  SaveType    ();  // in property
     void  RestoreType ();  // from property
 
-    int   GetVertex1  () { return v1-1;     }
-    int   GetVertex2  () { return v2-1;     }
-    int   GetType     () { return type;     }
-    int   GetProperty () { return property; }
+    inline int GetVertex1  () { return v1;       }
+    inline int GetVertex2  () { return v2;       }
+    inline int GetType     () { return type;     }
+    inline int GetProperty () { return property; }
 
     virtual void Print ( int PKey );
 
@@ -286,10 +286,10 @@ class CGraph : public CStream  {
                                int bondNo );
 
     PCVertex   GetVertex ( int vertexNo );  // 1<=vertexNo<=nVertices
-    int   GetNofVertices () { return nVertices; }
+    inline int GetNofVertices() { return nVertices; }
 
     PCEdge    GetEdge    ( int edgeNo );    // 1<=edgeNo<=nEdges
-    int   GetNofEdges    () { return nEdges;    }
+    inline int GetNofEdges() { return nEdges;    }
 
     void  GetVertices ( PPCVertex & V, int & nV );
     void  GetEdges    ( PPCEdge   & E, int & nE );

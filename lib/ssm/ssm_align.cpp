@@ -9,8 +9,8 @@
 //       ~~~~~~~~~
 //  **** Project :  Structure alignment in 3D
 //       ~~~~~~~~~
-//  **** Classes :  CSSMAlign ( Secondary Structure Matching )
-//       ~~~~~~~~~  CXAlign   ( Output alignment             ) 
+//  **** Classes :  ssm::Align ( Secondary Structure Matching )
+//       ~~~~~~~~~  ssm::XAlign   ( Output alignment             )
 //                  CXTAlign  ( Text output alignment        )
 //
 //  E. Krissinel, 2002-2006
@@ -25,21 +25,21 @@
 #include "ssm_align.h"
 
 
-//  ---------------------------  CSSMAlign ------------------------
+//  ---------------------------  ssm::Align ------------------------
 
-CSSMAlign::CSSMAlign() : CStream()  {
-  InitSSMAlign();
+ssm::Align::Align() : CStream()  {
+  InitAlign();
 }
 
-CSSMAlign::CSSMAlign ( RPCStream Object ) : CStream ( Object )  {
-  InitSSMAlign();
+ssm::Align::Align ( RPCStream Object ) : CStream ( Object )  {
+  InitAlign();
 }
 
-CSSMAlign::~CSSMAlign()  {
+ssm::Align::~Align()  {
   FreeMemory();
 }
 
-void CSSMAlign::FreeMemory()  {
+void ssm::Align::FreeMemory()  {
   FreeVectorMemory ( Ca1     ,0 );
   FreeVectorMemory ( dist1   ,0 );
   FreeVectorMemory ( Ca2     ,0 );
@@ -51,11 +51,11 @@ void CSSMAlign::FreeMemory()  {
   nMatches = 0;
 }
 
-void CSSMAlign::InitSSMAlign()  {
+void ssm::Align::InitAlign()  {
 
   Mat4Init ( TMatrix ); // transformation matrix
-  
-  cnCheck     = CSSC_Flexible;
+
+  cnCheck     = CONNECT_Flexible;
   rmsd        = 0.0;  // core rmsd achieved
   Qscore      = 0.0;  // core Q achieved
   nres1       = 0;    // number of residues in query  structure
@@ -88,9 +88,9 @@ void CSSMAlign::InitSSMAlign()  {
 }
 
 
-void CSSMAlign::MapSelections ( int & selHndCa, PCMMDBManager M,
-                                PCSSGraph G, int selHnd,
-                                ivector & newID )  {
+void ssm::Align::MapSelections ( int & selHndCa, PCMMDBManager M,
+                                 PGraph G, int selHnd,
+                                 ivector & newID )  {
 PPCAtom a;
 int     nr,i,k;
   G->SelectCalphas ( M,selHndCa,NULL );
@@ -107,7 +107,7 @@ int     nr,i,k;
 }
 
 
-void CSSMAlign::MakeSelections ( PCMMDBManager M1, int selHnd1,
+void ssm::Align::MakeSelections ( PCMMDBManager M1, int selHnd1,
                                  PCMMDBManager M2, int selHnd2 )  {
 ivector newID1,newID2;
 int     i,k;
@@ -158,44 +158,19 @@ int     i,k;
 }
 
 
-PCSSGraph CSSMAlign::GetSSGraph ( PCMMDBManager M, int selHnd,
-                                  int & rc )  {
-PCSSGraph G;
-
-  G  = new CSSGraph();
-  rc = G->MakeGraph ( M );
-  if (!rc)  {
-    if (selHnd>0)  {
-      G->LeaveVertices ( selHnd,M );
-      if (G->GetNofVertices()<=0)  {
-        delete G;
-        rc = SSM_noVertices;
-        return NULL;
-      }
-    }
-    G->BuildGraph();
-    return G;
-  } else  {
-    rc = SSM_noGraph;
-    if (G)  delete G;
-    return NULL;
-  }
-
-}
-
-
-int CSSMAlign::Align ( PCMMDBManager M1, PCMMDBManager M2,
-                       int precision, int connectivity,
-                       int selHnd1,   int selHnd2 )  {
-PPCSSMatch Match;
-ivector    F1,F2;
-realtype   Q1;
-int        i,nm;
+int ssm::Align::align ( PCMMDBManager M1, PCMMDBManager M2,
+                        PRECISION     precision,
+                        CONNECTIVITY  connectivity,
+                        int selHnd1,  int selHnd2 )  {
+PPMatch  Match;
+ivector  F1,F2;
+realtype Q1;
+int      i,nm;
 
   FreeMemory();
 
-  SetSSMatchPrecision    ( precision    );
-  SetSSConnectivityCheck ( connectivity );
+  SetMatchPrecision    ( precision    );
+  SetConnectivityCheck ( connectivity );
   cnCheck = connectivity;
 
   U.SetUniqueMatch ( True );
@@ -210,8 +185,7 @@ int        i,nm;
   U.MatchGraphs ( G1,G2,1 );
 
   U.GetMatches ( Match,nMatches );
-  if (nMatches<=0)  return SSM_noHits;
-
+  if (nMatches<=0)  return RC_NoHits;
 
   GetVectorMemory ( pqvalues,nMatches,0 );
   for (i=0;i<nMatches;i++)
@@ -221,12 +195,12 @@ int        i,nm;
   for (i=0;i<nMatches;i++)
     if (Match[i])  {
       Match[i]->GetMatch ( F1,F2,nm );
-      Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
+      superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
                                    selHnd1,selHnd2 );
-      Q1 = Superpose.GetCalphaQ();
+      Q1 = superpose.GetCalphaQ();
       if ((Q1>0.0) && (Q1>Qscore))  {
         Qscore = Q1;
-        Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,
+        superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,
                                      TMatrix,rmsd,nalgn,ngaps,
                                      seqIdentity, nmd,ncombs );
       }
@@ -235,30 +209,30 @@ int        i,nm;
 
   if (Qscore>0.0)  {
     MakeSelections ( M1,selHnd1, M2,selHnd2 );
-    return SSM_Ok;
+    return RC_Ok;
   }
 
-  return SSM_noSPSN;
+  return RC_NoSuperposition;
 
 }
 
 
-int CSSMAlign::AlignSelectedMatch ( PCMMDBManager M1,
-                                    PCMMDBManager M2,
-                                    int    precision,
-                                    int connectivity,
-                                    int      selHnd1,
-                                    int      selHnd2,
-                                    int      nselect )  {
-PPCSSMatch Match;
-ivector    F1,F2;
-realtype   Q1;
-int        i,nGMatches,nm;
+int ssm::Align::AlignSelectedMatch ( PCMMDBManager M1,
+                                     PCMMDBManager M2,
+                                     PRECISION    precision,
+                                     CONNECTIVITY connectivity,
+                                     int          selHnd1,
+                                     int          selHnd2,
+                                     int          nselect )  {
+PPMatch   Match;
+ivector   F1,F2;
+realtype  Q1;
+int       i,nGMatches,nm;
 
   FreeMemory();
 
-  SetSSMatchPrecision    ( precision    );
-  SetSSConnectivityCheck ( connectivity );
+  SetMatchPrecision    ( precision    );
+  SetConnectivityCheck ( connectivity );
   cnCheck = connectivity;
 
   U.SetUniqueMatch ( True );
@@ -273,11 +247,11 @@ int        i,nGMatches,nm;
   U.MatchGraphs ( G1,G2,1 );
 
   U.GetMatches ( Match,nGMatches );
-  if (nGMatches<=0)  return SSM_noHits;
+  if (nGMatches<=0)  return RC_NoHits;
 
   if (nselect>=nGMatches)  {
 //  printf(" There are only %d matches for this alignment", nGMatches);
-    return SSM_tooFewMatches;
+    return RC_TooFewMatches;
   }
 
   Qscore = -0.5;
@@ -285,32 +259,32 @@ int        i,nGMatches,nm;
   if (Match[nselect])  {
 
     Match[nselect]->GetMatch   ( F1,F2,nm );
-    Superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
+    superpose.SuperposeCalphas ( G1,G2,F1,F2,nm,M1,M2,
                                  selHnd1,selHnd2 );
 
-    Q1 = Superpose.GetCalphaQ();
+    Q1 = superpose.GetCalphaQ();
     if (Q1>0.0)  {
-      Superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
+      superpose.GetSuperposition ( Ca1,dist1,nres1,Ca2,nres2,TMatrix,
                                    rmsd,nalgn,ngaps,seqIdentity,
                                    nmd,ncombs );
       MakeSelections ( M1,selHnd1, M2,selHnd2 );
-      return SSM_Ok;
+      return RC_Ok;
     }
 
   }
 
-  return SSM_noSPSN;
+  return RC_NoSuperposition;
 
 }
 
 
-void CSSMAlign::write ( RCFile f )  {
+void ssm::Align::write ( RCFile f )  {
 int i,j;
 
   for (i=0;i<4;i++)
     for (j=0;j<4;j++)
       f.WriteReal ( &(TMatrix[i][j]) );
-  
+
   f.WriteInt  ( &cnCheck     );
   f.WriteReal ( &rmsd        );
   f.WriteInt  ( &nres1       );
@@ -337,7 +311,7 @@ int i,j;
 
 }
 
-void CSSMAlign::read ( RCFile f )  {
+void ssm::Align::read ( RCFile f )  {
 int i,j;
 
   FreeMemory();
@@ -345,7 +319,7 @@ int i,j;
   for (i=0;i<4;i++)
     for (j=0;j<4;j++)
       f.ReadReal ( &(TMatrix[i][j]) );
-  
+
   f.ReadInt  ( &cnCheck     );
   f.ReadReal ( &rmsd        );
   f.ReadInt  ( &nres1       );
@@ -377,13 +351,14 @@ int i,j;
 
 }
 
-MakeStreamFunctions(CSSMAlign)
+namespace ssm  {
+  MakeStreamFunctions(Align)
+}
 
 
+//  -----------------------------  ssm::XAlign --------------------------
 
-//  -----------------------------  CXAlign --------------------------
-
-CXAlign::CXAlign()  {
+ssm::XAlign::XAlign()  {
   XBlock1 = NULL;
   nBlock1 = 0;
   XBlock2 = NULL;
@@ -391,11 +366,11 @@ CXAlign::CXAlign()  {
   algnLen = 0;
 }
 
-CXAlign::~CXAlign()  {
+ssm::XAlign::~XAlign()  {
   FreeMemory();
 }
 
-void CXAlign::FreeMemory()  {
+void ssm::XAlign::FreeMemory()  {
   if (XBlock1)  delete[] XBlock1;
   if (XBlock2)  delete[] XBlock2;
   XBlock1 = NULL;
@@ -406,12 +381,12 @@ void CXAlign::FreeMemory()  {
 }
 
 
-void CXAlign::customInit() {}
+void ssm::XAlign::customInit() {}
 
-void CXAlign::XAlign (
-                PCSSGraph g1, PPCAtom Calpha1, ivector Ca1, int nat1,
-                PCSSGraph g2, PPCAtom Calpha2, ivector Ca2, int nat2,
-               rvector dist1, int & nr )  {
+void ssm::XAlign::align (
+                PGraph g1, PPCAtom Calpha1, ivector Ca1, int nat1,
+                PGraph g2, PPCAtom Calpha2, ivector Ca2, int nat2,
+                rvector dist1, int & nr )  {
 int i,j;
 
   FreeMemory();
@@ -448,8 +423,8 @@ int i,j;
 }
 
 
-int  CXAlign::makeXBlocks ( ivector Ca, int nat, RPSXBlock XBlock,
-                            int & nBlocks )  {
+int  ssm::XAlign::makeXBlocks ( ivector Ca, int nat, RPXBlock xBlock,
+                                int & nBlocks )  {
 //    Ca is considered as blocks of non-negative,
 //  increasing-by-one numbers Ca[i]>=0, and negative
 //  Ca[i]<0 surrounding them. Block boundaries are drawn
@@ -458,12 +433,12 @@ int  CXAlign::makeXBlocks ( ivector Ca, int nat, RPSXBlock XBlock,
 //  identified by the initial and final indices i1 and i2, and
 //  by "index mass center" mc used for sorting.
 //    Returns the number of fold-columns.
-PSXBlock XB1;
+PXBlock  XB1;
 int      nAlloc,i,j,i1,i2,ip1,ip2,iv,k,icol;
 realtype mc;
 
-  if (XBlock)  delete[] XBlock;
-  XBlock  = NULL;
+  if (xBlock)  delete[] xBlock;
+  xBlock  = NULL;
   nBlocks = 0;
   nAlloc  = 0;
 
@@ -505,24 +480,24 @@ realtype mc;
     // create new block
     if (nBlocks>=nAlloc)  {
       nAlloc += 20;
-      XB1 = new SXBlock[nAlloc];
+      XB1 = new XBlock[nAlloc];
       for (j=0;j<nBlocks;j++)  {
-        XB1[j].i1   = XBlock[j].i1;
-        XB1[j].i2   = XBlock[j].i2;
-        XB1[j].ip1  = XBlock[j].ip1;
-        XB1[j].ip2  = XBlock[j].ip2;
-        XB1[j].mc   = XBlock[j].mc;
-        XB1[j].icol = XBlock[j].icol;
+        XB1[j].i1   = xBlock[j].i1;
+        XB1[j].i2   = xBlock[j].i2;
+        XB1[j].ip1  = xBlock[j].ip1;
+        XB1[j].ip2  = xBlock[j].ip2;
+        XB1[j].mc   = xBlock[j].mc;
+        XB1[j].icol = xBlock[j].icol;
       }
-      delete[] XBlock;
-      XBlock = XB1;
+      delete[] xBlock;
+      xBlock = XB1;
     }
-    XBlock[nBlocks].i1   = i1;
-    XBlock[nBlocks].i2   = i2;
-    XBlock[nBlocks].ip1  = ip1;
-    XBlock[nBlocks].ip2  = ip2;
-    XBlock[nBlocks].mc   = mc;
-    XBlock[nBlocks].icol = 0;
+    xBlock[nBlocks].i1   = i1;
+    xBlock[nBlocks].i2   = i2;
+    xBlock[nBlocks].ip1  = ip1;
+    xBlock[nBlocks].ip2  = ip2;
+    xBlock[nBlocks].mc   = mc;
+    xBlock[nBlocks].icol = 0;
     nBlocks++;
     i1 = i2+1;
   } while (i<nat);
@@ -537,12 +512,12 @@ realtype mc;
       mc = MaxReal;
       k  = -1;
       for (j=i;j<nBlocks;j++)
-        if ((XBlock[j].icol==0) && (XBlock[j].mc<mc))  {
-          mc = XBlock[j].mc;
+        if ((xBlock[j].icol==0) && (xBlock[j].mc<mc))  {
+          mc = xBlock[j].mc;
           k  = j;
         }
       if (k>=0)  {
-        XBlock[k].icol = icol;
+        xBlock[k].icol = icol;
         i  = k+1;
         iv = 1;
       } else
@@ -555,12 +530,12 @@ realtype mc;
 }
 
 
-void CXAlign::alignXBlocks ( RSXBlock B1, RSXBlock B2, int & nr )  {
+void ssm::XAlign::alignXBlocks ( RXBlock B1, RXBlock B2, int & nr )  {
 int  l1,l2, i1,i2, sseType1,sseType2, icol;
 
-  if (((a1[B1.ip1]>=B2.ip1) && (a1[B1.ip1]<=B2.ip2)) || 
-      ((a1[B1.ip2]>=B2.ip1) && (a1[B1.ip2]<=B2.ip2)) || 
-      ((a2[B2.ip1]>=B1.ip1) && (a2[B2.ip1]<=B1.ip2)) || 
+  if (((a1[B1.ip1]>=B2.ip1) && (a1[B1.ip1]<=B2.ip2)) ||
+      ((a1[B1.ip2]>=B2.ip1) && (a1[B1.ip2]<=B2.ip2)) ||
+      ((a2[B2.ip1]>=B1.ip1) && (a2[B2.ip1]<=B1.ip2)) ||
       ((a2[B2.ip2]>=B1.ip1) && (a2[B2.ip2]<=B1.ip2)))  {
 
     if (a1[B1.ip1]<B2.ip1)  {
@@ -672,7 +647,7 @@ int  l1,l2, i1,i2, sseType1,sseType2, icol;
 }
 
 
-void CXAlign::makeRow ( PCAtom A1, int sseType1,
+void ssm::XAlign::makeRow ( PCAtom A1, int sseType1,
                         PCAtom A2, int sseType2,
                         realtype dist, int rowNo,
                         int icol, Boolean aligned )  {
@@ -690,39 +665,42 @@ UNUSED_ARGUMENT(aligned);
 
 //  ----------------------------  CXTAlign --------------------------
 
+namespace ssm  {
 
-void  PrintAtom ( RCFile f, int sseType, realtype hydropathy,
-                  ChainID chID, ResName resName, int seqNum,
-                  InsCode insCode )  {
-char sse[2],hp[2],ch[3],S[200];
+  void  PrintAtom ( RCFile f, int sseType, realtype hydropathy,
+                    ChainID chID, ResName resName, int seqNum,
+                    InsCode insCode )  {
+  char sse[2],hp[2],ch[3],S[200];
 
-  if (sseType==V_HELIX)       sse[0] = 'H';
-  else if (sseType==V_STRAND) sse[0] = 'S';
-                         else sse[0] = ' ';
-  sse[1] = char(0);
+    if (sseType==V_HELIX)       sse[0] = 'H';
+    else if (sseType==V_STRAND) sse[0] = 'S';
+                           else sse[0] = ' ';
+    sse[1] = char(0);
 
-  if ((-5.0<hydropathy) && (hydropathy<5.0))  {
-    if (hydropathy>=-0.5)      hp[0] = '-';
-    else if (hydropathy<=-1.5) hp[0] = '+';
-                          else hp[0] = '.';
-  } else
-    hp[0] = ' ';
-  hp[1] = char(0);
+    if ((-5.0<hydropathy) && (hydropathy<5.0))  {
+      if (hydropathy>=-0.5)      hp[0] = '-';
+      else if (hydropathy<=-1.5) hp[0] = '+';
+                            else hp[0] = '.';
+    } else
+      hp[0] = ' ';
+    hp[1] = char(0);
 
-  if ((!chID[0]) || (chID[0]==' '))  {
-    ch[0] = ' ';      ch[1] = ' ';
-  } else  {
-    ch[0] = chID[0];  ch[1] = ':';
+    if ((!chID[0]) || (chID[0]==' '))  {
+      ch[0] = ' ';      ch[1] = ' ';
+    } else  {
+      ch[0] = chID[0];  ch[1] = ':';
+    }
+    ch[2] = char(0);
+
+    sprintf ( S," |%1s%1s %2s%3s%4i%1s|",
+                sse,hp,ch,resName,seqNum,insCode );
+    f.Write ( S );
+
   }
-  ch[2] = char(0);
-
-  sprintf ( S,"|%1s%1s %2s%3s%4i%1s|",
-              sse,hp,ch,resName,seqNum,insCode );
-  f.Write ( S );
 
 }
 
-void  SXTAlign::Print ( RCFile f )  {
+void  ssm::XTAlign::Print ( RCFile f )  {
 char S[100],SI[10];
 int  i;
 
@@ -732,7 +710,7 @@ int  i;
       PrintAtom ( f,sseType1,hydropathy1,chID1,
                     resName1,seqNum1,insCode1 );
     else
-      f.Write ( "|             |" );
+      f.Write ( " |             |" );
 
     if (alignKey==0)  {
       switch (simindex)  {
@@ -745,23 +723,23 @@ int  i;
         case 0 :  strcpy ( SI,"....." );  break;
       }
       SI[1] = char(0);
-      sprintf ( S," <%1s%5.2f%1s%1s",SI,dist,SI,SI );
+      sprintf ( S," %1s%5.2f%1s%1s",SI,dist,SI,SI );
       if (S[3]==' ')  S[3] = SI[0];
       f.Write ( S );
       SI[1] = SI[0];
       for (i=1;i<loopNo;i++)  f.Write ( SI );
-      f.Write ( "> " );
+//      f.Write ( " " );
     } else  {
-      f.Write ( "          " );
+      f.Write ( "        " );
       for (i=1;i<loopNo;i++)  f.Write ( "     " );
-      f.Write ( "  " );
+      f.Write ( " " );
     }
 
     if (alignKey!=3)
       PrintAtom ( f,sseType2,hydropathy2,chID2,
                     resName2,seqNum2,insCode2 );
     else
-      f.Write ( "|             |" );
+      f.Write ( " |             |" );
 
     f.LF();
 
@@ -770,32 +748,32 @@ int  i;
 }
 
 
-CXAlignText::CXAlignText() : CXAlign() {
+ssm::XAlignText::XAlignText() : ssm::XAlign() {
   R = NULL;
 }
 
-CXAlignText::~CXAlignText() {
+ssm::XAlignText::~XAlignText() {
   customFree();
 }
 
-void CXAlignText::customFree()  {
+void ssm::XAlignText::customFree()  {
   if (R)  delete[] R;
   R = NULL;
 }
 
-void CXAlignText::customInit()  {
+void ssm::XAlignText::customInit()  {
 int i;
   customFree();
-  R = new SXTAlign[nRows];
+  R = new ssm::XTAlign[nRows];
   for (i=0;i<nRows;i++)
     R[i].alignKey = 5;
 }
 
-void  CXAlignText::WipeTextRows()  {
+void  ssm::XAlignText::WipeTextRows()  {
   R = NULL;
 }
 
-void CXAlignText::makeRow ( PCAtom A1, int sseType1,
+void ssm::XAlignText::makeRow ( PCAtom A1, int sseType1,
                             PCAtom A2, int sseType2,
                             realtype dist, int rowNo, int icol,
                             Boolean aligned )  {
@@ -824,7 +802,7 @@ void CXAlignText::makeRow ( PCAtom A1, int sseType1,
     R[rowNo].alignKey = 3;
 
   if ((!A1) && (!A2))  R[rowNo].alignKey = 4;
-  
+
   R[rowNo].simindex = -5;
   R[rowNo].dist     = -1.0;
   if (aligned)  {
@@ -837,7 +815,7 @@ void CXAlignText::makeRow ( PCAtom A1, int sseType1,
 
 }
 
-void  CXAlignText::GetAlignments ( pstr & algn1, pstr & algn2 )  {
+void  ssm::XAlignText::GetAlignments ( pstr & algn1, pstr & algn2 )  {
 char rn1[10];
 char rn2[10];
 int i;
@@ -877,52 +855,57 @@ int i;
 }
 
 
+namespace ssm  {
 
-void PrintSSMAlignTable ( RCFile f, PCMMDBManager M1, PCMMDBManager M2,
-                                    PCSSMAlign SSMAlign )  {
-CXAlignText CXA;
-PSXTAlign   XTA;
-PPCAtom     Calpha1,Calpha2;
-int         nat1,nat2,nr,j;
+  void PrintAlignTable ( RCFile f, PCMMDBManager M1, PCMMDBManager M2,
+                                   PAlign SSMAlign )  {
+  XAlignText CXA;
+  PXTAlign   XTA;
+  PPCAtom     Calpha1,Calpha2;
+  int         nat1,nat2,nr,j;
 
-  M1->GetSelIndex ( SSMAlign->selHndCa1,Calpha1,nat1 );
-  M2->GetSelIndex ( SSMAlign->selHndCa2,Calpha2,nat2 );
+    M1->GetSelIndex ( SSMAlign->selHndCa1,Calpha1,nat1 );
+    M2->GetSelIndex ( SSMAlign->selHndCa2,Calpha2,nat2 );
 
-  CXA.XAlign ( SSMAlign->G1,Calpha1,SSMAlign->Ca1,nat1,
-               SSMAlign->G2,Calpha2,SSMAlign->Ca2,nat2,
-               SSMAlign->dist1,nr );
-  f.LF();
-  if (SSMAlign->cnCheck!=CSSC_None)  {
-    f.WriteLine ( ".-------------.------------.-------------." );
-    f.WriteLine ( "|    Query    |  Dist.(A)  |   Target    |" );
-    f.WriteLine ( "|-------------+------------+-------------|" );
-  } else  {
-    f.WriteLine (
-    ".-------------.------------.-----------------------------------");
-    f.WriteLine (
-    "|    Query    |  Dist.(A)  |   Target"                          );
-    f.WriteLine (
-    "|-------------+------------+-----------------------------------");
+    CXA.align ( SSMAlign->G1,Calpha1,SSMAlign->Ca1,nat1,
+                SSMAlign->G2,Calpha2,SSMAlign->Ca2,nat2,
+                SSMAlign->dist1,nr );
+    f.LF();
+
+    if (SSMAlign->cnCheck!=CONNECT_None)  {
+      f.WriteLine ( " .-------------.----------.-------------." );
+      f.WriteLine ( " |    Query    | Dist.(A) |   Target    |" );
+      f.WriteLine ( " |-------------+----------+-------------|" );
+    } else  {
+      f.WriteLine (
+      " .-------------.----------.-----------------------------------");
+      f.WriteLine (
+      " |    Query    | Dist.(A) |   Target"                          );
+      f.WriteLine (
+      " |-------------+----------+-----------------------------------");
+    }
+
+    XTA = CXA.GetTextRows();
+    for (j=0;j<nr;j++)
+      XTA[j].Print ( f );
+
+    if (SSMAlign->cnCheck!=CONNECT_None)
+      f.WriteLine ( " `-------------'----------'-------------'" );
+    else
+      f.WriteLine (
+      " `-------------'----------'-----------------------------------");
+    f.LF();
+
+    f.WriteLine ( " Notations:" );
+    f.WriteLine ( " S/H   residue belongs to a strand/helix" );
+    f.WriteLine ( " +/-/. hydrophylic/hydrophobic/neutral residue" );
+    f.WriteLine ( " **    identical residues matched: similarity 5" );
+    f.WriteLine ( " ++    similarity 4" );
+    f.WriteLine ( " ==    similarity 3" );
+    f.WriteLine ( " --    similarity 2" );
+    f.WriteLine ( " ::    similarity 1" );
+    f.WriteLine ( " ..    dissimilar residues: similarity 0" );
+
   }
-  XTA = CXA.GetTextRows();
-  for (j=0;j<nr;j++)
-    XTA[j].Print ( f );
-  if (SSMAlign->cnCheck!=CSSC_None)
-    f.WriteLine ( "`-------------'------------'-------------'" );
-  else
-    f.WriteLine (
-    "`-------------'------------'-----------------------------------");
-  f.LF();
-  f.WriteLine ( " Notations:" );
-  f.WriteLine ( " S/H   residue belongs to a strand/helix" );
-  f.WriteLine ( " +/-/. hydrophylic/hydrophobic/neutral residue" );
-  f.WriteLine ( " **    identical residues matched: similarity 5" );
-  f.WriteLine ( " ++    similarity 4" );
-  f.WriteLine ( " ==    similarity 3" );
-  f.WriteLine ( " --    similarity 2" );
-  f.WriteLine ( " ::    similarity 1" );
-  f.WriteLine ( " ..    dissimilar residues: similarity 0" );
 
 }
-
-

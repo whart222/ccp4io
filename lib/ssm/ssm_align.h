@@ -1,7 +1,7 @@
 // $Id$
 // =================================================================
 //
-//    22.04.04   <--  Date of Last Modification.
+//    05.04.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -9,198 +9,185 @@
 //       ~~~~~~~~~
 //  **** Project :  Structure alignment in 3D
 //       ~~~~~~~~~
-//  **** Classes :  CSSMAlign ( Secondary Structure Matching )
-//       ~~~~~~~~~  CXAlign   ( Output alignment             ) 
-//                  CXTAlign  ( Text output alignment        )
+//  **** Classes :  ssm::Align   ( Secondary Structure Matching )
+//       ~~~~~~~~~  ssm::XAlign  ( Output alignment             )
+//                  ssm::XTAlign ( Text output alignment        )
 //
-//  E. Krissinel, 2002-2004
+//  E. Krissinel, 2002-2013
 //
 // =================================================================
 //
- 
+
 #ifndef  __SSM_Align__
 #define  __SSM_Align__
 
 #include "mmdb/mmdb_manager.h"
 
 #include "ssm_superpose.h"
-#include "ss_csia.h"
+#include "ssm_csia.h"
 
 
 //  ---------------------------  CSSMAlign  ------------------------
 
-#define SSM_Ok            0
-#define SSM_noHits        1
-#define SSM_noSPSN        2
-#define SSM_noGraph       3
-#define SSM_noVertices    4
-#define SSM_noGraph2      5
-#define SSM_noVertices2   6
-#define SSM_tooFewMatches 7
+namespace ssm {
 
-DefineClass(CSSMAlign)
-DefineStreamFunctions(CSSMAlign)
+  DefineClass(Align);
+  DefineStreamFunctions(Align)
 
-class CSSMAlign : public CStream  {
+  class Align : public CStream  {
 
-  public :
-    mat44    TMatrix; //!< superposition matrix to be applied to 1st structure
-    realtype rmsd;         //!< core rmsd achieved
-    realtype Qscore;       //!< core Q achieved
-    int      cnCheck;      //!< connectivity option used
-    int      nres1,nres2;  //!< number of residues in structures
-    int      nsel1,nsel2;  //!< number of residues in aligned selections
-    int      nalgn;        //!< number of aligned residues
-    int      ngaps;        //!< number of gaps
-    int      nmd;          //!< number of misdirections
-    realtype ncombs;       //!< number of SSE combinations
-    realtype seqIdentity;  //!< sequence identity
-    int      selHndCa1,selHndCa2; //!< selection handles to used C-alphas
-    ivector  Ca1,Ca2;      //!< C-alpha correspondence vectors
-                           //!< Ca1[i] corresponds to a[i], where a is
-                           //!< selection identified by selHndCa1
-    rvector  dist1;        //!< optimizedd distances between the query
-                           //!< and target C-alphas
-    PCSSGraph G1,G2;       //!< retained SSE graphs
+    public :
+      mat44    TMatrix; //!< superposition matrix to be applied to 1st structure
+      realtype rmsd;         //!< core rmsd achieved
+      realtype Qscore;       //!< core Q achieved
+      int      cnCheck;      //!< connectivity option used
+      int      nres1,nres2;  //!< number of residues in structures
+      int      nsel1,nsel2;  //!< number of residues in aligned selections
+      int      nalgn;        //!< number of aligned residues
+      int      ngaps;        //!< number of gaps
+      int      nmd;          //!< number of misdirections
+      realtype ncombs;       //!< number of SSE combinations
+      realtype seqIdentity;  //!< sequence identity
+      int      selHndCa1,selHndCa2; //!< selection handles to used C-alphas
+      ivector  Ca1,Ca2;      //!< C-alpha correspondence vectors
+                             /// Ca1[i] corresponds to a[i], where a is
+                             /// selection identified by selHndCa1
+      rvector  dist1;        //!< optimizedd distances between the query
+                             /// and target C-alphas
+      PGraph   G1,G2;        //!< retained SSE graphs
 
-    CSSMAlign ();
-    CSSMAlign ( RPCStream Object );
-    ~CSSMAlign();
+      Align ();
+      Align ( RPCStream Object );
+      ~Align();
 
-    int Align ( PCMMDBManager M1, PCMMDBManager M2,
-                int precision, int connectivity,
-                int selHnd1=0, int selHnd2=0 );
+      int align ( PCMMDBManager M1, PCMMDBManager M2,
+                  PRECISION     precision,
+                  CONNECTIVITY  connectivity,
+                  int selHnd1=0, int selHnd2=0 );
 
+      int AlignSelectedMatch ( PCMMDBManager M1, PCMMDBManager M2,
+                               PRECISION     precision,
+                               CONNECTIVITY  connectivity,
+                               int selHnd1=0, int selHnd2=0,
+                               int nselect=0 );
 
+      rvector GetQvalues () const { return pqvalues; }
+      int     GetNMatches() const { return nMatches; }
 
-    int AlignSelectedMatch ( PCMMDBManager M1, PCMMDBManager M2,
-                             int precision, int connectivity,
-                             int selHnd1=0, int selHnd2=0,
-                             int nselect=0 );
+      PSuperpose GetSuperpose() { return &superpose; }
 
-    rvector GetQvalues () const { return pqvalues; }
-    int     GetNMatches() const { return nMatches; }
+      void  read  ( RCFile f );
+      void  write ( RCFile f );
 
+    protected :
+      GraphMatch U;
+      Superpose  superpose;
+      rvector    pqvalues;
+      int        nMatches;
 
-    PCSSGraph GetSSGraph ( PCMMDBManager M, int selHnd, int & rc );
+      void  InitAlign ();
+      void  FreeMemory();
+      void  MapSelections  ( int & selHndCa, PCMMDBManager M,
+                             PGraph G, int selHnd, ivector & newID );
+      void  MakeSelections ( PCMMDBManager M1, int selHnd1,
+                             PCMMDBManager M2, int selHnd2 );
 
-    PCSuperpose GetSuperpose() { return &Superpose; }
-
-    void  read  ( RCFile f );
-    void  write ( RCFile f );
-
-  protected :
-    CSSGraphMatch U;
-    CSuperpose    Superpose;
-    rvector       pqvalues;
-    int           nMatches;
-
-    void  InitSSMAlign();
-    void  FreeMemory  ();
-    void  MapSelections  ( int & selHndCa, PCMMDBManager M,
-                           PCSSGraph G, int selHnd,
-                           ivector & newID );
-    void  MakeSelections ( PCMMDBManager M1, int selHnd1,
-                           PCMMDBManager M2, int selHnd2 );
-
-};
-
-   
-
-//  -----------------------------  CXAlign --------------------------
-
-DefineStructure(SXBlock)
-
-struct SXBlock  {
-  int      i1,i2;    // the outer block boundaries
-  int      ip1,ip2;  // the alignment boundaries (ip1>=i1, ip2<=i2)
-  int      icol;     // the block "column" number
-  realtype mc;       // center of "index mass"
-};
+  };
 
 
-DefineClass(CXAlign)
+  //  -----------------------------  CXAlign --------------------------
 
-class CXAlign  {
+  DefineStructure(XBlock);
 
-  public :
-    CXAlign();
-    ~CXAlign();
-
-    void XAlign ( PCSSGraph g1, PPCAtom Calpha1, ivector Ca1, int nat1,
-                  PCSSGraph g2, PPCAtom Calpha2, ivector Ca2, int nat2,
-                  rvector dist1, int & nr );
-
-    int  GetNCols2() { return nCols2; }
-
-  protected :
-    PSXBlock  XBlock1,XBlock2;
-    int       nBlock1,nBlock2;
-    int       na1,na2,nCols1,nCols2,nRows,algnLen;
-
-    ivector   a1,a2;
-    PPCAtom   alpha1,alpha2;
-    PCSSGraph sg1,sg2;
-    rvector   d1;
-    realtype  maxdist;
-
-    virtual void FreeMemory();
-    virtual void customInit();
-    int   makeXBlocks  ( ivector Ca, int nat, RPSXBlock XBlock,
-                         int & nBlocks );
-    void  alignXBlocks ( RSXBlock B1, RSXBlock B2, int & nr );
-
-    virtual void makeRow ( PCAtom A1, int sseType1,
-                           PCAtom A2, int sseType2,
-                           realtype dist, int rowNo, int icol,
-                           Boolean aligned );
-};
+  struct XBlock  {
+    int      i1,i2;    //!< the outer block boundaries
+    int      ip1,ip2;  //!< the alignment boundaries (ip1>=i1, ip2<=i2)
+    int      icol;     //!< the block "column" number
+    realtype mc;       //!< center of "index mass"
+  };
 
 
-//  ----------------------------  CXTAlign --------------------------
+  DefineClass(XAlign);
 
-DefineStructure(SXTAlign)
+  class XAlign  {
 
-struct SXTAlign  {
-  realtype hydropathy1,hydropathy2,dist;
-  ChainID  chID1,chID2;
-  ResName  resName1,resName2;
-  InsCode  insCode1,insCode2;
-  int      alignKey; // 0: aligned, 1: not aligned, 2: NULL 1, 3: NULL 2
-  int      loopNo;
-  int      sseType1,sseType2;
-  int      seqNum1,seqNum2;
-  int      simindex;
-  void  Print ( RCFile f );
-};
+    public :
+      XAlign();
+      virtual ~XAlign();
 
+      void align ( PGraph g1, PPCAtom Calpha1, ivector Ca1, int nat1,
+                   PGraph g2, PPCAtom Calpha2, ivector Ca2, int nat2,
+                   rvector dist1, int & nr );
 
-DefineClass(CXAlignText)
+      int  GetNCols2() { return nCols2; }
 
-class CXAlignText : public CXAlign  {
+    protected :
+      PXBlock  XBlock1,XBlock2;
+      int       nBlock1,nBlock2;
+      int       na1,na2,nCols1,nCols2,nRows,algnLen;
 
-  public :
-    CXAlignText ();
-    ~CXAlignText();
+      ivector   a1,a2;
+      PPCAtom   alpha1,alpha2;
+      PGraph sg1,sg2;
+      rvector   d1;
+      realtype  maxdist;
 
-    PSXTAlign GetTextRows   () { return R; }
-    void      GetAlignments ( pstr & algn1, pstr & algn2 );
-    void      WipeTextRows  ();
+      virtual void FreeMemory();
+      virtual void customInit();
+      int   makeXBlocks  ( ivector Ca, int nat, RPXBlock xBlock,
+                           int & nBlocks );
+      void  alignXBlocks ( RXBlock B1, RXBlock B2, int & nr );
 
-  protected :
-    PSXTAlign R;
-
-    void customFree();
-    void customInit();
-    void makeRow   ( PCAtom A1, int sseType1,
-                     PCAtom A2, int sseType2,
-                     realtype dist, int rowNo, int icol,
-                     Boolean aligned );
-};
+      virtual void makeRow ( PCAtom A1, int sseType1,
+                             PCAtom A2, int sseType2,
+                             realtype dist, int rowNo, int icol,
+                             Boolean aligned );
+  };
 
 
-extern void PrintSSMAlignTable ( RCFile f,
-                                 PCMMDBManager M1, PCMMDBManager M2,
-                                 PCSSMAlign SSMAlign );
+  //  ----------------------------  CXTAlign --------------------------
+
+  DefineStructure(XTAlign);
+
+  struct XTAlign  {
+    realtype hydropathy1,hydropathy2,dist;
+    ChainID  chID1,chID2;
+    ResName  resName1,resName2;
+    InsCode  insCode1,insCode2;
+    int      alignKey; //!< 0: aligned, 1: not aligned, 2: NULL 1, 3: NULL 2
+    int      loopNo;
+    int      sseType1,sseType2;
+    int      seqNum1,seqNum2;
+    int      simindex;
+    void  Print ( RCFile f );
+  };
+
+  DefineClass(XAlignText);
+
+  class XAlignText : public XAlign  {
+
+    public :
+      XAlignText ();
+      ~XAlignText();
+
+      PXTAlign GetTextRows   () { return R; }
+      void     GetAlignments ( pstr & algn1, pstr & algn2 );
+      void     WipeTextRows  ();
+
+    protected :
+      PXTAlign R;
+
+      void customFree();
+      void customInit();
+      void makeRow   ( PCAtom A1, int sseType1,
+                       PCAtom A2, int sseType2,
+                       realtype dist, int rowNo, int icol,
+                       Boolean aligned );
+  };
+
+  extern void PrintAlignTable ( RCFile f,
+                                PCMMDBManager M1, PCMMDBManager M2,
+                                PAlign SSMAlign );
+}
 
 #endif

@@ -4062,49 +4062,7 @@ CSortContacts SC;
 }
 
 
-/*
-void  SortContacts ( PSContact contact, int ncontacts, int sortmode )  {
-int     i,l1,l2, m1,m2;
-Boolean swap;
-
-  if (sortmode==CNSORT_OFF)  return;
-
-  l1 = 1;
-  l2 = ncontacts;
-  do  {
-    m1   = -1;
-    m2   = -1;
-    for (i=l1;i<l2;i++)  {
-      switch (sortmode)  {
-        default          :
-        case CNSORT_1INC : swap = (contact[i-1].id1>contact[i].id1);   break;
-        case CNSORT_1DEC : swap = (contact[i-1].id1<contact[i].id1);   break;
-        case CNSORT_2INC : swap = (contact[i-1].id2>contact[i].id2);   break;
-        case CNSORT_2DEC : swap = (contact[i-1].id2<contact[i].id2);   break;
-        case CNSORT_DINC : swap = (contact[i-1].dist>contact[i].dist); break;
-        case CNSORT_DDEC : swap = (contact[i-1].dist<contact[i].dist); break;
-      }
-      if (swap)  {
-        if (m1<0)  m1 = i;
-        m2 = i;
-        ISwap ( contact[i-1].id1  ,contact[i].id1   );
-        ISwap ( contact[i-1].id2  ,contact[i].id2   );
-        RSwap ( contact[i-1].dist ,contact[i].dist  );
-        LSwap ( contact[i-1].group,contact[i].group );
-      }
-    }
-    l1 = IMax(1,m1-1);
-    l2 = m2+1;
-  } while (l2>0);
-
-}
-*/
-
-
-
-
 //  -------------------  Stream functions  ----------------------
-
 
 void  CMMDBCoorManager::write ( RCFile f )  {
 byte Version=1;
@@ -4135,7 +4093,7 @@ byte Version;
 }
 
 
-MakeStreamFunctions(CMMDBCoorManager)
+MakeStreamFunctions(CMMDBCoorManager);
 
 
 

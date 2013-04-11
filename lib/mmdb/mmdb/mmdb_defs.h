@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    06.02.13   <--  Date of Last Modification.
+//    11.04.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -47,7 +47,7 @@
 
 #define MMDB_MAJOR_VERSION    (1)
 #define MMDB_MINOR_VERSION    (25)
-#define MMDB_MICRO_VERSION    (0)
+#define MMDB_MICRO_VERSION    (1)
 
 
 //  =======================  types  =================================
