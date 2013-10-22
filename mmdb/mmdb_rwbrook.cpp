@@ -80,6 +80,8 @@
 
 //  ==========================  Channel  ===========================
 
+namespace mmdb {
+
 DefineClass(Channel)
 
 class Channel {
@@ -3073,4 +3075,4 @@ FORTRAN_SUBR ( HY36DECODE_F, hy36decode_f,
   }
 
 }
-
+}
