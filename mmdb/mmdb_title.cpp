@@ -159,32 +159,33 @@ namespace mmdb  {
     return Error_NoError;
   }
 
-  void  ObsLine::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE  ObsLine::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
   int         i,RC;
   pstr        F,FDate,FID;
   char        DateCIF [20];
   char        DateCIF0[20];
   IDCode      idCode1;
+
     Loop = CIF->GetLoop ( CIFCAT_OBSLTE );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
     i = 0;
     do  {
-      F = Loop->GetString ( CIFTAG_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_ID,n,RC );
       if (RC)  {
-        if (i==0)  Signal = -1;
-        return;
+        if (i==0)  n = -1;
+        return Error_MissingCIFField;
       }
       if (F)  {
         if (!strcmp(F,"OBSLTE"))  {
-          FDate = Loop->GetString ( CIFTAG_DATE,Signal,RC );
+          FDate = Loop->GetString ( CIFTAG_DATE,n,RC );
           if ((!RC) && FDate)
                 strncpy ( DateCIF,FDate,15 );
           else  strcpy  ( DateCIF,"YYYY-MMM-DD" );
-          FID = Loop->GetString ( CIFTAG_REPLACE_PDB_ID,Signal,RC );
+          FID = Loop->GetString ( CIFTAG_REPLACE_PDB_ID,n,RC );
           if ((!RC) && FID)
                 strncpy ( idCode1,FID,sizeof(IDCode)-1 );
           else  idCode1[0] = char(0);
@@ -195,20 +196,23 @@ namespace mmdb  {
             strcpy ( DateCIF0,DateCIF );
           } else if ((strcmp(DateCIF0,DateCIF)) ||
                      (strcmp(idCode,idCode1)))
-            return;
-          FID = Loop->GetString ( CIFTAG_PDB_ID,Signal,RC );
+            return Error_MissingCIFField;
+          FID = Loop->GetString ( CIFTAG_PDB_ID,n,RC );
           if ((!RC) && FID)
                strncpy ( rIdCode[i],FID,sizeof(IDCode)-1 );
           else rIdCode[i][0] = char(0);
-          Loop->DeleteField ( CIFTAG_ID            ,Signal );
-          Loop->DeleteField ( CIFTAG_DATE          ,Signal );
-          Loop->DeleteField ( CIFTAG_REPLACE_PDB_ID,Signal );
-          Loop->DeleteField ( CIFTAG_PDB_ID        ,Signal );
+          Loop->DeleteField ( CIFTAG_ID            ,n );
+          Loop->DeleteField ( CIFTAG_DATE          ,n );
+          Loop->DeleteField ( CIFTAG_REPLACE_PDB_ID,n );
+          Loop->DeleteField ( CIFTAG_PDB_ID        ,n );
           i++;
         }
       }
-      Signal++;
+      n++;
     } while (i<8);
+
+    return Error_NoError;
+
   }
 
   void  ObsLine::Copy ( PContainerClass ObsLine )  {
@@ -974,58 +978,60 @@ namespace mmdb  {
 
   }
 
-  void RevData::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE RevData::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
-  int         RC;
-  pstr        F;
+  int          RC;
+  pstr         F;
 
     Loop = CIF->GetLoop ( CIFCAT_DATABASE_PDB_REV );
     if (!Loop)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    RC = Loop->GetInteger ( modNum,CIFTAG_NUM,Signal,true );
+    RC = Loop->GetInteger ( modNum,CIFTAG_NUM,n,true );
     if (RC==mmcif::CIFRC_WrongIndex)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
     if (RC==mmcif::CIFRC_WrongFormat)  {
       sprintf ( CIFErrorLocation,"loop %s.%s row %i",
-                CIFCAT_DATABASE_PDB_REV,CIFTAG_NUM,Signal );
-      Signal = -Error_UnrecognizedInteger-1;
-      return;
+                CIFCAT_DATABASE_PDB_REV,CIFTAG_NUM,n );
+      n = -Error_UnrecognizedInteger-1;
+      return Error_UnrecognizedInteger;
     }
 
-    F = Loop->GetString ( CIFTAG_DATE,Signal,RC );
+    F = Loop->GetString ( CIFTAG_DATE,n,RC );
     if ((!RC) && F)  DateCIFto11 ( F,modDate );
-    F = Loop->GetString ( CIFTAG_REPLACES,Signal,RC );
+    F = Loop->GetString ( CIFTAG_REPLACES,n,RC );
     if ((!RC) && F)  strcpy ( modId,F );
-    RC = Loop->GetInteger ( modType,CIFTAG_MOD_TYPE,Signal,true );
+    RC = Loop->GetInteger ( modType,CIFTAG_MOD_TYPE,n,true );
     if (RC==mmcif::CIFRC_WrongFormat)  {
       sprintf ( CIFErrorLocation,"loop %s.%s row %i",
-                CIFCAT_DATABASE_PDB_REV,CIFTAG_MOD_TYPE,Signal );
-      Signal = -Error_UnrecognizedInteger-1;
-      return;
+                CIFCAT_DATABASE_PDB_REV,CIFTAG_MOD_TYPE,n );
+      n = -Error_UnrecognizedInteger-1;
+      return Error_UnrecognizedInteger;
     }
 
-    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_1,Signal,RC );
+    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_1,n,RC );
     if ((!RC) && F)  strcpy ( record[0],F );
-    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_2,Signal,RC );
+    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_2,n,RC );
     if ((!RC) && F)  strcpy ( record[1],F );
-    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_3,Signal,RC );
+    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_3,n,RC );
     if ((!RC) && F)  strcpy ( record[2],F );
-    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_4,Signal,RC );
+    F = Loop->GetString ( CIFTAG_RCSB_RECORD_REVISED_4,n,RC );
     if ((!RC) && F)  strcpy ( record[3],F );
 
-    Loop->DeleteField ( CIFTAG_DATE                 ,Signal );
-    Loop->DeleteField ( CIFTAG_REPLACES             ,Signal );
-    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_1,Signal );
-    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_2,Signal );
-    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_3,Signal );
-    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_4,Signal );
+    Loop->DeleteField ( CIFTAG_DATE                 ,n );
+    Loop->DeleteField ( CIFTAG_REPLACES             ,n );
+    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_1,n );
+    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_2,n );
+    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_3,n );
+    Loop->DeleteField ( CIFTAG_RCSB_RECORD_REVISED_4,n );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -1172,33 +1178,36 @@ namespace mmdb  {
     return Error_NoError;
   }
 
-  void  Supersede::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE Supersede::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
   int         i,RC;
   pstr        F,FDate,FID;
   char        DateCIF [20];
   char        DateCIF0[20];
   IDCode      idCode1;
+
     Loop = CIF->GetLoop ( CIFCAT_SPRSDE );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
     i = 0;
     do  {
-      F = Loop->GetString ( CIFTAG_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_ID,n,RC );
       if (RC)  {
-        if (i==0)
-          Signal = -1;
-        return;
+        if (i==0)  {
+          n = -1;
+          return Error_EmptyCIF;
+        } else
+          return Error_NoError;
       }
       if (F)  {
         if (!strcmp(F,"SPRSDE"))  {
-          FDate = Loop->GetString ( CIFTAG_DATE,Signal,RC );
+          FDate = Loop->GetString ( CIFTAG_DATE,n,RC );
           if ((!RC) && FDate)
                 strncpy ( DateCIF,FDate,15 );
           else  strcpy  ( DateCIF,"YYYY-MMM-DD" );
-          FID = Loop->GetString ( CIFTAG_REPLACE_PDB_ID,Signal,RC );
+          FID = Loop->GetString ( CIFTAG_REPLACE_PDB_ID,n,RC );
           if ((!RC) && FID)
                 strncpy ( idCode1,FID,sizeof(IDCode)-1 );
           else  idCode1[0] = char(0);
@@ -1209,20 +1218,23 @@ namespace mmdb  {
             strcpy ( DateCIF0,DateCIF );
           } else if ((strcmp(DateCIF0,DateCIF)) ||
                      (strcmp(idCode,idCode1)))
-            return;
-          FID = Loop->GetString ( CIFTAG_PDB_ID,Signal,RC );
+            return Error_NoError;
+          FID = Loop->GetString ( CIFTAG_PDB_ID,n,RC );
           if ((!RC) && FID)
                strncpy ( sIdCode[i],FID,sizeof(IDCode)-1 );
           else sIdCode[i][0] = char(0);
-          Loop->DeleteField ( CIFTAG_ID            ,Signal );
-          Loop->DeleteField ( CIFTAG_DATE          ,Signal );
-          Loop->DeleteField ( CIFTAG_REPLACE_PDB_ID,Signal );
-          Loop->DeleteField ( CIFTAG_PDB_ID        ,Signal );
+          Loop->DeleteField ( CIFTAG_ID            ,n );
+          Loop->DeleteField ( CIFTAG_DATE          ,n );
+          Loop->DeleteField ( CIFTAG_REPLACE_PDB_ID,n );
+          Loop->DeleteField ( CIFTAG_PDB_ID        ,n );
           i++;
         }
       }
-      Signal++;
+      n++;
     } while (i<8);
+
+    return Error_NoError;
+
   }
 
   void  Supersede::Copy ( PContainerClass Supersede )  {
@@ -1367,31 +1379,33 @@ namespace mmdb  {
     Loop->AddString ( remark );
   }
 
-  void  Remark::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE  Remark::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
-  int         RC;
+  int          RC;
 
     Loop = CIF->GetLoop ( CIFCAT_NDB_DATABASE_REMARK );
     if (!Loop)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
-    if (Signal>=Loop->GetLoopLength() )  {
-      Signal = -1;
-      return;
+    if (n>=Loop->GetLoopLength() )  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    RC = Loop->GetInteger ( remarkNum,CIFTAG_ID,Signal,true );
+    RC = Loop->GetInteger ( remarkNum,CIFTAG_ID,n,true );
     if (RC==mmcif::CIFRC_WrongFormat)  {
       sprintf ( CIFErrorLocation,"loop %s.%s row %i",
-                CIFCAT_NDB_DATABASE_REMARK,CIFTAG_ID,Signal );
-      Signal = -Error_UnrecognizedInteger-1;
-      return;
+                CIFCAT_NDB_DATABASE_REMARK,CIFTAG_ID,n );
+      n = -Error_UnrecognizedInteger-1;
+      return Error_UnrecognizedInteger;
     } else if (RC)
       remarkNum = MinInt4;
-    Loop->GetString ( remark,CIFTAG_TEXT,Signal,true );
+    Loop->GetString ( remark,CIFTAG_TEXT,n,true );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -2176,7 +2190,7 @@ namespace mmdb  {
     mdlType .GetCIF ( CIF,ClassID_MdlType   );
     author  .GetCIF ( CIF,ClassID_Author    );
     RC = revData.GetCIF ( CIF,ClassID_RevData );
-    if (!RC)  {
+    if (RC!=Error_NoError)  {
       supersede.GetCIF ( CIF,ClassID_Supersede );
       journal  .GetCIF ( CIF,ClassID_Journal   );
       RC = remark.GetCIF ( CIF,ClassID_Remark );

@@ -153,7 +153,7 @@ namespace mmdb  {
       void       PDBASCIIDump    ( pstr S, int N   );
       void       MakeCIF         ( mmcif::PData CIF, int N );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_Helix; }
 
       void  Copy  ( PContainerClass Helix );
@@ -326,7 +326,7 @@ namespace mmdb  {
       void       PDBASCIIDump    ( pstr S, int N   );
       void       MakeCIF         ( mmcif::PData CIF, int N );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_Turn; }
 
       void  Copy  ( PContainerClass turn );
@@ -432,7 +432,7 @@ namespace mmdb  {
       void       PDBASCIIDump    ( pstr S, int N   );
       void       MakeCIF         ( mmcif::PData CIF, int N );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_Link; }
 
       void  Copy  ( PContainerClass link );
@@ -525,7 +525,7 @@ namespace mmdb  {
       void       PDBASCIIDump    ( pstr S, int N   );
       void       MakeCIF         ( mmcif::PData CIF, int N );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_LinkR; }
 
       void  Copy  ( PContainerClass LinkR );

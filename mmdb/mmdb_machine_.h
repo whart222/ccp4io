@@ -298,7 +298,7 @@ namespace mmdb  {
 # define FTN_LEN(s)  s##_len
 
 # define char_struct(s)           \
-    pstr  s;                      \
+    mmdb::pstr  s;                      \
     int   s##_len;
 # define fill_char_struct(s,str)  \
     s  = str;                     \

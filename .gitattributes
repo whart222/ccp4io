@@ -66,6 +66,7 @@ libccp4/ccp4/pack_c.h -text
 libccp4/ccp4/vmslibrary.c -text
 libccp4/ccp4/w32mvs.c -text
 libccp4/ccp4/w32mvs.h -text
+libccp4/config.h -text
 libccp4/config.h.in -text
 libccp4/configure -text
 libccp4/configure.ac -text

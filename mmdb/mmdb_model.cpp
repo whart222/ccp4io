@@ -605,6 +605,7 @@ namespace mmdb  {
   int          RC,i,l,k;
 
     FreeMemory();
+    c = char(0);  // only to supress compiler warnings
 
     Loop = CIF->GetLoop ( CIFCAT_CHEM_COMP );
     if (!Loop)  return Error_NoError;
@@ -833,68 +834,78 @@ namespace mmdb  {
     return Error_NoError;
   }
 
-  void  Helix::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE Helix::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
   int          RC,l;
   pstr         F;
   bool         Done;
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONF );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
     l    = Loop->GetLoopLength();
-    Done = Signal>=l;
+    Done = n>=l;
     while (!Done) {
-      F = Loop->GetString ( CIFTAG_CONF_TYPE_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_CONF_TYPE_ID,n,RC );
       if ((!RC) && F)  Done = (strcmp(F,HelixTypeID)==0);
                  else  Done = false;
       if (!Done)  {
-        Signal++;
-        Done = Signal>=l;
+        n++;
+        Done = n>=l;
       }
     }
 
-    if (Signal>=l)  {
-      Signal = -1;  // finish processing of Helix
-      return;
+    if (n>=l)  {
+      n = -1;  // finish processing of Helix
+      return Error_EmptyCIF;
     }
 
-    Loop->DeleteField ( CIFTAG_CONF_TYPE_ID,Signal );
+    Loop->DeleteField ( CIFTAG_CONF_TYPE_ID,n );
 
-    if (CIFGetInteger(serNum,Loop,CIFTAG_ID,Signal)) return;
-
+    rc = CIFGetInteger ( serNum,Loop,CIFTAG_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
     CIFGetString ( helixID    ,Loop,CIFTAG_PDB_ID,
-                               Signal,sizeof(helixID),pstr("   ") );
+                               n,sizeof(helixID),pstr("   ") );
 
     CIFGetString ( initResName,Loop,CIFTAG_BEG_LABEL_COMP_ID,
-                               Signal,sizeof(initResName),pstr("   ") );
+                               n,sizeof(initResName),pstr("   ") );
     CIFGetString ( initChainID,Loop,CIFTAG_BEG_LABEL_ASYM_ID,
-                               Signal,sizeof(initChainID),pstr("") );
+                               n,sizeof(initChainID),pstr("") );
     CIFGetString ( initICode  ,Loop,CIFTAG_NDB_BEG_LABEL_INS_CODE_PDB,
-                               Signal,sizeof(initICode),pstr("") );
-    if (CIFGetInteger(initSeqNum,Loop,CIFTAG_BEG_LABEL_SEQ_ID,Signal))
-      return;
+                               n,sizeof(initICode),pstr("") );
+    if (CIFGetInteger(initSeqNum,Loop,CIFTAG_BEG_LABEL_SEQ_ID,n))
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
     CIFGetString ( endResName,Loop,CIFTAG_END_LABEL_COMP_ID,
-                              Signal,sizeof(endResName),pstr("   ") );
+                              n,sizeof(endResName),pstr("   ") );
     CIFGetString ( endChainID,Loop,CIFTAG_END_LABEL_ASYM_ID,
-                              Signal,sizeof(endChainID),pstr("") );
+                              n,sizeof(endChainID),pstr("") );
     CIFGetString ( endICode  ,Loop,CIFTAG_NDB_END_LABEL_INS_CODE_PDB,
-                              Signal,sizeof(endICode),pstr("") );
-    if (CIFGetInteger(endSeqNum,Loop,CIFTAG_END_LABEL_SEQ_ID,Signal))
-      return;
+                              n,sizeof(endICode),pstr("") );
+    rc = CIFGetInteger(endSeqNum,Loop,CIFTAG_END_LABEL_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    if (CIFGetInteger(helixClass,Loop,
-                      CIFTAG_NDB_HELIX_CLASS_PDB,Signal)) return;
-    CreateCopy     ( comment,Loop->GetString(CIFTAG_DETAILS,Signal,RC));
-    Loop->DeleteField ( CIFTAG_DETAILS,Signal );
-    if (CIFGetInteger(length,Loop,CIFTAG_NDB_LENGTH,Signal)) return;
+    rc = CIFGetInteger(helixClass,Loop,CIFTAG_NDB_HELIX_CLASS_PDB,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    Signal++;
+    CreateCopy     ( comment,Loop->GetString(CIFTAG_DETAILS,n,RC));
+    Loop->DeleteField ( CIFTAG_DETAILS,n );
+    rc = CIFGetInteger ( length,Loop,CIFTAG_NDB_LENGTH,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
+
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -1943,65 +1954,71 @@ namespace mmdb  {
     return Error_NoError;
   }
 
-  void  Turn::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE Turn::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
   int          RC,l;
   pstr         F;
   bool         Done;
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONF );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
     l    = Loop->GetLoopLength();
-    Done = Signal>=l;
+    Done = n>=l;
     while (!Done) {
-      F = Loop->GetString ( CIFTAG_CONF_TYPE_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_CONF_TYPE_ID,n,RC );
       if ((!RC) && F)  Done = (strcmp(F,TurnTypeID)==0);
                  else  Done = false;
       if (!Done)  {
-        Signal++;
-        Done = Signal>=l;
+        n++;
+        Done = n>=l;
       }
     }
 
-    if (Signal>=l)  {
-      Signal = -1;  // finish processing of Turn
-      return;
+    if (n>=l)  {
+      n = -1;  // finish processing of Turn
+      return Error_EmptyCIF;
     }
 
-    Loop->DeleteField ( CIFTAG_CONF_TYPE_ID,Signal );
+    Loop->DeleteField ( CIFTAG_CONF_TYPE_ID,n );
 
-    if (CIFGetInteger(serNum,Loop,CIFTAG_ID,Signal)) return;
+    rc = CIFGetInteger ( serNum,Loop,CIFTAG_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-
-    CIFGetString ( turnID,Loop,CIFTAG_PDB_ID,Signal,
+    CIFGetString ( turnID,Loop,CIFTAG_PDB_ID,n,
                    sizeof(turnID),pstr("   ") );
 
     CIFGetString ( initResName,Loop,CIFTAG_BEG_LABEL_COMP_ID,
-                               Signal,sizeof(initResName),pstr("   ") );
+                               n,sizeof(initResName),pstr("   ") );
     CIFGetString ( initChainID,Loop,CIFTAG_BEG_LABEL_ASYM_ID,
-                               Signal,sizeof(initChainID),pstr(" ") );
+                               n,sizeof(initChainID),pstr(" ") );
     CIFGetString ( initICode  ,Loop,CIFTAG_NDB_BEG_LABEL_INS_CODE_PDB,
-                               Signal,sizeof(initICode),pstr(" ") );
-    if (CIFGetInteger(initSeqNum,Loop,CIFTAG_BEG_LABEL_SEQ_ID,Signal))
-      return;
+                               n,sizeof(initICode),pstr(" ") );
+    rc = CIFGetInteger ( initSeqNum,Loop,CIFTAG_BEG_LABEL_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
     CIFGetString ( endResName,Loop,CIFTAG_END_LABEL_COMP_ID,
-                              Signal,sizeof(endResName),pstr("   ") );
+                              n,sizeof(endResName),pstr("   ") );
     CIFGetString ( endChainID,Loop,CIFTAG_END_LABEL_ASYM_ID,
-                              Signal,sizeof(endChainID),pstr(" ") );
+                              n,sizeof(endChainID),pstr(" ") );
     CIFGetString ( endICode  ,Loop,CIFTAG_NDB_END_LABEL_INS_CODE_PDB,
-                              Signal,sizeof(endICode),pstr(" ") );
-    if (CIFGetInteger(endSeqNum,Loop,CIFTAG_END_LABEL_SEQ_ID,Signal))
-      return;
+                              n,sizeof(endICode),pstr(" ") );
+    rc = CIFGetInteger ( endSeqNum,Loop,CIFTAG_END_LABEL_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    CreateCopy      ( comment,Loop->GetString(CIFTAG_DETAILS,Signal,RC));
-    Loop->DeleteField ( CIFTAG_DETAILS,Signal );
+    CreateCopy      ( comment,Loop->GetString(CIFTAG_DETAILS,n,RC));
+    Loop->DeleteField ( CIFTAG_DETAILS,n );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -2232,67 +2249,72 @@ namespace mmdb  {
 
   }
 
-  void  Link::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE Link::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
-  pstr        F;
-  char        S[100];
-  int         RC,l;
-  bool     Done;
+  pstr         F;
+  char         S[100];
+  int          RC,l;
+  bool         Done;
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONN );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
     l    = Loop->GetLoopLength();
-    Done = (Signal>=l);
+    Done = (n>=l);
     while (!Done) {
-      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,n,RC );
       if ((!RC) && F)  Done = (strcmp(F,LinkTypeID)==0);
                  else  Done = false;
       if (!Done)  {
-        Signal++;
-        Done = (Signal>=l);
+        n++;
+        Done = (n>=l);
       }
     }
 
-    if (Signal>=l)  {
-      Signal = -1;  // finish processing of Turn
-      return;
+    if (n>=l)  {
+      n = -1;  // finish processing of Turn
+      return Error_EmptyCIF;
     }
 
-    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,Signal );
+    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,n );
 
-  //  CIFGetInteger ( l,Loop,CIFTAG_ID,Signal );
+  //  CIFGetInteger ( l,Loop,CIFTAG_ID,n );
 
-    CIFGetString ( atName1,Loop,CIFTAG_CONN_PTNR1_AUTH_ATOM_ID,Signal,
+    CIFGetString ( atName1,Loop,CIFTAG_CONN_PTNR1_AUTH_ATOM_ID,n,
                    sizeof(atName1),pstr("    ") );
-    CIFGetString ( aloc1,Loop,CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID,Signal,
+    CIFGetString ( aloc1,Loop,CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID,n,
                    sizeof(aloc1),pstr(" ") );
-    CIFGetString ( resName1,Loop,CIFTAG_CONN_PTNR1_AUTH_COMP_ID,Signal,
+    CIFGetString ( resName1,Loop,CIFTAG_CONN_PTNR1_AUTH_COMP_ID,n,
                    sizeof(resName1),pstr("   ") );
-    CIFGetString ( chainID1,Loop,CIFTAG_CONN_PTNR1_AUTH_ASYM_ID,Signal,
+    CIFGetString ( chainID1,Loop,CIFTAG_CONN_PTNR1_AUTH_ASYM_ID,n,
                    sizeof(chainID1),pstr(" ") );
-    if (CIFGetInteger(seqNum1,Loop,CIFTAG_CONN_PTNR1_AUTH_SEQ_ID,Signal))
-      return;
+    rc = CIFGetInteger ( seqNum1,Loop,CIFTAG_CONN_PTNR1_AUTH_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
+
     CIFGetString ( insCode1,Loop,CIFTAG_CONN_PDBX_PTNR1_PDB_INS_CODE,
-                   Signal,sizeof(insCode1),pstr(" ") );
+                   n,sizeof(insCode1),pstr(" ") );
 
-    CIFGetString ( atName2,Loop,CIFTAG_CONN_PTNR2_AUTH_ATOM_ID,Signal,
+    CIFGetString ( atName2,Loop,CIFTAG_CONN_PTNR2_AUTH_ATOM_ID,n,
                    sizeof(atName2),pstr("    ") );
-    CIFGetString ( aloc2,Loop,CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID,Signal,
+    CIFGetString ( aloc2,Loop,CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID,n,
                    sizeof(aloc2),pstr(" ") );
-    CIFGetString ( resName2,Loop,CIFTAG_CONN_PTNR2_AUTH_COMP_ID,Signal,
+    CIFGetString ( resName2,Loop,CIFTAG_CONN_PTNR2_AUTH_COMP_ID,n,
                    sizeof(resName2),pstr("   ") );
-    CIFGetString ( chainID2,Loop,CIFTAG_CONN_PTNR2_AUTH_ASYM_ID,Signal,
+    CIFGetString ( chainID2,Loop,CIFTAG_CONN_PTNR2_AUTH_ASYM_ID,n,
                    sizeof(chainID2),pstr(" ") );
-    if (CIFGetInteger(seqNum2,Loop,CIFTAG_CONN_PTNR2_AUTH_SEQ_ID,Signal))
-      return;
-    CIFGetString ( insCode2,Loop,CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE,
-                   Signal,sizeof(insCode2),pstr(" ") );
+    rc = CIFGetInteger ( seqNum2,Loop,CIFTAG_CONN_PTNR2_AUTH_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    CIFGetString ( S,Loop,CIFTAG_CONN_PTNR1_SYMMETRY,Signal,
+    CIFGetString ( insCode2,Loop,CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE,
+                   n,sizeof(insCode2),pstr(" ") );
+
+    CIFGetString ( S,Loop,CIFTAG_CONN_PTNR1_SYMMETRY,n,
                    sizeof(S),pstr("") );
     if (S[0])  {
       l  = strlen(S)-1;
@@ -2303,7 +2325,7 @@ namespace mmdb  {
       s1 = atoi(S);
     }
 
-    CIFGetString ( S,Loop,CIFTAG_CONN_PTNR2_SYMMETRY,Signal,
+    CIFGetString ( S,Loop,CIFTAG_CONN_PTNR2_SYMMETRY,n,
                    sizeof(S),pstr("") );
     if (S[0])  {
       l  = strlen(S)-1;
@@ -2314,7 +2336,9 @@ namespace mmdb  {
       s2 = atoi(S);
     }
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -2580,72 +2604,80 @@ namespace mmdb  {
 
   }
 
-  void  LinkR::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE LinkR::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
   pstr         F;
   int          RC,l;
   bool         Done;
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONN );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
     l    = Loop->GetLoopLength();
-    Done = (Signal>=l);
+    Done = (n>=l);
     while (!Done) {
-      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,Signal,RC );
+      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,n,RC );
       if ((!RC) && F)  Done = (strcmp(F,LinkTypeID)==0);
                  else  Done = false;
       if (!Done)  {
-        Signal++;
-        Done = (Signal>=l);
+        n++;
+        Done = (n>=l);
       }
     }
 
-    if (Signal>=l)  {
-      Signal = -1;  // finish processing of Turn
-      return;
+    if (n>=l)  {
+      n = -1;  // finish processing of Turn
+      return Error_EmptyCIF;
     }
 
-    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,Signal );
+    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,n );
 
-    //  CIFGetInteger ( l,Loop,CIFTAG_ID,Signal );
+    //  CIFGetInteger ( l,Loop,CIFTAG_ID,n );
 
-    CIFGetString ( atName1,Loop,CIFTAG_CONN_PTNR1_AUTH_ATOM_ID,Signal,
+    CIFGetString ( atName1,Loop,CIFTAG_CONN_PTNR1_AUTH_ATOM_ID,n,
                    sizeof(atName1),pstr("    ") );
-    CIFGetString ( aloc1,Loop,CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID,Signal,
+    CIFGetString ( aloc1,Loop,CIFTAG_CONN_PDBX_PTNR1_AUTH_ALT_ID,n,
                    sizeof(aloc1),pstr(" ") );
-    CIFGetString ( resName1,Loop,CIFTAG_CONN_PTNR1_AUTH_COMP_ID,Signal,
+    CIFGetString ( resName1,Loop,CIFTAG_CONN_PTNR1_AUTH_COMP_ID,n,
                    sizeof(resName1),pstr("   ") );
-    CIFGetString ( chainID1,Loop,CIFTAG_CONN_PTNR1_AUTH_ASYM_ID,Signal,
+    CIFGetString ( chainID1,Loop,CIFTAG_CONN_PTNR1_AUTH_ASYM_ID,n,
                    sizeof(chainID1),pstr(" ") );
-    if (CIFGetInteger(seqNum1,Loop,CIFTAG_CONN_PTNR1_AUTH_SEQ_ID,Signal))
-      return;
+    rc = CIFGetInteger ( seqNum1,Loop,CIFTAG_CONN_PTNR1_AUTH_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
+
     CIFGetString ( insCode1,Loop,CIFTAG_CONN_PDBX_PTNR1_PDB_INS_CODE,
-                   Signal,sizeof(insCode1),pstr(" ") );
+                   n,sizeof(insCode1),pstr(" ") );
 
-    if (CIFGetReal(dist,Loop,CIFTAG_CONN_DIST,Signal))
-      return;
+    rc = CIFGetReal ( dist,Loop,CIFTAG_CONN_DIST,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    CIFGetString ( atName2,Loop,CIFTAG_CONN_PTNR2_AUTH_ATOM_ID,Signal,
+    CIFGetString ( atName2,Loop,CIFTAG_CONN_PTNR2_AUTH_ATOM_ID,n,
                    sizeof(atName2),pstr("    ") );
-    CIFGetString ( aloc2,Loop,CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID,Signal,
+    CIFGetString ( aloc2,Loop,CIFTAG_CONN_PDBX_PTNR2_AUTH_ALT_ID,n,
                    sizeof(aloc2),pstr(" ") );
-    CIFGetString ( resName2,Loop,CIFTAG_CONN_PTNR2_AUTH_COMP_ID,Signal,
+    CIFGetString ( resName2,Loop,CIFTAG_CONN_PTNR2_AUTH_COMP_ID,n,
                    sizeof(resName2),pstr("   ") );
-    CIFGetString ( chainID2,Loop,CIFTAG_CONN_PTNR2_AUTH_ASYM_ID,Signal,
+    CIFGetString ( chainID2,Loop,CIFTAG_CONN_PTNR2_AUTH_ASYM_ID,n,
                    sizeof(chainID2),pstr(" ") );
-    if (CIFGetInteger(seqNum2,Loop,CIFTAG_CONN_PTNR2_AUTH_SEQ_ID,Signal))
-      return;
-    CIFGetString ( insCode2,Loop,CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE,
-                   Signal,sizeof(insCode2),pstr(" ") );
+    rc = CIFGetInteger ( seqNum2,Loop,CIFTAG_CONN_PTNR2_AUTH_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    CIFGetString ( linkRID,Loop,CIFTAG_CONN_NAME,Signal,
+    CIFGetString ( insCode2,Loop,CIFTAG_CONN_PDBX_PTNR2_PDB_INS_CODE,
+                   n,sizeof(insCode2),pstr(" ") );
+
+    CIFGetString ( linkRID,Loop,CIFTAG_CONN_NAME,n,
                    sizeof(linkRID),pstr(" ") );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 

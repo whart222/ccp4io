@@ -135,13 +135,13 @@ namespace mmdb  {
   const int      MaxInt  =  32767;
   const int      MinInt  = -32768;
   const word     MaxWord =  65535L;
-  const long int MaxInt4 =  2147483647;
+  const long int MaxInt4 =  2147483647L;
 
   //    MinInt4 would have to be defined as  -2147483648,
   // however some compilers do not like that. To be on safe,
   // we define it as -2147483647:
   const long int MinInt4  = -2147483647;
-  const lword    MaxWord4 =  4294967295;
+  const lword    MaxWord4 =  4294967295UL;
 
   const realtype Pi   = 3.141592653589793238462643;
   const realtype Eu   = 2.718281828459045235360287;

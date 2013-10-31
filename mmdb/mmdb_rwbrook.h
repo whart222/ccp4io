@@ -76,8 +76,6 @@
 #include "mmdb_mattype.h"
 #include "mmdb_machine_.h"
 
-using namespace mmdb;
-using namespace mmdb::machine;
 
 // ****** mmdb_rwbrook error codes
 
@@ -302,21 +300,23 @@ FORTRAN_SUBR ( SIMRWBROOK,simrwbrook,
 
 FORTRAN_SUBR ( MMDB_F_OPEN, mmdb_f_open,
                (    // lengths-at-end list
-                fpstr LName,      // logical name
-                fpstr RWStat,     // "INPUT" or "OUTPUT"
-                fpstr FType,      // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr LName,  // logical name
+                mmdb::machine::fpstr RWStat, // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,  // "PDB", "CIF", "BIN" or " "
                 int * iUnit,      // channel number
                 int * iRet,       // returns error code
                 int   LName_len,  // fortran-hidden length of LName
                 int   RWStat_len, // fortran-hidden length of RWStat
                 int   FType_len   // fortran-hidden length of FType
                ), ( // lengths-in-structure list
-                fpstr LName,  fpstr RWStat, fpstr FType,
+                mmdb::machine::fpstr LName,
+                mmdb::machine::fpstr RWStat,
+                mmdb::machine::fpstr FType,
                 int * iUnit,  int * iRet
                ), ( // lengths-follow list
-                fpstr LName,   int LName_len,
-                fpstr RWStat,  int RWStat_len,
-                fpstr FType,   int FType_len,
+                mmdb::machine::fpstr LName,   int LName_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
                 int * iUnit,   int * iRet
                ) );
 
@@ -334,21 +334,23 @@ FORTRAN_SUBR ( MMDB_F_OPEN, mmdb_f_open,
 
 FORTRAN_SUBR ( MMDB_F_OPEN1, mmdb_f_open1,
                (    // lengths-at-end list
-                fpstr FName,      // file name
-                fpstr RWStat,     // "INPUT" or "OUTPUT"
-                fpstr FType,      // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr FName,  // file name
+                mmdb::machine::fpstr RWStat, // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,  // "PDB", "CIF", "BIN" or " "
                 int * iUnit,      // channel number
                 int * iRet,       // returns error code
                 int   FName_len,  // fortran-hidden length of FName
                 int   RWStat_len, // fortran-hidden length of RWStat
                 int   FType_len   // fortran-hidden length of FType
                ), ( // lengths-in-structure list
-                fpstr FName,  fpstr RWStat, fpstr FType,
+                mmdb::machine::fpstr FName,
+                mmdb::machine::fpstr RWStat,
+                mmdb::machine::fpstr FType,
                 int * iUnit,  int * iRet
                ), ( // lengths-follow list
-                fpstr FName,   int FName_len,
-                fpstr RWStat,  int RWStat_len,
-                fpstr FType,   int FType_len,
+                mmdb::machine::fpstr FName,   int FName_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
                 int * iUnit,   int * iRet
                ) );
 
@@ -446,19 +448,19 @@ FORTRAN_SUBR ( MMDB_F_DELETE, mmdb_f_delete,
 FORTRAN_SUBR ( MMDB_F_SETTYPE, mmdb_f_settype,
                (    // lengths-at-end list
                 int * iUnit,     // unit number
-                fpstr FType,     // "PDB", "CIF", "BIN" or " "
-                fpstr RWStat,    // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,  // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr RWStat, // "INPUT" or "OUTPUT"
                 int * iRet,      // returns -1 if unit not found,
                                  // otherwise 0
                 int   FType_len, // fortran-hidden length of FType
                 int   RWStat_len // fortran-hidden length of RWStat
                ), ( // lengths-in-structure list
-                int * iUnit,  fpstr FType,
-                fpstr RWStat, int * iRet
+                int * iUnit,  mmdb::machine::fpstr FType,
+                mmdb::machine::fpstr RWStat, int * iRet
                ), ( // lengths-follow list
                 int * iUnit,
-                fpstr FType,   int FType_len,
-                fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
                 int * iRet
                ) );
 
@@ -482,15 +484,15 @@ FORTRAN_SUBR ( MMDB_F_SETTYPE, mmdb_f_settype,
 FORTRAN_SUBR ( MMDB_F_SETNAME, mmdb_f_setname,
                (    // lengths-at-end list
                 int * iUnit,    // unit number
-                fpstr FName,    // file name
+                mmdb::machine::fpstr FName,    // file name
                 int * iRet,     // returns -1 if unit not found,
                                 // otherwise 0
                 int   FName_len // fortran-hidden length of FName
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr FName, int * iRet
+                int * iUnit, mmdb::machine::fpstr FName, int * iRet
                ), ( // lengths-follow list
                 int * iUnit,
-                fpstr FName, int FName_len,
+                mmdb::machine::fpstr FName, int FName_len,
                 int * iRet
                ) );
 
@@ -696,17 +698,17 @@ FORTRAN_SUBR ( MMDB_F_ATOM,  mmdb_f_atom,
            (    // lengths-at-end list
             int * iUnit,    // unit number
             int * iSer,     // atom serial number
-            fpstr AtNam,    // atom name (left justified)
-            fpstr ResNam,   // residue name
-            fpstr ChnNam,   // chain name
+            mmdb::machine::fpstr AtNam,    // atom name (left justified)
+            mmdb::machine::fpstr ResNam,   // residue name
+            mmdb::machine::fpstr ChnNam,   // chain name
             int * iResN,    // residue number as an integer
-            fpstr ResNo,    // residue number as character (input only)
-            fpstr InsCod,   // the insertion code
-            fpstr AltCod,   // the alternate conformation code
-            fpstr segID,    // segment ID
+            mmdb::machine::fpstr ResNo,    // residue number as character (input only)
+            mmdb::machine::fpstr InsCod,   // the insertion code
+            mmdb::machine::fpstr AltCod,   // the alternate conformation code
+            mmdb::machine::fpstr segID,    // segment ID
             int * IZ,       // atomic number (input only, returned as
                             // 7 from ambiguous atoms)
-            fpstr ID,       // atomic ID related to atomic number
+            mmdb::machine::fpstr ID,       // atomic ID related to atomic number
                             // (element symbol right justified), plus
                             // the ionic state +2, +3 etc..
                             //
@@ -735,22 +737,28 @@ FORTRAN_SUBR ( MMDB_F_ATOM,  mmdb_f_atom,
             int segID_len,  // fortran-hidden length of SegID
             int ID_len      // fortran-hidden length of ID
            ), ( // lengths-in-structure list
-            int * iUnit,  int * iSer,  fpstr AtNam,  fpstr ResNam,
-            fpstr ChnNam, int * iResN, fpstr ResNo,  fpstr InsCod,
-            fpstr AltCod, fpstr segID, int * IZ,     fpstr ID,
+            int * iUnit,  int * iSer,
+            mmdb::machine::fpstr AtNam,
+            mmdb::machine::fpstr ResNam,
+            mmdb::machine::fpstr ChnNam, int * iResN,
+            mmdb::machine::fpstr ResNo,
+            mmdb::machine::fpstr InsCod,
+            mmdb::machine::fpstr AltCod,
+            mmdb::machine::fpstr segID, int * IZ,
+            mmdb::machine::fpstr ID,
             int * iRet
            ), ( // lengths-follow list
             int * iUnit,  int * iSer,
-            fpstr AtNam,  int   AtNam_len,
-            fpstr ResNam, int   ResNam_len,
-            fpstr ChnNam, int   ChnNam_len,
+            mmdb::machine::fpstr AtNam,  int   AtNam_len,
+            mmdb::machine::fpstr ResNam, int   ResNam_len,
+            mmdb::machine::fpstr ChnNam, int   ChnNam_len,
             int * iResN,
-            fpstr ResNo,  int   ResNo_len,
-            fpstr InsCod, int   InsCod_len,
-            fpstr AltCod, int   AltCod_len,
-            fpstr segID,  int   segID_len,
+            mmdb::machine::fpstr ResNo,  int   ResNo_len,
+            mmdb::machine::fpstr InsCod, int   InsCod_len,
+            mmdb::machine::fpstr AltCod, int   AltCod_len,
+            mmdb::machine::fpstr segID,  int   segID_len,
             int * IZ,
-            fpstr ID,     int   ID_len,
+            mmdb::machine::fpstr ID,     int   ID_len,
             int * iRet
            ) );
 
@@ -805,22 +813,22 @@ FORTRAN_SUBR ( MMDB_F_COPYATOM, mmdb_f_copyatom,
 FORTRAN_SUBR ( MMDB_F_COORD, mmdb_f_coord,
                (    // lengths-at-end list
                 int * iUnit,    // unit number
-                fpstr XFlag,    // "F" or "O" flag for the fractional
+                mmdb::machine::fpstr XFlag,    // "F" or "O" flag for the fractional
                                 // or orthogonal coordinates x,y,z
                                 // for output files XFlag may also be
                                 // set to "HF" or "HO", where "F" and
                                 // "O" have the same meaning as before
                                 // and "H" indicates that the atom
                                 // should be marked as heteroatom
-                fpstr BFlag ,   // "F" or "O" flag for temperature
+                mmdb::machine::fpstr BFlag ,   // "F" or "O" flag for temperature
                                 // factor in fractional or orthogonal
                                 // Us
-                apireal * x,    // x-coordinate
-                apireal * y,    // y-coordinate
-                apireal * z,    // z-coordinate
-                apireal * occ,  // occupancy
-                apireal * BIso, // isotropic temperature factor
-                apireal * U,    // array(6) of the anisotr. t-factor
+                mmdb::machine::apireal * x,    // x-coordinate
+                mmdb::machine::apireal * y,    // y-coordinate
+                mmdb::machine::apireal * z,    // z-coordinate
+                mmdb::machine::apireal * occ,  // occupancy
+                mmdb::machine::apireal * BIso, // isotropic temperature factor
+                mmdb::machine::apireal * U,    // array(6) of the anisotr. t-factor
                 int * iRet,     // returns
                                 //  RWBERR_NoChannel     if iUnit was not
                                 //                       initialized
@@ -841,16 +849,26 @@ FORTRAN_SUBR ( MMDB_F_COORD, mmdb_f_coord,
                 int XFlag_len,  // fortran-hidden length of XFlag
                 int BFlag_len   // fortran-hidden length of BFlag
                ), ( // lengths-in-structure list
-                int * iUnit,   fpstr XFlag,    fpstr BFlag,
-                apireal * x,   apireal * y,    apireal * z,
-                apireal * occ, apireal * BIso, apireal * U,
+                int * iUnit,
+                mmdb::machine::fpstr XFlag,
+                mmdb::machine::fpstr BFlag,
+                mmdb::machine::apireal * x,
+                mmdb::machine::apireal * y,
+                mmdb::machine::apireal * z,
+                mmdb::machine::apireal * occ,
+                mmdb::machine::apireal * BIso,
+                mmdb::machine::apireal * U,
                 int * iRet
                ), ( // lengths-follow list
                 int * iUnit,
-                fpstr XFlag,   int XFlag_len,
-                fpstr BFlag,   int BFlag_len,
-                apireal * x,   apireal * y,    apireal * z,
-                apireal * occ, apireal * BIso, apireal * U,
+                mmdb::machine::fpstr XFlag,   int XFlag_len,
+                mmdb::machine::fpstr BFlag,   int BFlag_len,
+                mmdb::machine::apireal * x,
+                mmdb::machine::apireal * y,
+                mmdb::machine::apireal * z,
+                mmdb::machine::apireal * occ,
+                mmdb::machine::apireal * BIso,
+                mmdb::machine::apireal * U,
                 int * iRet
                ) );
 
@@ -913,12 +931,12 @@ FORTRAN_SUBR ( MMDB_F_SETCELL, mmdb_f_setcell,
                (   //   lengths-at-end list
                 int     * iUnit,    // unit number; *iUnit<=0 means
                                     // "the last mentioned unit"
-                apireal * a,        // cell parameter a, angstroms
-                apireal * b,        // cell parameter b, angstroms
-                apireal * c,        // cell parameter c, angstroms
-                apireal * alpha,    // cell parameter alpha, degrees
-                apireal * beta,     // cell parameter beta,  degrees
-                apireal * gamma,    // cell parameter gamma, degrees
+                mmdb::machine::apireal * a,     // cell parameter a, angstroms
+                mmdb::machine::apireal * b,     // cell parameter b, angstroms
+                mmdb::machine::apireal * c,     // cell parameter c, angstroms
+                mmdb::machine::apireal * alpha, // cell parameter alpha, degrees
+                mmdb::machine::apireal * beta,  // cell parameter beta,  degrees
+                mmdb::machine::apireal * gamma, // cell parameter gamma, degrees
                 int     * ArgNCode, // orthogonalization code, 1-6
                 int     * iRet      // return code:
                                     //   RWBERR_Ok  - success
@@ -942,13 +960,21 @@ FORTRAN_SUBR ( MMDB_F_SETCELL, mmdb_f_setcell,
                                     // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
                 int     * iUnit,
-                apireal * a,        apireal * b,    apireal * c,
-                apireal * alpha,    apireal * beta, apireal * gamma,
+                mmdb::machine::apireal * a,
+                mmdb::machine::apireal * b,
+                mmdb::machine::apireal * c,
+                mmdb::machine::apireal * alpha,
+                mmdb::machine::apireal * beta,
+                mmdb::machine::apireal * gamma,
                 int     * ArgNCode, int     * iRet
                ), ( // lengths-follow list
                 int     * iUnit,
-                apireal * a,        apireal * b,    apireal * c,
-                apireal * alpha,    apireal * beta, apireal * gamma,
+                mmdb::machine::apireal * a,
+                mmdb::machine::apireal * b,
+                mmdb::machine::apireal * c,
+                mmdb::machine::apireal * alpha,
+                mmdb::machine::apireal * beta,
+                mmdb::machine::apireal * gamma,
                 int     * ArgNCode, int     * iRet
                )
              );
@@ -975,7 +1001,7 @@ FORTRAN_SUBR ( MMDB_F_WBSPGRP, mmdb_f_wbspgrp,
                (   //   lengths-at-end list
                 int * iUnit,    // unit number; *iUnit<=0 means
                                 // "the last mentioned unit"
-                fpstr spGroup,  // space group
+                mmdb::machine::fpstr spGroup,  // space group
                 int * iRet,     // return code:
                                 //   RWBERR_Ok  - success
                                 //   RWBERR_NoChannel     if unit
@@ -985,9 +1011,9 @@ FORTRAN_SUBR ( MMDB_F_WBSPGRP, mmdb_f_wbspgrp,
                                 //              has been disposed
                 int spGroup_len // fortran-hidden length of spGroup
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr spGroup, int * iRet
+                int * iUnit, mmdb::machine::fpstr spGroup, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr spGroup, int spGroup_len,
+                int * iUnit, mmdb::machine::fpstr spGroup, int spGroup_len,
                 int * iRet
                )
              );
@@ -1014,7 +1040,7 @@ FORTRAN_SUBR ( MMDB_F_RBSPGRP, mmdb_f_rbspgrp,
                (   //   lengths-at-end list
                 int * iUnit,    // unit number; *iUnit<=0 means
                                 // "the last mentioned unit"
-                fpstr spGroup,  // space group
+                mmdb::machine::fpstr spGroup,  // space group
                 int * iRet,     // return code:
                                 //   RWBERR_Ok  - success
                                 //   RWBERR_NoChannel     if unit
@@ -1024,9 +1050,9 @@ FORTRAN_SUBR ( MMDB_F_RBSPGRP, mmdb_f_rbspgrp,
                                 //              has been disposed
                 int spGroup_len // fortran-hidden length of spGroup
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr spGroup, int * iRet
+                int * iUnit, mmdb::machine::fpstr spGroup, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr spGroup, int spGroup_len,
+                int * iUnit, mmdb::machine::fpstr spGroup, int spGroup_len,
                 int * iRet
                )
              );
@@ -1054,7 +1080,7 @@ FORTRAN_SUBR ( MMDB_F_WBCELL, mmdb_f_wbcell,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number; *iUnit<=0 means
                                     // "the last mentioned unit"
-                apireal * ArgCell,  // array to accept the cell parameters
+                mmdb::machine::apireal * ArgCell,  // array to accept the cell parameters
                                     // if ArgCell(1) is set to 0, then
                                     // the cell does not change
                 int     * ArgNCode, // orthogonalisation code
@@ -1069,10 +1095,10 @@ FORTRAN_SUBR ( MMDB_F_WBCELL, mmdb_f_wbcell,
                                     //   RWBERR_NoFile        if unit
                                     //              has been disposed
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * ArgCell,
+                int * iUnit,    mmdb::machine::apireal * ArgCell,
                 int * ArgNCode, int     * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * ArgCell,
+                int * iUnit,    mmdb::machine::apireal * ArgCell,
                 int * ArgNCode, int     * iRet
                )
              );
@@ -1100,8 +1126,8 @@ FORTRAN_SUBR ( MMDB_F_RBCELL, mmdb_f_rbcell,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number; *iUnit<=0 means
                                     // "the last mentioned unit"
-                apireal * celld,    // array to accept the cell parameters
-                apireal * cvol,     // returns the cell volume
+                mmdb::machine::apireal * celld,    // array to accept the cell parameters
+                mmdb::machine::apireal * cvol,     // returns the cell volume
                 int     * iRet      // return code
                         //   RWBERR_Ok  - success
                         //   RWBERR_NoChannel     if unit
@@ -1122,11 +1148,11 @@ FORTRAN_SUBR ( MMDB_F_RBCELL, mmdb_f_rbcell,
                         // rather indicate a programming
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int     * iUnit,  apireal * celld,
-                apireal * cvol,   int     * iRet
+                int     * iUnit,  mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,   int     * iRet
                ), ( // lengths-follow list
-                int     * iUnit,  apireal * celld,
-                apireal * cvol,   int     * iRet
+                int     * iUnit,  mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,   int     * iRet
                ) );
 
 
@@ -1152,8 +1178,8 @@ FORTRAN_SUBR ( MMDB_F_RBCELLN, mmdb_f_rbcelln,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number; *iUnit<=0 means
                                     // "the last mentioned unit"
-                apireal * celld,    // array to accept the cell parameters
-                apireal * cvol,     // returns the cell volume
+                mmdb::machine::apireal * celld,    // array to accept the cell parameters
+                mmdb::machine::apireal * cvol,     // returns the cell volume
                 int     * ArgNCode, // returns the orthogonalization code, 1-6
                 int     * iRet      // return code
                                     //   RWBERR_Ok  - success
@@ -1175,10 +1201,14 @@ FORTRAN_SUBR ( MMDB_F_RBCELLN, mmdb_f_rbcelln,
                                     // rather indicate a programming
                                     // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * celld, apireal * cvol,
+                int * iUnit,
+                mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,
                 int * ArgNCode, int     * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * celld, apireal * cvol,
+                int * iUnit,
+                mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,
                 int * ArgNCode, int     * iRet
                )
              );
@@ -1205,9 +1235,9 @@ FORTRAN_SUBR ( MMDB_F_RBCELLN, mmdb_f_rbcelln,
 FORTRAN_SUBR ( MMDB_F_RBRCEL, mmdb_f_rbrcel,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number
-                apireal * rcell,    // array to accept the reciprocal
+                mmdb::machine::apireal * rcell,    // array to accept the reciprocal
                                     // cell parameters
-                apireal * rvol,     // returns the reciprocal cell volume
+                mmdb::machine::apireal * rvol,     // returns the reciprocal cell volume
                 int     * iRet      // return code
                         //   RWBERR_Ok  - success
                         //   RWBERR_NoChannel     if unit
@@ -1228,10 +1258,14 @@ FORTRAN_SUBR ( MMDB_F_RBRCEL, mmdb_f_rbrcel,
                         // rather indicate a programming
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * rcell, apireal * rvol,
+                int * iUnit,
+                mmdb::machine::apireal * rcell,
+                mmdb::machine::apireal * rvol,
                 int * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * rcell, apireal * rvol,
+                int * iUnit,
+                mmdb::machine::apireal * rcell,
+                mmdb::machine::apireal * rvol,
                 int * iRet
                ) );
 
@@ -1261,8 +1295,8 @@ FORTRAN_SUBR ( MMDB_F_RBORF, mmdb_f_rborf,
                (     // lengths-at-end list
                  int     * iUnit, // unit number; *iUnit<=0 means
                                   // "the last mentioned unit"
-                 apireal * RO,    // array for orthogonalising matrix
-                 apireal * RF,    // array for fractionalising matrix
+                 mmdb::machine::apireal * RO,    // array for orthogonalising matrix
+                 mmdb::machine::apireal * RF,    // array for fractionalising matrix
                  int     * LCode, // buffer for orthogonalisation code
                  int     * iRet   // return code:
                                   //   RWBERR_Ok  - success
@@ -1276,10 +1310,14 @@ FORTRAN_SUBR ( MMDB_F_RBORF, mmdb_f_rborf,
                                   //              matrices were not
                                   //              calculated
                 ), ( // lengths-in-structure list
-                 int * iUnit, apireal * RO, apireal * RF,
+                 int * iUnit,
+                 mmdb::machine::apireal * RO,
+                 mmdb::machine::apireal * RF,
                  int * LCode, int * iRet
                 ), ( // lengths-follow list
-                 int * iUnit, apireal * RO, apireal * RF,
+                 int * iUnit,
+                 mmdb::machine::apireal * RO,
+                 mmdb::machine::apireal * RF,
                  int * LCode, int * iRet
                 )
              );
@@ -1310,12 +1348,12 @@ FORTRAN_SUBR ( MMDB_F_ORTHMAT, mmdb_f_orthmat,
                (     // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                apireal * Cell,  // array of cell parameters:
+                mmdb::machine::apireal * Cell,  // array of cell parameters:
                                  //  Cell(1) - a   Cell(4) - alpha
                                  //  Cell(2) - b   Cell(5) - beta
                                  //  Cell(3) - c   Cell(6) - gamma
-                apireal * Vol,   // returns cell volume
-                apireal * RRR,   // array (3,3,6), returns
+                mmdb::machine::apireal * Vol,   // returns cell volume
+                mmdb::machine::apireal * RRR,   // array (3,3,6), returns
                                  // orthogonalisation matrices
                 int     * iRet   // return code:
                                  //   RWBERR_Ok  - success
@@ -1329,11 +1367,15 @@ FORTRAN_SUBR ( MMDB_F_ORTHMAT, mmdb_f_orthmat,
                                  //              matrices were not
                                  //              calculated
                ), ( // lengths-in-structure list
-                int     * iUnit, apireal * Cell, apireal * Vol,
-                apireal * RRR,   int * iRet
+                int     * iUnit,
+                mmdb::machine::apireal * Cell,
+                mmdb::machine::apireal * Vol,
+                mmdb::machine::apireal * RRR,   int * iRet
                ), ( // lengths-follow list
-                int     * iUnit, apireal * Cell, apireal * Vol,
-                apireal * RRR,   int * iRet
+                int     * iUnit,
+                mmdb::machine::apireal * Cell,
+                mmdb::machine::apireal * Vol,
+                mmdb::machine::apireal * RRR,   int * iRet
                )
              );
 
@@ -1359,7 +1401,7 @@ FORTRAN_SUBR ( MMDB_F_CVANISOU, mmdb_f_cvanisou,
                (     // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                apireal * U,     // array of coordinates to convert
+                mmdb::machine::apireal * U,     // array of coordinates to convert
                 int     * iFlag, // =0: convert from fract. to orthog.
                                  // =1: convert from orthog. to fract.
                 int     * iRet   // return code:
@@ -1374,9 +1416,11 @@ FORTRAN_SUBR ( MMDB_F_CVANISOU, mmdb_f_cvanisou,
                                  //              matrices were not
                                  //              calculated
                ), ( // lengths-in-structure list
-                int * iUnit, apireal * U, int * iFlag, int * iRet
+                int * iUnit,
+                mmdb::machine::apireal * U, int * iFlag, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, apireal * U, int * iFlag, int * iRet
+                int * iUnit,
+                mmdb::machine::apireal * U, int * iFlag, int * iRet
                )
              );
 
@@ -1407,7 +1451,7 @@ FORTRAN_SUBR ( MMDB_F_WREMARK, mmdb_f_wremark,
                (    // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                fpstr     Line,  // line to be added
+                mmdb::machine::fpstr     Line,  // line to be added
                 int     * iRet,  // return code:
                                  //   RWBERR_Ok  - success
                                  //   RWBERR_NoChannel     if unit
@@ -1419,9 +1463,11 @@ FORTRAN_SUBR ( MMDB_F_WREMARK, mmdb_f_wremark,
                                  // returned by mmdb_f_open1_(..)
                 int    Line_len  // fortran-hidden length of Line
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr Line, int * iRet
+                int * iUnit,
+                mmdb::machine::fpstr Line, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr Line, int Line_len, int *iRet
+                int * iUnit,
+                mmdb::machine::fpstr Line, int Line_len, int *iRet
                )
              );
 
@@ -1436,9 +1482,9 @@ FORTRAN_SUBR ( MMDB_F_WREMARK, mmdb_f_wremark,
 //  ~~~~~~~~~~~~~~~~~~~   real  A(4,4),AI(4,4)
 
 FORTRAN_SUBR ( RBRINV, rbrinv,
-               ( apireal * A, apireal * AI ),
-               ( apireal * A, apireal * AI ),
-               ( apireal * A, apireal * AI )
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI ),
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI ),
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI )
              );
 
 */
@@ -1456,16 +1502,16 @@ FORTRAN_SUBR ( RBRINV, rbrinv,
 
 FORTRAN_SUBR ( RES3TO1, res3to1,
                (     // lengths-at-end list
-                fpstr ResNm3,   // 3-char name, 4th char
+                mmdb::machine::fpstr ResNm3,   // 3-char name, 4th char
                                 // will be set blank
-                fpstr ResNm1,   // 1-char name
+                mmdb::machine::fpstr ResNm1,   // 1-char name
                 int ResNm3_len, // fortran-hidden length of ResNm3
                 int ResNm1_len  // fortran-hidden length of ResNm3
                ), ( // lengths-in-structure list
-                fpstr ResNm3, fpstr ResNm1
+                mmdb::machine::fpstr ResNm3, mmdb::machine::fpstr ResNm1
                ), ( // lengths-follow list
-                fpstr ResNm3, int ResNm3_len,
-                fpstr ResNm1, int ResNm1_len
+                mmdb::machine::fpstr ResNm3, int ResNm3_len,
+                mmdb::machine::fpstr ResNm1, int ResNm1_len
                )
              );
 

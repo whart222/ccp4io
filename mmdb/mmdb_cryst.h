@@ -102,7 +102,7 @@ namespace mmdb  {
       bool       PDBASCIIDump1   ( io::RFile f );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
       void       MakeCIF         ( mmcif::PData CIF, int N );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_NCSMatrix; }
 
       void  SetNCSMatrix    ( int serialNum,
@@ -146,7 +146,7 @@ namespace mmdb  {
       void       PDBASCIIDump    ( pstr S, int N );
       ERROR_CODE ConvertPDBASCII ( cpstr S );
       void       MakeCIF         ( mmcif::PData CIF, int N );
-      void       GetCIF          ( mmcif::PData CIF, int & Signal );
+      ERROR_CODE GetCIF          ( mmcif::PData CIF, int & n );
       CLASS_ID   GetClassID      () { return ClassID_TVect; }
 
       void  Copy  ( PContainerClass TVect );

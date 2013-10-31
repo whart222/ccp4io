@@ -247,24 +247,26 @@ namespace mmdb  {
               else  Loop->AddNoData ( mmcif::CIF_NODATA_DOT    );
   }
 
-  void  NCSMatrix::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE  NCSMatrix::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
-  char        Code[100];
+  char         Code[100];
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_NCS_OPER );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
-    if (Signal>=Loop->GetLoopLength())  {
-      Signal = -1;
-      return;
+    if (n>=Loop->GetLoopLength())  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
     WhatIsSet = 0;
-    if (CIFGetInteger(serNum,Loop,CIFTAG_ID,Signal))  return;
-    if (CIFGetString(Code,Loop,CIFTAG_CODE,Signal,sizeof(Code),
+    rc = CIFGetInteger ( serNum,Loop,CIFTAG_ID,n );
+    if (rc!=Error_NoError)  return rc;
+    if (CIFGetString(Code,Loop,CIFTAG_CODE,n,sizeof(Code),
         pstr("")))
       iGiven = MinInt4;
     else if (!strcasecmp(Code,"generated"))
@@ -273,25 +275,39 @@ namespace mmdb  {
       iGiven = MinInt4;
 
 
-    if (CIFGetReal(m[0][0],Loop,CIFTAG_MATRIX11,Signal))  return;
-    if (CIFGetReal(m[0][1],Loop,CIFTAG_MATRIX12,Signal))  return;
-    if (CIFGetReal(m[0][2],Loop,CIFTAG_MATRIX13,Signal))  return;
-    if (CIFGetReal(v[0]   ,Loop,CIFTAG_VECTOR1 ,Signal))  return;
+    rc = CIFGetReal ( m[0][0],Loop,CIFTAG_MATRIX11,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[0][1],Loop,CIFTAG_MATRIX12,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[0][2],Loop,CIFTAG_MATRIX13,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( v[0]   ,Loop,CIFTAG_VECTOR1 ,n );
+    if (rc!=Error_NoError)  return rc;
     WhatIsSet |= NCSMSET_Matrix1;
 
-    if (CIFGetReal(m[1][0],Loop,CIFTAG_MATRIX21,Signal))  return;
-    if (CIFGetReal(m[1][1],Loop,CIFTAG_MATRIX22,Signal))  return;
-    if (CIFGetReal(m[1][2],Loop,CIFTAG_MATRIX23,Signal))  return;
-    if (CIFGetReal(v[1]   ,Loop,CIFTAG_VECTOR2 ,Signal))  return;
+    rc = CIFGetReal ( m[1][0],Loop,CIFTAG_MATRIX21,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[1][1],Loop,CIFTAG_MATRIX22,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[1][2],Loop,CIFTAG_MATRIX23,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( v[1]   ,Loop,CIFTAG_VECTOR2 ,n );
+    if (rc!=Error_NoError)  return rc;
     WhatIsSet |= NCSMSET_Matrix2;
 
-    if (CIFGetReal(m[2][0],Loop,CIFTAG_MATRIX31,Signal))  return;
-    if (CIFGetReal(m[2][1],Loop,CIFTAG_MATRIX32,Signal))  return;
-    if (CIFGetReal(m[2][2],Loop,CIFTAG_MATRIX33,Signal))  return;
-    if (CIFGetReal(v[2]   ,Loop,CIFTAG_VECTOR3 ,Signal))  return;
+    rc = CIFGetReal ( m[2][0],Loop,CIFTAG_MATRIX31,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[2][1],Loop,CIFTAG_MATRIX32,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( m[2][2],Loop,CIFTAG_MATRIX33,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal ( v[2]   ,Loop,CIFTAG_VECTOR3 ,n );
+    if (rc!=Error_NoError)  return rc;
     WhatIsSet |= NCSMSET_Matrix3;
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -425,27 +441,34 @@ namespace mmdb  {
     Loop->AddString  ( comment );
   }
 
-  void  TVect::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE TVect::GetCIF ( mmcif::PData CIF, int & n )  {
   mmcif::PLoop Loop;
+  ERROR_CODE   rc;
 
     Loop = CIF->GetLoop ( CIFCAT_DATABASE_PDB_TVECT );
     if (!Loop)  {
-      Signal = -1;  // signal to finish processing of this structure
-      return;
+      n = -1;  // signal to finish processing of this structure
+      return Error_EmptyCIF;
     }
 
-    if (Signal>=Loop->GetLoopLength())  {
-      Signal = -1;
-      return;
+    if (n>=Loop->GetLoopLength())  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    if (CIFGetInteger(serNum,Loop,CIFTAG_ID,Signal))  return;
-    if (CIFGetReal(t[0],Loop,CIFTAG_VECTOR1,Signal))  return;
-    if (CIFGetReal(t[1],Loop,CIFTAG_VECTOR2,Signal))  return;
-    if (CIFGetReal(t[2],Loop,CIFTAG_VECTOR3,Signal))  return;
-    Loop->GetString ( comment,CIFTAG_DETAILS,Signal,true );
+    rc = CIFGetInteger(serNum,Loop,CIFTAG_ID,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal(t[0],Loop,CIFTAG_VECTOR1,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal(t[1],Loop,CIFTAG_VECTOR2,n );
+    if (rc!=Error_NoError)  return rc;
+    rc = CIFGetReal(t[2],Loop,CIFTAG_VECTOR3,n );
+    if (rc!=Error_NoError)  return rc;
+    Loop->GetString ( comment,CIFTAG_DETAILS,n,true );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 

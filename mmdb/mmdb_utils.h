@@ -149,11 +149,11 @@ namespace mmdb  {
   // is erroneous or absent, they store an error message in
   // CIFErrorLocation string (below) and return non-zero.
   extern ERROR_CODE CIFGetInteger  ( int & I, mmcif::PStruct Struct,
-                                       cpstr Tag,
-                                       bool Remove=true );
+                                     cpstr Tag,
+                                     bool Remove=true );
   extern ERROR_CODE CIFGetReal     ( realtype & R, mmcif::PStruct Struct,
-                                       cpstr Tag,
-                                       bool Remove=true );
+                                     cpstr Tag,
+                                     bool Remove=true );
   extern ERROR_CODE CIFGetString   ( pstr S, mmcif::PStruct Struct,
                                       cpstr Tag, int SLen,
                                       cpstr DefS,
@@ -266,8 +266,8 @@ namespace mmdb  {
       //    Other          : the corresponding error. This instance of
       //                  container class should be deleted and the
       //                  whole input stopped.
-      virtual void GetCIF ( mmcif::PData, ERROR_CODE & Signal )
-                                     { Signal = Error_EmptyCIF; }
+      virtual ERROR_CODE GetCIF ( mmcif::PData, int & n )
+                                     { n = -1; return Error_EmptyCIF; }
       virtual CLASS_ID GetClassID () { return ClassID_Template; }
 
       virtual void Copy ( PContainerClass ) {}

@@ -229,7 +229,7 @@ namespace mmdb  {
 
   }
 
-  void  DBReference::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE DBReference::GetCIF ( mmcif::PData CIF, int & n )  {
   //  GetCIF(..) must be always run without reference to Chain,
   //  see CModel::GetCIF(..).
   mmcif::PLoop   Loop1,Loop2;
@@ -237,17 +237,18 @@ namespace mmdb  {
   pstr           F;
   int            RC,ref_id1,ref_id2;
   CIF_MODE       CIFMode;
+  ERROR_CODE     rc;
 
     Loop1 = CIF->GetLoop ( CIFCAT_STRUCT_REF_SEQ );
 
     if (!Loop1)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    if (Signal>=Loop1->GetLoopLength())  {
-      Signal = -1;
-      return;
+    if (n>=Loop1->GetLoopLength())  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
 
@@ -255,50 +256,54 @@ namespace mmdb  {
     // be used by CModel for generating chains and placing the
     // primary structure data BEFORE reading the coordinate section.
     CIFMode = CIF_NDB;
-    F = Loop1->GetString ( CIFName(TAG_CHAIN_ID,CIFMode),Signal,RC );
+    F = Loop1->GetString ( CIFName(TAG_CHAIN_ID,CIFMode),n,RC );
     if ((RC) || (!F))  {
       CIFMode = CIF_PDBX;
-      F = Loop1->GetString ( CIFName(TAG_CHAIN_ID,CIFMode),Signal,RC );
+      F = Loop1->GetString ( CIFName(TAG_CHAIN_ID,CIFMode),n,RC );
     }
     if ((!RC) && F)  {
       strcpy_n0 ( chainID,F,sizeof(ChainID)-1 );
-      Loop1->DeleteField ( CIFName(TAG_CHAIN_ID,CIFMode),Signal );
+      Loop1->DeleteField ( CIFName(TAG_CHAIN_ID,CIFMode),n );
     } else
       strcpy ( chainID,"" );
 
 
-    if (CIFGetInteger(seqBeg,Loop1,CIFName(TAG_SEQ_ALIGN_BEG,CIFMode),
-                      Signal))  return;
+    rc = CIFGetInteger(seqBeg,Loop1,CIFName(TAG_SEQ_ALIGN_BEG,CIFMode),n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
     CIFGetString ( insBeg,Loop1,CIFName(TAG_SEQ_ALIGN_BEG_INS_CODE,CIFMode),
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
 
-    if (CIFGetInteger(seqEnd,Loop1,CIFName(TAG_SEQ_ALIGN_END,CIFMode),
-                      Signal))  return;
+    rc = CIFGetInteger(seqEnd,Loop1,CIFName(TAG_SEQ_ALIGN_END,CIFMode),n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
     CIFGetString ( insEnd,Loop1,CIFName(TAG_SEQ_ALIGN_END_INS_CODE,CIFMode),
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
     CIFGetString ( dbAccession,Loop1,CIFName(TAG_DB_ACCESSION,CIFMode),
-                   Signal,sizeof(DBAcCode),pstr("        ") );
+                   n,sizeof(DBAcCode),pstr("        ") );
 
-    if (CIFGetInteger(dbseqBeg,Loop1,CIFName(TAG_DB_ALIGN_BEG,CIFMode),
-                      Signal))  return;
+    rc = CIFGetInteger(dbseqBeg,Loop1,CIFName(TAG_DB_ALIGN_BEG,CIFMode),n);
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
     CIFGetString ( dbinsBeg,Loop1,CIFName(TAG_DB_ALIGN_BEG_INS_CODE,CIFMode),
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
 
-    if (CIFGetInteger(dbseqEnd,Loop1,CIFName(TAG_DB_ALIGN_END,CIFMode),
-                      Signal))  return;
+    rc = CIFGetInteger(dbseqEnd,Loop1,CIFName(TAG_DB_ALIGN_END,CIFMode),n);
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
     CIFGetString ( dbinsEnd,Loop1,CIFName(TAG_DB_ALIGN_END_INS_CODE,CIFMode),
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
 
     Loop2 = CIF->GetLoop ( CIFCAT_STRUCT_REF );
     if (Loop2)  {
-      CIFGetString ( database,Loop2,CIFTAG_DB_NAME,Signal,
+      CIFGetString ( database,Loop2,CIFTAG_DB_NAME,n,
                      sizeof(DBName)  ,pstr("      ")       );
-      CIFGetString ( dbIdCode,Loop2,CIFTAG_DB_CODE,Signal,
+      CIFGetString ( dbIdCode,Loop2,CIFTAG_DB_CODE,n,
                      sizeof(DBIdCode),pstr("            ") );
     } else if (CIFMode==CIF_PDBX)  {
       Struct2 = CIF->GetStructure ( CIFCAT_STRUCT_REF );
       if (Struct2 &&
-          (!CIFGetInteger(ref_id1,Loop1,CIFTAG_REF_ID,Signal)) &&
+          (!CIFGetInteger(ref_id1,Loop1,CIFTAG_REF_ID,n)) &&
           (!CIFGetInteger(ref_id2,Struct2,CIFTAG_ID,false)))  {
         if (ref_id1==ref_id2)  {
           CIFGetString ( database,Struct2,CIFTAG_DB_NAME,
@@ -309,7 +314,9 @@ namespace mmdb  {
       }
     }
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -514,7 +521,7 @@ namespace mmdb  {
 
   }
 
-  void  SeqAdv::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE SeqAdv::GetCIF ( mmcif::PData CIF, int & n )  {
   //  GetCIF(..) must be always run without reference to Chain,
   //  see CModel::GetCIF(..).
   mmcif::PLoop  Loop;
@@ -523,55 +530,57 @@ namespace mmdb  {
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_REF_SEQ_DIF );
     if (!Loop)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    if (Signal>=Loop->GetLoopLength())  {
-      Signal = -1;
-      return;
+    if (n>=Loop->GetLoopLength())  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
     //  Determine the ChainID first and store it locally. It will
     // be used by CModel for generating chains and placing the
     // primary structure data BEFORE reading the coordinate section.
 
-    F = Loop->GetString ( CIFTAG_NDB_PDB_CHAIN_ID,Signal,RC );
+    F = Loop->GetString ( CIFTAG_NDB_PDB_CHAIN_ID,n,RC );
     if ((!RC) && F)  {
       strcpy_n0 ( chainID,F,sizeof(ChainID)-1 );
-      Loop->DeleteField ( CIFTAG_NDB_PDB_CHAIN_ID,Signal );
+      Loop->DeleteField ( CIFTAG_NDB_PDB_CHAIN_ID,n );
     } else
       strcpy ( chainID,"" );
 
-    CIFGetString ( resName,Loop,CIFTAG_MON_ID,Signal,sizeof(ResName),
+    CIFGetString ( resName,Loop,CIFTAG_MON_ID,n,sizeof(ResName),
                    pstr("UNK") );
 
     CIFGetIntegerD ( seqNum,Loop,CIFTAG_SEQ_NUM );
 
     CIFGetString ( insCode,Loop,CIFTAG_NDB_PDB_INS_CODE,
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
 
-    CIFGetString ( database,Loop,CIFTAG_NDB_SEQ_DB_NAME,Signal,
+    CIFGetString ( database,Loop,CIFTAG_NDB_SEQ_DB_NAME,n,
                    sizeof(DBName),pstr(" ") );
 
     CIFGetString ( dbAccession,Loop,CIFTAG_NDB_SEQ_DB_ACCESSION_CODE,
-                   Signal,sizeof(DBAcCode),pstr(" ") );
+                   n,sizeof(DBAcCode),pstr(" ") );
 
-    CIFGetString ( dbRes,Loop,CIFTAG_DB_MON_ID,Signal,sizeof(ResName),
+    CIFGetString ( dbRes,Loop,CIFTAG_DB_MON_ID,n,sizeof(ResName),
                    pstr("   ") );
 
     CIFGetIntegerD ( dbSeq,Loop,CIFTAG_NDB_SEQ_DB_SEQ_NUM );
-  //  if (CIFGetInteger1(dbSeq,Loop,CIFTAG_NDB_SEQ_DB_SEQ_NUM,Signal))
+  //  if (CIFGetInteger1(dbSeq,Loop,CIFTAG_NDB_SEQ_DB_SEQ_NUM,n))
   //    dbSeq = MinInt4;
 
-    F = Loop->GetString ( CIFTAG_DETAILS,Signal,RC );
+    F = Loop->GetString ( CIFTAG_DETAILS,n,RC );
     if ((!RC) && F)  {
       CreateCopy ( conflict,F );
-      Loop->DeleteField ( CIFTAG_DETAILS,Signal );
+      Loop->DeleteField ( CIFTAG_DETAILS,n );
     } else
       CreateCopy ( conflict,pstr(" ") );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 
@@ -991,7 +1000,7 @@ namespace mmdb  {
 
   }
 
-  void  ModRes::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE ModRes::GetCIF ( mmcif::PData CIF, int & n )  {
   UNUSED_ARGUMENT(CIF);
   //  GetCIF(..) must be always run without reference to Chain,
   //  see CModel::GetCIF(..).
@@ -1003,60 +1012,62 @@ namespace mmdb  {
 
     Loop = CIF->GetLoop ( CIFCAT_STRUCT_CONN );
     if (!Loop)  {
-      Signal = -1;
+      n = -1;
       return;
     }
 
     l = Loop->GetLoopLength();
-    while (Signal<l)  {
-      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,Signal,RC );
+    while (n<l)  {
+      F = Loop->GetString ( CIFTAG_CONN_TYPE_ID,n,RC );
       if ((!RC) && F)  {
         if (!strcmp(F,"MODRES"))  break;
       }
-      Signal++;
+      n++;
     }
-    if (Signal>=l)  {
-      Signal = -1;
+    if (n>=l)  {
+      n = -1;
       return;
     }
 
-    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,Signal );
+    Loop->DeleteField ( CIFTAG_CONN_TYPE_ID,n );
 
     //  Determine the ChainID first and store it locally. It will
     // be used by CModel for generating chains and placing the
     // primary structure data BEFORE reading the coordinate section.
-    F = Loop->GetString ( CIFTAG_PTNR1_LABEL_ASYM_ID,Signal,RC );
+    F = Loop->GetString ( CIFTAG_PTNR1_LABEL_ASYM_ID,n,RC );
     if ((!RC) && F)  {
       strcpy_n0 ( chainID,F,sizeof(ChainID)-1 );
-      Loop->DeleteField ( CIFTAG_PTNR1_LABEL_ASYM_ID,Signal );
+      Loop->DeleteField ( CIFTAG_PTNR1_LABEL_ASYM_ID,n );
     } else
       strcpy ( chainID,"" );
 
 
-    CIFGetString ( resName,Loop,CIFTAG_PTNR1_LABEL_COMP_ID,Signal,
+    CIFGetString ( resName,Loop,CIFTAG_PTNR1_LABEL_COMP_ID,n,
                    sizeof(ResName),pstr("UNK") );
 
-    if (CIFGetInteger(seqNum,Loop,CIFTAG_PTNR1_LABEL_SEQ_ID,Signal))
+    if (CIFGetInteger(seqNum,Loop,CIFTAG_PTNR1_LABEL_SEQ_ID,n))
       return;
 
     CIFGetString ( insCode,Loop,CIFTAG_NDB_PTNR1_LABEL_INS_CODE,
-                   Signal,sizeof(InsCode),pstr(" ") );
+                   n,sizeof(InsCode),pstr(" ") );
 
-    CIFGetString ( stdRes,Loop,CIFTAG_NDB_PTNR1_STANDARD_COMP_ID,Signal,
+    CIFGetString ( stdRes,Loop,CIFTAG_NDB_PTNR1_STANDARD_COMP_ID,n,
                    sizeof(ResName),pstr("UNK") );
 
-    F = Loop->GetString ( CIFTAG_DETAILS,Signal,RC );
+    F = Loop->GetString ( CIFTAG_DETAILS,n,RC );
     if ((!RC) && F)  {
       CreateCopy ( comment,F );
-      Loop->DeleteField ( CIFTAG_DETAILS,Signal );
+      Loop->DeleteField ( CIFTAG_DETAILS,n );
     } else
       CreateCopy ( comment,pstr(" ") );
 
-    Signal++;
+    n++;
 
   */
 
-    Signal = -1;
+    n = -1;
+
+    return Error_EmptyCIF;
 
   }
 
@@ -1182,54 +1193,60 @@ namespace mmdb  {
 
   }
 
-  void  HetRec::GetCIF ( mmcif::PData CIF, int & Signal )  {
+  ERROR_CODE HetRec::GetCIF ( mmcif::PData CIF, int & n )  {
   //  GetCIF(..) must be always run without reference to Chain,
   //  see CModel::GetCIF(..).
   mmcif::PLoop   Loop;
-  pstr          F;
-  int           RC;
+  pstr           F;
+  int            RC;
+  ERROR_CODE     rc;
 
     Loop = CIF->GetLoop ( CIFCAT_NDB_NONSTANDARD_LIST );
     if (!Loop)  {
-      Signal = -1;
-      return;
+      n = -1;
+      return Error_EmptyCIF;
     }
 
-    if (Signal>=Loop->GetLoopLength())  {
-      Signal = -1;
-      return;
+    if (n>=Loop->GetLoopLength())  {
+      n = -1;
+      return Error_EmptyCIF;
     }
 
     //  Determine the ChainID first and store it locally. It will
     // be used by CModel for generating chains and placing the
     // primary structure data BEFORE reading the coordinate section.
-    F = Loop->GetString ( CIFTAG_AUTH_ASYM_ID,Signal,RC );
+    F = Loop->GetString ( CIFTAG_AUTH_ASYM_ID,n,RC );
     if ((!RC) && F)  {
       strcpy_n0 ( chainID,F,sizeof(ChainID)-1 );
-      Loop->DeleteField ( CIFTAG_AUTH_ASYM_ID,Signal );
+      Loop->DeleteField ( CIFTAG_AUTH_ASYM_ID,n );
     } else
       strcpy ( chainID,"" );
 
 
-    CIFGetString ( hetID,Loop,CIFTAG_ID,Signal,sizeof(ResName),
+    CIFGetString ( hetID,Loop,CIFTAG_ID,n,sizeof(ResName),
                    pstr("UNK") );
 
-    if (CIFGetInteger(seqNum,Loop,CIFTAG_AUTH_SEQ_ID,Signal))  return;
+    rc = CIFGetInteger ( seqNum,Loop,CIFTAG_AUTH_SEQ_ID,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    CIFGetString ( insCode,Loop,CIFTAG_INS_CODE,Signal,sizeof(InsCode),
+    CIFGetString ( insCode,Loop,CIFTAG_INS_CODE,n,sizeof(InsCode),
                    pstr(" ") );
 
-    if (CIFGetInteger(numHetAtoms,Loop,CIFTAG_NUMBER_ATOMS_NH,Signal))
-      return;
+    rc = CIFGetInteger ( numHetAtoms,Loop,CIFTAG_NUMBER_ATOMS_NH,n );
+    if (rc==Error_NoData)   return Error_EmptyCIF;
+    if (rc!=Error_NoError)  return rc;
 
-    F = Loop->GetString ( CIFTAG_DETAILS,Signal,RC );
+    F = Loop->GetString ( CIFTAG_DETAILS,n,RC );
     if ((!RC) && F)  {
       CreateCopy ( comment,F );
-      Loop->DeleteField ( CIFTAG_DETAILS,Signal );
+      Loop->DeleteField ( CIFTAG_DETAILS,n );
     } else
       CreateCopy ( comment,pstr(" ") );
 
-    Signal++;
+    n++;
+
+    return Error_NoError;
 
   }
 

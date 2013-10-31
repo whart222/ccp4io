@@ -1179,18 +1179,19 @@ namespace mmdb  {
 
   ERROR_CODE ClassContainer::GetCIF ( mmcif::PData CIF, int ClassID )  {
   PContainerClass ContainerClass;
-  ERROR_CODE      Signal;
-    Signal = Error_NoError;
+  int             n;
+  ERROR_CODE      rc;
+    n = -1;
     do  {
       ContainerClass = MakeContainerClass ( ClassID );
-      ContainerClass->GetCIF ( CIF,Signal );
-      if (Signal>=Error_NoError)
+      rc = ContainerClass->GetCIF ( CIF,n );
+      if (rc==Error_NoError)
         AddData ( ContainerClass );
-    } while (Signal>=Error_NoError);
+    } while (rc==Error_NoError);
     delete ContainerClass;
-    if (Signal==Error_EmptyCIF)
-      Signal = Error_NoError;
-    return Signal;
+    if (rc==Error_EmptyCIF)
+      rc = Error_NoError;
+    return rc;
   }
 
   void  ClassContainer::MakeCIF ( mmcif::PData CIF )  {

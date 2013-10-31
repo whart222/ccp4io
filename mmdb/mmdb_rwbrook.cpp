@@ -80,8 +80,6 @@
 
 //  ==========================  Channel  ===========================
 
-namespace mmdb {
-
 DefineClass(Channel)
 
 class Channel {
@@ -105,9 +103,9 @@ class Channel {
     void    Dispose();
     void    Init   ();
 
-    void    SetFileType ( pstr FType );
-    void    SetFileName ( pstr FileName, int FNameLen );
-    void    IdentifyFile( pstr ExistingFName );
+    void    SetFileType ( mmdb::pstr FType );
+    void    SetFileName ( mmdb::pstr FileName, int FNameLen );
+    void    IdentifyFile( mmdb::pstr ExistingFName );
 
     bool    EndOfFile   ();
     mmdb::PAtom * GetAtomArray();
@@ -117,50 +115,50 @@ class Channel {
 
     bool   areCrystMatrices();
     void   Frac2Orth   (
-                realtype x,    realtype y,    realtype z,
-                realtype & xx, realtype & yy, realtype & zz );
+                mmdb::realtype x,    mmdb::realtype y,    mmdb::realtype z,
+                mmdb::realtype & xx, mmdb::realtype & yy, mmdb::realtype & zz );
     void   Orth2Frac   (
-                realtype x,    realtype y,    realtype z,
-                realtype & xx, realtype & yy, realtype & zz );
-    void   Cryst2Orth  ( rvector U );
-    void   Orth2Cryst  ( rvector U );
-    int    SetCell     ( realtype cell_a,
-                         realtype cell_b,
-                         realtype cell_c,
-                         realtype cell_alpha,
-                         realtype cell_beta,
-                         realtype cell_gamma,
+                mmdb::realtype x,    mmdb::realtype y,    mmdb::realtype z,
+                mmdb::realtype & xx, mmdb::realtype & yy, mmdb::realtype & zz );
+    void   Cryst2Orth  ( mmdb::rvector U );
+    void   Orth2Cryst  ( mmdb::rvector U );
+    int    SetCell     ( mmdb::realtype cell_a,
+                         mmdb::realtype cell_b,
+                         mmdb::realtype cell_c,
+                         mmdb::realtype cell_alpha,
+                         mmdb::realtype cell_beta,
+                         mmdb::realtype cell_gamma,
                          int      OrthCode );
-    int    PutCell     ( realtype cell_a,
-                         realtype cell_b,
-                         realtype cell_c,
-                         realtype cell_alpha,
-                         realtype cell_beta,
-                         realtype cell_gamma,
+    int    PutCell     ( mmdb::realtype cell_a,
+                         mmdb::realtype cell_b,
+                         mmdb::realtype cell_c,
+                         mmdb::realtype cell_alpha,
+                         mmdb::realtype cell_beta,
+                         mmdb::realtype cell_gamma,
                          int      OrthCode );
-    int    SetSpGroup  ( pstr     spGroup );
-    int    GetSpGroup  ( pstr     spGroup );
-    int    GetCell     ( realtype & cell_a,
-                         realtype & cell_b,
-                         realtype & cell_c,
-                         realtype & cell_alpha,
-                         realtype & cell_beta,
-                         realtype & cell_gamma,
-                         realtype & cell_v,
+    int    SetSpGroup  ( mmdb::pstr     spGroup );
+    int    GetSpGroup  ( mmdb::pstr     spGroup );
+    int    GetCell     ( mmdb::realtype & cell_a,
+                         mmdb::realtype & cell_b,
+                         mmdb::realtype & cell_c,
+                         mmdb::realtype & cell_alpha,
+                         mmdb::realtype & cell_beta,
+                         mmdb::realtype & cell_gamma,
+                         mmdb::realtype & cell_v,
                          int      & OrthCode );
-    int    GetRCell    ( realtype & cell_as,
-                         realtype & cell_bs,
-                         realtype & cell_cs,
-                         realtype & cell_alphas,
-                         realtype & cell_betas,
-                         realtype & cell_gammas,
-                         realtype & cell_vs );
+    int    GetRCell    ( mmdb::realtype & cell_as,
+                         mmdb::realtype & cell_bs,
+                         mmdb::realtype & cell_cs,
+                         mmdb::realtype & cell_alphas,
+                         mmdb::realtype & cell_betas,
+                         mmdb::realtype & cell_gammas,
+                         mmdb::realtype & cell_vs );
 
     void MakeCoordStructure();
     void Read ();
     void Write();
 
-    void GetInputBuffer ( pstr Line, int & count );
+    void GetInputBuffer ( mmdb::pstr Line, int & count );
 
   protected :
 
@@ -202,7 +200,7 @@ void Channel::Dispose()  {
 }
 
 
-void Channel::SetFileType ( pstr FType )  {
+void Channel::SetFileType ( mmdb::pstr FType )  {
   switch (FType[0])  {
     default  :
     case ' ' :  if (nRead==0)
@@ -217,11 +215,11 @@ void Channel::SetFileType ( pstr FType )  {
   }
 }
 
-void Channel::IdentifyFile ( pstr ExistingFName )  {
+void Channel::IdentifyFile ( mmdb::pstr ExistingFName )  {
   if (nType==-1)  {
     if (ExistingFName)  {
-      if  (isMMDBBIN(ExistingFName)==0)  nType = 2;
-      else if (isPDB(ExistingFName,mmdb::io::GZM_CHECK,true)==0)
+      if  (mmdb::isMMDBBIN(ExistingFName)==0)  nType = 2;
+      else if (mmdb::isPDB(ExistingFName,mmdb::io::GZM_CHECK,true)==0)
                                          nType = 0;
       else if (mmdb::mmcif::isCIF(ExistingFName)==0)  nType = 1;
                                    else  nType = -2;  // unidentified
@@ -235,7 +233,7 @@ void Channel::IdentifyFile ( pstr ExistingFName )  {
   }
 }
 
-void Channel::SetFileName ( pstr FileName, int FNameLen )  {
+void Channel::SetFileName ( mmdb::pstr FileName, int FNameLen )  {
   if (FName)  delete[] FName;
   FName = new char[FNameLen+1];
   strncpy ( FName,FileName,FNameLen );
@@ -244,10 +242,10 @@ void Channel::SetFileName ( pstr FileName, int FNameLen )  {
 
 void Channel::MakeCoordStructure()  {
   if (MMDBManager)
-    MMDBManager->Delete ( MMDBFCM_All );
+    MMDBManager->Delete ( mmdb::MMDBFCM_All );
   else  {
     MMDBManager = new mmdb::Manager();
-    MMDBManager->SetFlag ( MMDBF_AllowDuplChainID );
+    MMDBManager->SetFlag ( mmdb::MMDBF_AllowDuplChainID );
   }
 }
 
@@ -261,18 +259,18 @@ int RC;
 
   IdentifyFile ( FName );
 
-  if (FAutoSer)     MMDBManager->SetFlag    ( MMDBF_AutoSerials );
-           else     MMDBManager->RemoveFlag ( MMDBF_AutoSerials );
-  if (FReadCoords)  MMDBManager->RemoveFlag ( MMDBF_NoCoordRead );
-              else  MMDBManager->SetFlag    ( MMDBF_NoCoordRead );
-  if (FSimRWBROOK)  MMDBManager->SetFlag    ( MMDBF_SimRWBROOK  );
-              else  MMDBManager->RemoveFlag ( MMDBF_SimRWBROOK  );
+  if (FAutoSer)     MMDBManager->SetFlag    ( mmdb::MMDBF_AutoSerials );
+           else     MMDBManager->RemoveFlag ( mmdb::MMDBF_AutoSerials );
+  if (FReadCoords)  MMDBManager->RemoveFlag ( mmdb::MMDBF_NoCoordRead );
+              else  MMDBManager->SetFlag    ( mmdb::MMDBF_NoCoordRead );
+  if (FSimRWBROOK)  MMDBManager->SetFlag    ( mmdb::MMDBF_SimRWBROOK  );
+              else  MMDBManager->RemoveFlag ( mmdb::MMDBF_SimRWBROOK  );
 
-  MMDBManager->SetFlag ( MMDBF_IgnoreDuplSeqNum |
-                         MMDBF_IgnoreBlankLines |
-                         MMDBF_IgnoreRemarks    |
-                         MMDBF_IgnoreNonCoorPDBErrors |
-                         MMDBF_AllowDuplChainID );
+  MMDBManager->SetFlag ( mmdb::MMDBF_IgnoreDuplSeqNum |
+                         mmdb::MMDBF_IgnoreBlankLines |
+                         mmdb::MMDBF_IgnoreRemarks    |
+                         mmdb::MMDBF_IgnoreNonCoorPDBErrors |
+                         mmdb::MMDBF_AllowDuplChainID );
 
   switch (nType)  {
     default : nType   = 0;  // nType=-2: unidentified: try PDB
@@ -283,10 +281,10 @@ int RC;
   if (ErrCode==0)  {
     RC = MMDBManager->CrystReady();
     switch (RC)  {
-      case CRRDY_NoTransfMatrices : ErrCode = RWBERR_NoMatrices;   break;
-      case CRRDY_Unchecked        : ErrCode = RWBERR_NoCheck;      break;
-      case CRRDY_Ambiguous        : ErrCode = RWBERR_Disagreement; break;
-      case CRRDY_NoCell           : ErrCode = RWBERR_NoCellParams; break;
+      case mmdb::CRRDY_NoTransfMatrices : ErrCode = RWBERR_NoMatrices;   break;
+      case mmdb::CRRDY_Unchecked        : ErrCode = RWBERR_NoCheck;      break;
+      case mmdb::CRRDY_Ambiguous        : ErrCode = RWBERR_Disagreement; break;
+      case mmdb::CRRDY_NoCell           : ErrCode = RWBERR_NoCellParams; break;
       default : ;
     }
   }
@@ -312,48 +310,48 @@ void  Channel::TranslateError()  {
 
   switch (ErrCode)  {
 
-    case Error_CantOpenFile        : ErrCode = RWBERR_CantOpenFile;     break;
-    case Error_UnrecognizedInteger : ErrCode = RWBERR_WrongInteger;     break;
-    case Error_NoData             : ErrCode = RWBERR_NotACIFFile;       break;
-    case Error_WrongModelNo       : ErrCode = RWBERR_WrongModelNo;      break;
-    case Error_DuplicatedModel    : ErrCode = RWBERR_DuplicatedModel;   break;
-    case Error_ForeignFile        : ErrCode = RWBERR_ForeignFile;       break;
-    case Error_WrongEdition       : ErrCode = RWBERR_WrongEdition;      break;
-    case Error_ATOM_Unrecognized  : ErrCode = RWBERR_ATOM_Unrecognd;    break;
-    case Error_ATOM_AlreadySet    : ErrCode = RWBERR_ATOM_AlreadySet;   break;
-    case Error_ATOM_NoResidue     : ErrCode = RWBERR_ATOM_NoResidue;    break;
-    case Error_ATOM_Unmatch       : ErrCode = RWBERR_ATOM_Unmatch;      break;
-    case Error_NotACIFFile        : ErrCode = RWBERR_NotACIFFile;       break;
-    case Error_UnrecognCIFItems   : ErrCode = RWBERR_UnrecognCIFItems;  break;
-    case Error_MissingCIFField    : ErrCode = RWBERR_MissingCIFField;   break;
-    case Error_EmptyCIFLoop       : ErrCode = RWBERR_EmptyCIFLoop;      break;
-    case Error_UnexpEndOfCIF      : ErrCode = RWBERR_UnexpEndOfCIF;     break;
-    case Error_MissgCIFLoopField  : ErrCode = RWBERR_MissgCIFLoopField; break;
-    case Error_NotACIFStructure   : ErrCode = RWBERR_NotACIFStructure;  break;
-    case Error_NotACIFLoop        : ErrCode = RWBERR_NotACIFLoop;       break;
-    case Error_UnrecognizedReal   : ErrCode = RWBERR_WrongReal;         break;
+    case mmdb::Error_CantOpenFile        : ErrCode = RWBERR_CantOpenFile;     break;
+    case mmdb::Error_UnrecognizedInteger : ErrCode = RWBERR_WrongInteger;     break;
+    case mmdb::Error_NoData             : ErrCode = RWBERR_NotACIFFile;       break;
+    case mmdb::Error_WrongModelNo       : ErrCode = RWBERR_WrongModelNo;      break;
+    case mmdb::Error_DuplicatedModel    : ErrCode = RWBERR_DuplicatedModel;   break;
+    case mmdb::Error_ForeignFile        : ErrCode = RWBERR_ForeignFile;       break;
+    case mmdb::Error_WrongEdition       : ErrCode = RWBERR_WrongEdition;      break;
+    case mmdb::Error_ATOM_Unrecognized  : ErrCode = RWBERR_ATOM_Unrecognd;    break;
+    case mmdb::Error_ATOM_AlreadySet    : ErrCode = RWBERR_ATOM_AlreadySet;   break;
+    case mmdb::Error_ATOM_NoResidue     : ErrCode = RWBERR_ATOM_NoResidue;    break;
+    case mmdb::Error_ATOM_Unmatch       : ErrCode = RWBERR_ATOM_Unmatch;      break;
+    case mmdb::Error_NotACIFFile        : ErrCode = RWBERR_NotACIFFile;       break;
+    case mmdb::Error_UnrecognCIFItems   : ErrCode = RWBERR_UnrecognCIFItems;  break;
+    case mmdb::Error_MissingCIFField    : ErrCode = RWBERR_MissingCIFField;   break;
+    case mmdb::Error_EmptyCIFLoop       : ErrCode = RWBERR_EmptyCIFLoop;      break;
+    case mmdb::Error_UnexpEndOfCIF      : ErrCode = RWBERR_UnexpEndOfCIF;     break;
+    case mmdb::Error_MissgCIFLoopField  : ErrCode = RWBERR_MissgCIFLoopField; break;
+    case mmdb::Error_NotACIFStructure   : ErrCode = RWBERR_NotACIFStructure;  break;
+    case mmdb::Error_NotACIFLoop        : ErrCode = RWBERR_NotACIFLoop;       break;
+    case mmdb::Error_UnrecognizedReal   : ErrCode = RWBERR_WrongReal;         break;
 
-    case Error_Ok                 : ErrCode = RWBERR_Ok;                break;
-    case Error_WrongChainID       : ErrCode = RWBERR_WrongChainID;      break;
-    case Error_WrongEntryID       : ErrCode = RWBERR_WrongEntryID;      break;
-    case Error_SEQRES_serNum      : ErrCode = RWBERR_SEQRES_serNum;     break;
-    case Error_SEQRES_numRes      : ErrCode = RWBERR_SEQRES_numRes;     break;
-    case Error_SEQRES_extraRes    : ErrCode = RWBERR_SEQRES_exraRes;    break;
-    case Error_NCSM_Unrecognized  : ErrCode = RWBERR_NCSM_Unrecogn;     break;
-    case Error_NCSM_AlreadySet    : ErrCode = RWBERR_NCSM_AlreadySet;   break;
-    case Error_NCSM_WrongSerial   : ErrCode = RWBERR_NCSM_WrongSerial;  break;
-    case Error_NCSM_UnmatchIG     : ErrCode = RWBERR_NCSM_UnmatchIG;    break;
-    case Error_NoModel            : ErrCode = RWBERR_NoModel;           break;
-    case Error_NoSheetID          : ErrCode = RWBERR_NoSheetID;         break;
-    case Error_WrongSheetID       : ErrCode = RWBERR_WrongSheetID;      break;
-    case Error_WrongStrandNo      : ErrCode = RWBERR_WrongStrandNo;     break;
-    case Error_WrongNumberOfStrands : ErrCode = RWBERR_WrongNofStrands; break;
-    case Error_WrongSheetOrder    : ErrCode = RWBERR_WrongSheetOrder;   break;
-    case Error_HBondInconsistency : ErrCode = RWBERR_HBondInconsis;     break;
-    case Error_EmptyResidueName   : ErrCode = RWBERR_EmptyResidueName;  break;
-    case Error_DuplicateSeqNum    : ErrCode = RWBERR_DuplicateSeqNum;   break;
-    case Error_NoLogicalName      : ErrCode = RWBERR_NoLogicalName;     break;
-    case Error_GeneralError1      : ErrCode = RWBERR_GeneralError1;     break;
+    case mmdb::Error_Ok                 : ErrCode = RWBERR_Ok;                break;
+    case mmdb::Error_WrongChainID       : ErrCode = RWBERR_WrongChainID;      break;
+    case mmdb::Error_WrongEntryID       : ErrCode = RWBERR_WrongEntryID;      break;
+    case mmdb::Error_SEQRES_serNum      : ErrCode = RWBERR_SEQRES_serNum;     break;
+    case mmdb::Error_SEQRES_numRes      : ErrCode = RWBERR_SEQRES_numRes;     break;
+    case mmdb::Error_SEQRES_extraRes    : ErrCode = RWBERR_SEQRES_exraRes;    break;
+    case mmdb::Error_NCSM_Unrecognized  : ErrCode = RWBERR_NCSM_Unrecogn;     break;
+    case mmdb::Error_NCSM_AlreadySet    : ErrCode = RWBERR_NCSM_AlreadySet;   break;
+    case mmdb::Error_NCSM_WrongSerial   : ErrCode = RWBERR_NCSM_WrongSerial;  break;
+    case mmdb::Error_NCSM_UnmatchIG     : ErrCode = RWBERR_NCSM_UnmatchIG;    break;
+    case mmdb::Error_NoModel            : ErrCode = RWBERR_NoModel;           break;
+    case mmdb::Error_NoSheetID          : ErrCode = RWBERR_NoSheetID;         break;
+    case mmdb::Error_WrongSheetID       : ErrCode = RWBERR_WrongSheetID;      break;
+    case mmdb::Error_WrongStrandNo      : ErrCode = RWBERR_WrongStrandNo;     break;
+    case mmdb::Error_WrongNumberOfStrands : ErrCode = RWBERR_WrongNofStrands; break;
+    case mmdb::Error_WrongSheetOrder    : ErrCode = RWBERR_WrongSheetOrder;   break;
+    case mmdb::Error_HBondInconsistency : ErrCode = RWBERR_HBondInconsis;     break;
+    case mmdb::Error_EmptyResidueName   : ErrCode = RWBERR_EmptyResidueName;  break;
+    case mmdb::Error_DuplicateSeqNum    : ErrCode = RWBERR_DuplicateSeqNum;   break;
+    case mmdb::Error_NoLogicalName      : ErrCode = RWBERR_NoLogicalName;     break;
+    case mmdb::Error_GeneralError1      : ErrCode = RWBERR_GeneralError1;     break;
 
     default : ;
   }
@@ -374,19 +372,19 @@ int nA;
   return false;
 }
 
-PAtom * Channel::GetAtomArray()  {
+mmdb::PAtom * Channel::GetAtomArray()  {
   if (MMDBManager)  return MMDBManager->GetAtomArray();
               else  return NULL;
 }
 
-PAtom Channel::GetAtomI ( int index )  {
+mmdb::PAtom Channel::GetAtomI ( int index )  {
 // returns index-th atom, as counted from the
 // top of file
   if (MMDBManager)  return MMDBManager->GetAtomI ( index );
               else  return NULL;
 }
 
-PCryst Channel::GetCryst()  {
+mmdb::PCryst Channel::GetCryst()  {
   if (MMDBManager)  return MMDBManager->GetCrystData();
               else  return NULL;
 }
@@ -397,8 +395,8 @@ bool Channel::areCrystMatrices()  {
 }
 
 void  Channel::Frac2Orth (
-                realtype x,    realtype y,    realtype z,
-                realtype & xx, realtype & yy, realtype & zz )  {
+                mmdb::realtype x,    mmdb::realtype y,    mmdb::realtype z,
+                mmdb::realtype & xx, mmdb::realtype & yy, mmdb::realtype & zz )  {
   if (MMDBManager)
     MMDBManager->Frac2Orth ( x,y,z,xx,yy,zz );
   else  {
@@ -409,8 +407,8 @@ void  Channel::Frac2Orth (
 }
 
 void  Channel::Orth2Frac (
-                realtype x,    realtype y,    realtype z,
-                realtype & xx, realtype & yy, realtype & zz )  {
+                mmdb::realtype x,    mmdb::realtype y,    mmdb::realtype z,
+                mmdb::realtype & xx, mmdb::realtype & yy, mmdb::realtype & zz )  {
   if (MMDBManager)
     MMDBManager->Orth2Frac ( x,y,z,xx,yy,zz );
   else  {
@@ -420,23 +418,23 @@ void  Channel::Orth2Frac (
   }
 }
 
-void  Channel::Cryst2Orth ( rvector U )  {
+void  Channel::Cryst2Orth ( mmdb::rvector U )  {
   if (MMDBManager)
     MMDBManager->GetCrystData()->Cryst2Orth ( U );
 }
 
-void  Channel::Orth2Cryst ( rvector U )  {
+void  Channel::Orth2Cryst ( mmdb::rvector U )  {
   if (MMDBManager)
     MMDBManager->GetCrystData()->Orth2Cryst ( U );
 }
 
 
-int  Channel::PutCell ( realtype cell_a,
-                         realtype cell_b,
-                         realtype cell_c,
-                         realtype cell_alpha,
-                         realtype cell_beta,
-                         realtype cell_gamma,
+int  Channel::PutCell ( mmdb::realtype cell_a,
+                         mmdb::realtype cell_b,
+                         mmdb::realtype cell_c,
+                         mmdb::realtype cell_alpha,
+                         mmdb::realtype cell_beta,
+                         mmdb::realtype cell_gamma,
                          int      OrthCode )  {
 
   if (MMDBManager)  {
@@ -447,11 +445,11 @@ int  Channel::PutCell ( realtype cell_a,
                      OrthCode );
 
     if ((cell_a!=0.0) || (OrthCode>0))  {
-      if (cryst->CellCheck & CCHK_Disagreement)
+      if (cryst->CellCheck & mmdb::CCHK_Disagreement)
         return RWBERR_Disagreement;
-      if (cryst->CellCheck & CCHK_NoOrthCode)
+      if (cryst->CellCheck & mmdb::CCHK_NoOrthCode)
         return RWBERR_NoOrthCode;
-      if (cryst->CellCheck & CCHK_Unchecked)
+      if (cryst->CellCheck & mmdb::CCHK_Unchecked)
         return RWBERR_NoCheck;
     }
 
@@ -464,12 +462,12 @@ int  Channel::PutCell ( realtype cell_a,
 }
 
 
-int  Channel::SetCell ( realtype cell_a,
-                         realtype cell_b,
-                         realtype cell_c,
-                         realtype cell_alpha,
-                         realtype cell_beta,
-                         realtype cell_gamma,
+int  Channel::SetCell ( mmdb::realtype cell_a,
+                         mmdb::realtype cell_b,
+                         mmdb::realtype cell_c,
+                         mmdb::realtype cell_alpha,
+                         mmdb::realtype cell_beta,
+                         mmdb::realtype cell_gamma,
                          int      OrthCode )  {
 
   if (MMDBManager)  {
@@ -479,11 +477,11 @@ int  Channel::SetCell ( realtype cell_a,
                      cell_alpha,cell_beta,cell_gamma,
                      OrthCode );
 
-    if (cryst->CellCheck & CCHK_Disagreement)
+    if (cryst->CellCheck & mmdb::CCHK_Disagreement)
       return RWBERR_Disagreement;
-    if (cryst->CellCheck & CCHK_NoOrthCode)
+    if (cryst->CellCheck & mmdb::CCHK_NoOrthCode)
       return RWBERR_NoOrthCode;
-    if (cryst->CellCheck & CCHK_Unchecked)
+    if (cryst->CellCheck & mmdb::CCHK_Unchecked)
       return RWBERR_NoCheck;
 
     return RWBERR_Ok;
@@ -495,7 +493,7 @@ int  Channel::SetCell ( realtype cell_a,
 }
 
 
-int  Channel::SetSpGroup ( pstr spGroup )  {
+int  Channel::SetSpGroup ( mmdb::pstr spGroup )  {
   if (MMDBManager)  {
     MMDBManager->SetSpaceGroup(spGroup);
     return RWBERR_Ok;
@@ -504,10 +502,10 @@ int  Channel::SetSpGroup ( pstr spGroup )  {
 }
 
 
-int  Channel::GetSpGroup ( pstr spGroup )  {
+int  Channel::GetSpGroup ( mmdb::pstr spGroup )  {
   if (MMDBManager)  {
     mmdb::PCryst cryst = MMDBManager->GetCrystData();
-    if (cryst->WhatIsSet & CSET_SpaceGroup)
+    if (cryst->WhatIsSet & mmdb::CSET_SpaceGroup)
           strcpy ( spGroup,cryst->spaceGroup );
     else  strcpy ( spGroup," " );
     return RWBERR_Ok;
@@ -516,13 +514,13 @@ int  Channel::GetSpGroup ( pstr spGroup )  {
 }
 
 
-int  Channel::GetCell ( realtype & cell_a,
-                         realtype & cell_b,
-                         realtype & cell_c,
-                         realtype & cell_alpha,
-                         realtype & cell_beta,
-                         realtype & cell_gamma,
-                         realtype & cell_v,
+int  Channel::GetCell ( mmdb::realtype & cell_a,
+                         mmdb::realtype & cell_b,
+                         mmdb::realtype & cell_c,
+                         mmdb::realtype & cell_alpha,
+                         mmdb::realtype & cell_beta,
+                         mmdb::realtype & cell_gamma,
+                         mmdb::realtype & cell_v,
                          int      & OrthCode )  {
 
   if (MMDBManager)  {
@@ -535,11 +533,11 @@ int  Channel::GetCell ( realtype & cell_a,
     cell_gamma = cryst->gamma;
     cell_v     = cryst->Vol;
     OrthCode   = cryst->NCode;
-    if (!(cryst->WhatIsSet & CSET_CellParams))
+    if (!(cryst->WhatIsSet & mmdb::CSET_CellParams))
       return RWBERR_NoCellParams;
-    if (!(cryst->WhatIsSet & CSET_Transforms))
+    if (!(cryst->WhatIsSet & mmdb::CSET_Transforms))
       return RWBERR_NoCheck;
-//    if (MMDBManager->Cryst.CellCheck & CCHK_NoOrthCode)
+//    if (MMDBManager->Cryst.CellCheck & mmdb::CCHK_NoOrthCode)
 //      return RWBERR_NoOrthCode;
 
     return RWBERR_Ok;
@@ -550,28 +548,28 @@ int  Channel::GetCell ( realtype & cell_a,
 
 }
 
-int Channel::GetRCell ( realtype & cell_as,
-                         realtype & cell_bs,
-                         realtype & cell_cs,
-                         realtype & cell_alphas,
-                         realtype & cell_betas,
-                         realtype & cell_gammas,
-                         realtype & cell_vs )  {
+int Channel::GetRCell ( mmdb::realtype & cell_as,
+                         mmdb::realtype & cell_bs,
+                         mmdb::realtype & cell_cs,
+                         mmdb::realtype & cell_alphas,
+                         mmdb::realtype & cell_betas,
+                         mmdb::realtype & cell_gammas,
+                         mmdb::realtype & cell_vs )  {
   if (MMDBManager)  {
     mmdb::PCryst cryst = MMDBManager->GetCrystData();
     cryst->GetRCell ( cell_as,cell_bs,cell_cs,
                       cell_alphas,cell_betas,cell_gammas,
                       cell_vs );
-    if (!(cryst->WhatIsSet & CSET_CellParams))
+    if (!(cryst->WhatIsSet & mmdb::CSET_CellParams))
       return RWBERR_NoCellParams;
-    if (!(cryst->WhatIsSet & CSET_Transforms))
+    if (!(cryst->WhatIsSet & mmdb::CSET_Transforms))
       return RWBERR_NoCheck;
     return RWBERR_Ok;
   } else
     return RWBERR_NoFile;
 }
 
-void Channel::GetInputBuffer ( pstr Line, int & count )  {
+void Channel::GetInputBuffer ( mmdb::pstr Line, int & count )  {
   if (MMDBManager)
     MMDBManager->GetInputBuffer ( Line,count );
   else  {
@@ -606,7 +604,7 @@ static int        LastSer;      // last serial number kept for
 
 
 FORTRAN_SUBR ( MMDB_F_INIT, mmdb_f_init,(),(),() )  {
-  InitMatType();
+  mmdb::InitMatType();
   nChannels   = 0;
   channel     = NULL;
   strcpy ( LastFunc,"MMDB_F_Init" );
@@ -721,21 +719,21 @@ PChannel * channel1;
 
 FORTRAN_SUBR ( MMDB_F_OPEN, mmdb_f_open,
                (    // lengths-at-end list
-                fpstr FName,      // file name
-                fpstr RWStat,     // "INPUT" or "OUTPUT"
-                fpstr FType,      // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr FName,      // file name
+                mmdb::machine::fpstr RWStat,     // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,      // "PDB", "CIF", "BIN" or " "
                 int * iUnit,      // channel number
                 int * iRet,       // returns error code
                 int   FName_len,  // fortran-hidden length of FName
                 int   RWStat_len, // fortran-hidden length of RWStat
                 int   FType_len   // fortran-hidden length of FType
                ), ( // lengths-in-structure list
-                fpstr FName,  fpstr RWStat, fpstr FType,
+                mmdb::machine::fpstr FName,  mmdb::machine::fpstr RWStat, mmdb::machine::fpstr FType,
                 int * iUnit,  int * iRet
                ), ( // lengths-follow list
-                fpstr FName,   int FName_len,
-                fpstr RWStat,  int RWStat_len,
-                fpstr FType,   int FType_len,
+                mmdb::machine::fpstr FName,   int FName_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
                 int * iUnit,   int * iRet
                ) )  {
 
@@ -746,9 +744,9 @@ int k;
 char  L[500];
 
 #ifdef WIN32
- GetStrTerWin32File ( L,FTN_STR(FName),0,sizeof(L),FTN_LEN(FName) );
+ mmdb::GetStrTerWin32File ( L,FTN_STR(FName),0,sizeof(L),FTN_LEN(FName) );
 #else
- GetStrTer ( L,FTN_STR(FName),0,sizeof(L),FTN_LEN(FName) );
+ mmdb::GetStrTer ( L,FTN_STR(FName),0,sizeof(L),FTN_LEN(FName) );
 #endif
 
   strcpy ( LastFunc,"MMDB_F_Open" );
@@ -812,30 +810,30 @@ char  L[500];
 
 FORTRAN_SUBR ( MMDB_F_OPENL, mmdb_f_openl,
                (    // lengths-at-end list
-                fpstr LName,      // logical name
-                fpstr RWStat,     // "INPUT" or "OUTPUT"
-                fpstr FType,      // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr LName,      // logical name
+                mmdb::machine::fpstr RWStat,     // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,      // "PDB", "CIF", "BIN" or " "
                 int * iUnit,      // channel number
                 int * iRet,       // returns error code
                 int   LName_len,  // fortran-hidden length of LName
                 int   RWStat_len, // fortran-hidden length of RWStat
                 int   FType_len   // fortran-hidden length of FType
                ), ( // lengths-in-structure list
-                fpstr LName,  fpstr RWStat, fpstr FType,
+                mmdb::machine::fpstr LName,  mmdb::machine::fpstr RWStat, mmdb::machine::fpstr FType,
                 int * iUnit,  int * iRet
                ), ( // lengths-follow list
-                fpstr LName,   int LName_len,
-                fpstr RWStat,  int RWStat_len,
-                fpstr FType,   int FType_len,
+                mmdb::machine::fpstr LName,   int LName_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
                 int * iUnit,   int * iRet
                ) )  {
-char  L[200];
-pstr  S;
+char        L[200];
+mmdb::pstr  S;
 char_struct(FName)
 
   strcpy ( LastFunc,"MMDB_F_Openl" );
 
-  GetStrTer ( L,FTN_STR(LName),0,sizeof(L),FTN_LEN(LName) );
+  mmdb::GetStrTer ( L,FTN_STR(LName),0,sizeof(L),FTN_LEN(LName) );
 
   S = getenv ( L );
 
@@ -952,8 +950,8 @@ FORTRAN_SUBR ( MMDB_F_DELETE, mmdb_f_delete,
                ), ( // lengths-follow list
                 int * iUnit, int * delKey, int * iRet
                ) )  {
-int  k;
-word delMask;
+int        k;
+mmdb::word delMask;
 
   strcpy ( LastFunc,"MMDB_F_Delete" );
 
@@ -964,11 +962,11 @@ word delMask;
   if (k>=0)  {
     if (channel[k]->MMDBManager)  {
       switch (*delKey)  {
-        case 1  :  delMask = MMDBFCM_All;    break;
-        case 2  :  delMask = MMDBFCM_Top;    break;
-        case 3  :  delMask = MMDBFCM_Title;  break;
-        case 4  :  delMask = MMDBFCM_Cryst;  break;
-        case 5  :  delMask = MMDBFCM_Coord;  break;
+        case 1  :  delMask = mmdb::MMDBFCM_All;    break;
+        case 2  :  delMask = mmdb::MMDBFCM_Top;    break;
+        case 3  :  delMask = mmdb::MMDBFCM_Title;  break;
+        case 4  :  delMask = mmdb::MMDBFCM_Cryst;  break;
+        case 5  :  delMask = mmdb::MMDBFCM_Coord;  break;
         default :  delMask = 0x0000;
       }
       channel[k]->MMDBManager->Delete ( delMask );
@@ -986,19 +984,19 @@ word delMask;
 FORTRAN_SUBR ( MMDB_F_SETTYPE, mmdb_f_settype,
                (    // lengths-at-end list
                 int * iUnit,     // unit number
-                fpstr FType,     // "PDB", "CIF", "BIN" or " "
-                fpstr RWStat,    // "INPUT" or "OUTPUT"
+                mmdb::machine::fpstr FType,     // "PDB", "CIF", "BIN" or " "
+                mmdb::machine::fpstr RWStat,    // "INPUT" or "OUTPUT"
                 int * iRet,      // returns -1 if unit not found,
                                  // otherwise 0
                 int   FType_len, // fortran-hidden length of FType
                 int   RWStat_len // fortran-hidden length of RWStat
                ), ( // lengths-in-structure list
-                int * iUnit,  fpstr FType,
-                fpstr RWStat, int * iRet
+                int * iUnit,  mmdb::machine::fpstr FType,
+                mmdb::machine::fpstr RWStat, int * iRet
                ), ( // length-follow list
                 int * iUnit,
-                fpstr FType,   int FType_len,
-                fpstr RWStat,  int RWStat_len,
+                mmdb::machine::fpstr FType,   int FType_len,
+                mmdb::machine::fpstr RWStat,  int RWStat_len,
                 int * iRet
                ) )  {
 UNUSED_ARGUMENT(FType_len);
@@ -1031,15 +1029,15 @@ int k;
 FORTRAN_SUBR ( MMDB_F_SETNAME, mmdb_f_setname,
                (    // lengths-at-end list
                 int * iUnit,    // unit number
-                fpstr FName,    // file name
+                mmdb::machine::fpstr FName,    // file name
                 int * iRet,     // returns -1 if unit not found,
                                 // otherwise 0
                 int   FName_len // fortran-hidden length of FName
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr FName, int * iRet
+                int * iUnit, mmdb::machine::fpstr FName, int * iRet
                ), ( // lengths-follow list
                 int * iUnit,
-                fpstr FName, int FName_len,
+                mmdb::machine::fpstr FName, int FName_len,
                 int * iRet
                ) )  {
 
@@ -1143,7 +1141,7 @@ FORTRAN_SUBR ( MMDB_F_ADVANCE, mmdb_f_advance,
 UNUSED_ARGUMENT(iOut);
 
 int    k;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"mmdb_f_advance" );
   LastUnit = *iUnit;
@@ -1272,7 +1270,7 @@ FORTRAN_SUBR ( MMDB_F_SEEK, mmdb_f_seek,
                 int * iUnit, int * fPos, int * iRet
                ) )  {
 int    k;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"MMDB_F_Seek" );
   LastUnit = *iUnit;
@@ -1286,7 +1284,7 @@ PAtom atom;
   else  {
 
     // set the pointer
-    channel[k]->fPos = IMax(0,*fPos);
+    channel[k]->fPos = mmdb::IMax(0,*fPos);
     if (*fPos==0)  *iRet = RWBWAR_FileTop;
              else  *iRet = RWBERR_Ok;
 
@@ -1314,24 +1312,24 @@ PAtom atom;
 }
 
 
-void  Make_AN_ID_IZ ( PAtom atom, pstr AtNam, int AtNam_L,
-                      pstr ID, int ID_L, int * IZ, int * iRet )  {
+void  Make_AN_ID_IZ ( mmdb::PAtom atom, mmdb::pstr AtNam, int AtNam_L,
+                      mmdb::pstr ID, int ID_L, int * IZ, int * iRet )  {
 char chrg[10];
 int  i,k;
 
   if (atom->Ter)  {
 
-    strcpy_ns ( AtNam,pstr(" "),AtNam_L );
-    strcpy_ns ( ID   ,pstr(" "),ID_L    );
+    mmdb::strcpy_ns ( AtNam,mmdb::pstr(" "),AtNam_L );
+    mmdb::strcpy_ns ( ID   ,mmdb::pstr(" "),ID_L    );
     *IZ = 7;
 
   } else  {
 
-    if (atom->name[0]==' ')  strcpy_ns ( AtNam,&(atom->name[1]),4 );
-                       else  strcpy_ns ( AtNam,atom->name,4 );
+    if (atom->name[0]==' ')  mmdb::strcpy_ns ( AtNam,&(atom->name[1]),4 );
+                       else  mmdb::strcpy_ns ( AtNam,atom->name,4 );
 
     // first try to identify the atom with the element name
-    strcpy_ns ( ID,atom->element,ID_L );  // not more than ID_L symbols
+    mmdb::strcpy_ns ( ID,atom->element,ID_L );  // not more than ID_L symbols
                                 // from element until but not including
                                 // the terminated null are copied into
                                 // ID, and the latter is padded with
@@ -1345,31 +1343,31 @@ int  i,k;
     }
 
     k = 0;
-    while ((k<nElementNames) &&
-           ((atom->element[0]!=ElementName[k][0]) ||
-            (atom->element[1]!=ElementName[k][1])))  k++;
+    while ((k<mmdb::nElementNames) &&
+           ((atom->element[0]!=mmdb::ElementName[k][0]) ||
+            (atom->element[1]!=mmdb::ElementName[k][1])))  k++;
 
-    if (k>=nElementNames)  {
+    if (k>=mmdb::nElementNames)  {
 
       // no match for atom ID -- make sure to set it blank
-      strcpy_ns ( ID,pstr(" "),ID_L );
+      mmdb::strcpy_ns ( ID,mmdb::pstr(" "),ID_L );
 
       //  try to identify the atom using the atom name
       k = 0;
-      while ((k<nElementNames) &&
-             ((atom->name[0]!=ElementName[k][0]) ||
-              (atom->name[1]!=ElementName[k][1])))  k++;
+      while ((k<mmdb::nElementNames) &&
+             ((atom->name[0]!=mmdb::ElementName[k][0]) ||
+              (atom->name[1]!=mmdb::ElementName[k][1])))  k++;
 
       // try to identify a heteroatom
       i = 0;
-      while ((i<nHydAtomNames) && (k>=nElementNames))  {
-        if ((atom->name[0]==HydAtomName[i][0]) &&
-            (atom->name[1]==HydAtomName[i][1]))
+      while ((i<mmdb::nHydAtomNames) && (k>=mmdb::nElementNames))  {
+        if ((atom->name[0]==mmdb::HydAtomName[i][0]) &&
+            (atom->name[1]==mmdb::HydAtomName[i][1]))
           k = 0;
         i++;
       }
 
-      if (k>=nElementNames)  {
+      if (k>=mmdb::nElementNames)  {
         // unknown or ambiguous formfactor
         k = -1;
         if ((atom->name[0]==' ') &&
@@ -1382,7 +1380,7 @@ int  i,k;
 
     *IZ = k+1;
     if (*IZ==0)
-      strcpy_ns ( ID,pstr(" "),ID_L );
+      mmdb::strcpy_ns ( ID,mmdb::pstr(" "),ID_L );
     else  {
       if (ID_L>3)  {
         if (ID[0]==' ')  {
@@ -1396,7 +1394,7 @@ int  i,k;
           ID[3] = ' ';
         }
       }
-      strcpy_ns ( ID,ElementName[k],IMin(2,ID_L) );
+      mmdb::strcpy_ns ( ID,mmdb::ElementName[k],mmdb::IMin(2,ID_L) );
     }
 
   }
@@ -1409,17 +1407,17 @@ FORTRAN_SUBR ( MMDB_F_ATOM,  mmdb_f_atom,
            (    // lengths-at-end list
             int * iUnit,    // unit number
             int * iSer,     // atom serial number
-            fpstr AtNam,    // atom name (left justified)
-            fpstr ResNam,   // residue name
-            fpstr ChnNam,   // chain name
+            mmdb::machine::fpstr AtNam,    // atom name (left justified)
+            mmdb::machine::fpstr ResNam,   // residue name
+            mmdb::machine::fpstr ChnNam,   // chain name
             int * iResN,    // residue number as an integer
-            fpstr ResNo,    // residue number as character (input only)
-            fpstr InsCod,   // the insertion code
-            fpstr AltCod,   // the alternate conformation code
-            fpstr segID,    // segment ID
+            mmdb::machine::fpstr ResNo,    // residue number as character (input only)
+            mmdb::machine::fpstr InsCod,   // the insertion code
+            mmdb::machine::fpstr AltCod,   // the alternate conformation code
+            mmdb::machine::fpstr segID,    // segment ID
             int * IZ,       // atomic number (input only, returned as
                             // 7 from ambiguous atoms)
-            fpstr ID,       // atomic ID related to atomic number
+            mmdb::machine::fpstr ID,       // atomic ID related to atomic number
                             // (element symbol right justified), plus
                             // the ionic state +2, +3 etc..
                             //
@@ -1448,34 +1446,34 @@ FORTRAN_SUBR ( MMDB_F_ATOM,  mmdb_f_atom,
             int segID_len,  // fortran-hidden length of SegID
             int ID_len      // fortran-hidden length of ID
            ), ( // lengths-in-structure list
-            int * iUnit,  int * iSer,  fpstr AtNam,  fpstr ResNam,
-            fpstr ChnNam, int * iResN, fpstr ResNo,  fpstr InsCod,
-            fpstr AltCod, fpstr segID, int * IZ,     fpstr ID,
+            int * iUnit,  int * iSer,  mmdb::machine::fpstr AtNam,  mmdb::machine::fpstr ResNam,
+            mmdb::machine::fpstr ChnNam, int * iResN, mmdb::machine::fpstr ResNo,  mmdb::machine::fpstr InsCod,
+            mmdb::machine::fpstr AltCod, mmdb::machine::fpstr segID, int * IZ,     mmdb::machine::fpstr ID,
             int * iRet
            ), ( // lengths-follow list
             int * iUnit,  int * iSer,
-            fpstr AtNam,  int   AtNam_len,
-            fpstr ResNam, int   ResNam_len,
-            fpstr ChnNam, int   ChnNam_len,
+            mmdb::machine::fpstr AtNam,  int   AtNam_len,
+            mmdb::machine::fpstr ResNam, int   ResNam_len,
+            mmdb::machine::fpstr ChnNam, int   ChnNam_len,
             int * iResN,
-            fpstr ResNo,  int   ResNo_len,
-            fpstr InsCod, int   InsCod_len,
-            fpstr AltCod, int   AltCod_len,
-            fpstr segID,  int   segID_len,
+            mmdb::machine::fpstr ResNo,  int   ResNo_len,
+            mmdb::machine::fpstr InsCod, int   InsCod_len,
+            mmdb::machine::fpstr AltCod, int   AltCod_len,
+            mmdb::machine::fpstr segID,  int   segID_len,
             int * IZ,
-            fpstr ID,     int   ID_len,
+            mmdb::machine::fpstr ID,     int   ID_len,
             int * iRet
            ) )  {
-int      k,RC;
-ChainID  chainID;
-ResName  resName;
-InsCode  insCode;
-AtomName atomName;
-AltLoc   altLoc;
-SegID    sgID;
-Element  element;
-PAtom   atom;
-char     charge[10];
+int            k,RC;
+mmdb::ChainID  chainID;
+mmdb::ResName  resName;
+mmdb::InsCode  insCode;
+mmdb::AtomName atomName;
+mmdb::AltLoc   altLoc;
+mmdb::SegID    sgID;
+mmdb::Element  element;
+mmdb::PAtom    atom;
+char           charge[10];
 
   strcpy ( LastFunc,"MMDB_F_Atom" );
   LastUnit = *iUnit;
@@ -1507,21 +1505,21 @@ char     charge[10];
     Make_AN_ID_IZ ( atom,FTN_STR(AtNam),FTN_LEN(AtNam),
                     FTN_STR(ID),FTN_LEN(ID),IZ,iRet );
     if (atom->residue)  {
-      strcpy_ns  ( FTN_STR(ResNam),atom->residue->name,FTN_LEN(ResNam) );
+      mmdb::strcpy_ns  ( FTN_STR(ResNam),atom->residue->name,FTN_LEN(ResNam) );
       *iResN = atom->residue->seqNum;
-      PutInteger ( FTN_STR(ResNo),*iResN,IMin(4,FTN_LEN(ResNo)) );
-      strcpy_ns  ( FTN_STR(InsCod),atom->residue->insCode,FTN_LEN(InsCod) );
-      strcpy_ns  ( &(FTN_STR(ResNo)[4]),FTN_STR(InsCod),FTN_LEN(ResNo)-4 );
-      strcpy_ns  ( FTN_STR(ChnNam),atom->GetChainID(),FTN_LEN(ChnNam) );
+      mmdb::PutInteger ( FTN_STR(ResNo),*iResN,mmdb::IMin(4,FTN_LEN(ResNo)) );
+      mmdb::strcpy_ns  ( FTN_STR(InsCod),atom->residue->insCode,FTN_LEN(InsCod) );
+      mmdb::strcpy_ns  ( &(FTN_STR(ResNo)[4]),FTN_STR(InsCod),FTN_LEN(ResNo)-4 );
+      mmdb::strcpy_ns  ( FTN_STR(ChnNam),atom->GetChainID(),FTN_LEN(ChnNam) );
     } else  {
-      strcpy_ns  ( FTN_STR(ResNam),pstr("   "),FTN_LEN(ResNam) );
-      strcpy_ns  ( FTN_STR(ChnNam),pstr(" ")  ,FTN_LEN(ChnNam) );
+      mmdb::strcpy_ns  ( FTN_STR(ResNam),mmdb::pstr("   "),FTN_LEN(ResNam) );
+      mmdb::strcpy_ns  ( FTN_STR(ChnNam),mmdb::pstr(" ")  ,FTN_LEN(ChnNam) );
       *iResN = 0;
-      strcpy_ns  ( FTN_STR(ResNo) ,pstr("0")  ,FTN_LEN(ResNo)  );
-      strcpy_ns  ( FTN_STR(InsCod),pstr(" ")  ,FTN_LEN(InsCod) );
+      mmdb::strcpy_ns  ( FTN_STR(ResNo) ,mmdb::pstr("0")  ,FTN_LEN(ResNo)  );
+      mmdb::strcpy_ns  ( FTN_STR(InsCod),mmdb::pstr(" ")  ,FTN_LEN(InsCod) );
     }
-    strcpy_ns ( FTN_STR(AltCod),atom->altLoc,FTN_LEN(AltCod) );
-    strcpy_ns ( FTN_STR(segID) ,atom->segID ,FTN_LEN(segID)  );
+    mmdb::strcpy_ns ( FTN_STR(AltCod),atom->altLoc,FTN_LEN(AltCod) );
+    mmdb::strcpy_ns ( FTN_STR(segID) ,atom->segID ,FTN_LEN(segID)  );
 
   } else  {
 
@@ -1533,11 +1531,11 @@ char     charge[10];
       return;
     }
 
-    GetStrTer ( chainID,FTN_STR(ChnNam),1,sizeof(chainID),FTN_LEN(ChnNam) );
-    GetStrTer ( resName,FTN_STR(ResNam),3,sizeof(resName),FTN_LEN(ResNam) );
-    GetStrTer ( insCode,FTN_STR(InsCod),1,sizeof(insCode),FTN_LEN(InsCod) );
-    GetStrTer ( altLoc ,FTN_STR(AltCod),1,sizeof(altLoc) ,FTN_LEN(AltCod) );
-    GetStrTer ( sgID   ,FTN_STR(segID) ,4,sizeof(sgID)   ,FTN_LEN(segID)  );
+    mmdb::GetStrTer ( chainID,FTN_STR(ChnNam),1,sizeof(chainID),FTN_LEN(ChnNam) );
+    mmdb::GetStrTer ( resName,FTN_STR(ResNam),3,sizeof(resName),FTN_LEN(ResNam) );
+    mmdb::GetStrTer ( insCode,FTN_STR(InsCod),1,sizeof(insCode),FTN_LEN(InsCod) );
+    mmdb::GetStrTer ( altLoc ,FTN_STR(AltCod),1,sizeof(altLoc) ,FTN_LEN(AltCod) );
+    mmdb::GetStrTer ( sgID   ,FTN_STR(segID) ,4,sizeof(sgID)   ,FTN_LEN(segID)  );
     element[0] = FTN_STR(ID)[0];
     element[1] = FTN_STR(ID)[1];
     element[2] = char(0);
@@ -1559,13 +1557,13 @@ char     charge[10];
 //          GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
 //      }
       if ((FTN_STR(AtNam)[0]=='H') && (FTN_STR(AtNam)[3]!=' '))
-        GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
+        mmdb::GetStrTer ( atomName,FTN_STR(AtNam),4,5,FTN_LEN(AtNam) );
       if (!atomName[0])  {
         atomName[0] = ' ';
-        GetStrTer ( &(atomName[1]),FTN_STR(AtNam),3,4,FTN_LEN(AtNam) );
+        mmdb::GetStrTer ( &(atomName[1]),FTN_STR(AtNam),3,4,FTN_LEN(AtNam) );
       }
     } else
-      GetStrTer ( atomName,FTN_STR(AtNam),4,5,4 );
+      mmdb::GetStrTer ( atomName,FTN_STR(AtNam),4,5,4 );
 
     RC = channel[k]->MMDBManager->PutAtom ( channel[k]->fPos,*iSer,
                               atomName,resName,chainID,*iResN,
@@ -1577,7 +1575,7 @@ char     charge[10];
       return;
     }
 
-    DelSpaces ( charge );
+    mmdb::DelSpaces ( charge );
     if (charge[0])  {
       atom  = channel[k]->GetAtomI ( channel[k]->fPos );
       if (!atom)  {
@@ -1614,7 +1612,7 @@ FORTRAN_SUBR ( MMDB_F_SETTER, mmdb_f_setter,
                ( int * iUnit, int * iRet ),
                ( int * iUnit, int * iRet ) )  {
 int    k;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"MMDB_F_SetTer" );
   LastUnit = *iUnit;
@@ -1636,7 +1634,7 @@ PAtom atom;
   }
 
   atom->Ter       = true;
-  atom->WhatIsSet |= ASET_Coordinates;
+  atom->WhatIsSet |= mmdb::ASET_Coordinates;
 
 }
 
@@ -1647,7 +1645,7 @@ FORTRAN_SUBR ( MMDB_F_SETHET, mmdb_f_sethet,
                ( int * iUnit, int * iRet ),
                ( int * iUnit, int * iRet ) )  {
 int    k;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"MMDB_F_SetHet" );
   LastUnit = *iUnit;
@@ -1669,7 +1667,7 @@ PAtom atom;
   }
 
   atom->Het = true;
-  atom->WhatIsSet |= ASET_Coordinates;
+  atom->WhatIsSet |= mmdb::ASET_Coordinates;
 
 }
 
@@ -1678,7 +1676,7 @@ FORTRAN_SUBR ( MMDB_F_GETHET, mmdb_f_gethet,
                ( int * iUnit, int * isHet, int * iRet ),
                ( int * iUnit, int * isHet, int * iRet ) )  {
 int    k;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"MMDB_F_GetHet" );
   LastUnit = *iUnit;
@@ -1711,7 +1709,7 @@ FORTRAN_SUBR ( MMDB_F_COPYATOM, mmdb_f_copyatom,
                ( int * iUnit1, int * iUnit2, int * iRet ),
                ( int * iUnit1, int * iUnit2, int * iRet ) )  {
 int    k1,k2,RC;
-PAtom atom;
+mmdb::PAtom atom;
 
   strcpy ( LastFunc,"mmdb_f_copyatom" );
   LastUnit = *iUnit1;
@@ -1756,22 +1754,22 @@ PAtom atom;
 FORTRAN_SUBR ( MMDB_F_COORD, mmdb_f_coord,
                (    // lengths-at-end list
                 int * iUnit,    // unit number
-                fpstr XFlag,    // "F" or "O" flag for the fractional
+                mmdb::machine::fpstr XFlag,    // "F" or "O" flag for the fractional
                                 // or orthogonal coordinates x,y,z
                                 // for output files XFlag may also be
                                 // set to "HF" or "HO", where "F" and
                                 // "O" have the same meaning as before
                                 // and "H" indicates that the atom
                                 // should be marked as heteroatom
-                fpstr BFlag ,   // "F" or "O" flag for temperature
+                mmdb::machine::fpstr BFlag ,   // "F" or "O" flag for temperature
                                 // factor in fractional or orthogonal
                                 // Us
-                apireal * x,    // x-coordinate
-                apireal * y,    // y-coordinate
-                apireal * z,    // z-coordinate
-                apireal * occ,  // occupancy
-                apireal * BIso, // isotropic temperature factor
-                apireal * U,    // array(6) of the anisotr. t-factor
+                mmdb::machine::apireal * x,    // x-coordinate
+                mmdb::machine::apireal * y,    // y-coordinate
+                mmdb::machine::apireal * z,    // z-coordinate
+                mmdb::machine::apireal * occ,  // occupancy
+                mmdb::machine::apireal * BIso, // isotropic temperature factor
+                mmdb::machine::apireal * U,    // array(6) of the anisotr. t-factor
                 int * iRet,     // returns
                                 //  RWBERR_NoChannel     if iUnit was not
                                 //                       initialized
@@ -1792,26 +1790,26 @@ FORTRAN_SUBR ( MMDB_F_COORD, mmdb_f_coord,
                 int XFlag_len,  // fortran-hidden length of XFlag
                 int BFlag_len   // fortran-hidden length of BFlag
                ), ( // lengths-in-structure list
-                int * iUnit,   fpstr XFlag,    fpstr BFlag,
-                apireal * x,   apireal * y,    apireal * z,
-                apireal * occ, apireal * BIso, apireal * U,
+                int * iUnit,   mmdb::machine::fpstr XFlag,    mmdb::machine::fpstr BFlag,
+                mmdb::machine::apireal * x,   mmdb::machine::apireal * y,    mmdb::machine::apireal * z,
+                mmdb::machine::apireal * occ, mmdb::machine::apireal * BIso, mmdb::machine::apireal * U,
                 int * iRet
                ), ( // lengths-follow list
                 int * iUnit,
-                fpstr XFlag,   int XFlag_len,
-                fpstr BFlag,   int BFlag_len,
-                apireal * x,   apireal * y,    apireal * z,
-                apireal * occ, apireal * BIso, apireal * U,
+                mmdb::machine::fpstr XFlag,   int XFlag_len,
+                mmdb::machine::fpstr BFlag,   int BFlag_len,
+                mmdb::machine::apireal * x,   mmdb::machine::apireal * y,    mmdb::machine::apireal * z,
+                mmdb::machine::apireal * occ, mmdb::machine::apireal * BIso, mmdb::machine::apireal * U,
                 int * iRet
                ) )  {
 
 UNUSED_ARGUMENT(XFlag_len);
 UNUSED_ARGUMENT(BFlag_len);
 
-realtype AU[6];
-realtype xx,yy,zz;
-int      k,i,m;
-PAtom   atom;
+mmdb::realtype AU[6];
+mmdb::realtype xx,yy,zz;
+int            k,i,m;
+mmdb::PAtom    atom;
 
   strcpy ( LastFunc,"MMDB_F_Coord" );
   LastUnit = *iUnit;
@@ -1854,26 +1852,26 @@ PAtom   atom;
       U[5]  = 0.0;
     } else  {
 
-      if (atom->WhatIsSet & ASET_Coordinates)  {
+      if (atom->WhatIsSet & mmdb::ASET_Coordinates)  {
         if ((FTN_STR(XFlag)[m]=='F') ||
             (FTN_STR(XFlag)[m]=='f'))  {
           //  receive fractional coordinates
           if (channel[k]->areCrystMatrices())  {
             channel[k]->Orth2Frac ( atom->x,atom->y,atom->z,xx,yy,zz );
-            *x = (apireal)xx;
-            *y = (apireal)yy;
-            *z = (apireal)zz;
+            *x = (mmdb::machine::apireal)xx;
+            *y = (mmdb::machine::apireal)yy;
+            *z = (mmdb::machine::apireal)zz;
           } else  {
-            *x = (apireal)atom->x;
-            *y = (apireal)atom->y;
-            *z = (apireal)atom->z;
+            *x = (mmdb::machine::apireal)atom->x;
+            *y = (mmdb::machine::apireal)atom->y;
+            *z = (mmdb::machine::apireal)atom->z;
             *iRet = RWBERR_NoMatrices;
           }
         } else  {
           // receive orthogonal coordinates
-          *x = (apireal)atom->x;
-          *y = (apireal)atom->y;
-          *z = (apireal)atom->z;
+          *x = (mmdb::machine::apireal)atom->x;
+          *y = (mmdb::machine::apireal)atom->y;
+          *z = (mmdb::machine::apireal)atom->z;
         }
       } else  {
         *x = 0.0;
@@ -1884,14 +1882,14 @@ PAtom   atom;
 
       // calculate isotropic Uf from Uo, and convert it
       // if necessary
-      if (atom->WhatIsSet & ASET_Anis_tFac)  {
+      if (atom->WhatIsSet & mmdb::ASET_Anis_tFac)  {
         AU[0] = atom->u11;  // this intermediate array is
         AU[1] = atom->u22;  // required because of possible
         AU[2] = atom->u33;  // type difference between
-        AU[3] = atom->u12;  // 'apireal' and 'realtype'
+        AU[3] = atom->u12;  // 'mmdb::machine::apireal' and 'realtype'
         AU[4] = atom->u13;
         AU[5] = atom->u23;
-        *BIso = (apireal)(8.0*Pi*Pi*(AU[0]+AU[1]+AU[2])/3.0);
+        *BIso = (mmdb::machine::apireal)(8.0*mmdb::Pi*mmdb::Pi*(AU[0]+AU[1]+AU[2])/3.0);
         if ((FTN_STR(BFlag)[0]=='F') ||
             (FTN_STR(BFlag)[0]=='f'))  {
           if (channel[k]->areCrystMatrices())
@@ -1900,20 +1898,20 @@ PAtom   atom;
              *iRet = RWBERR_NoMatrices;
         }
         for (i=0;i<6;i++)
-          U[i] = (apireal)AU[i];
+          U[i] = (mmdb::machine::apireal)AU[i];
       } else  {
         for (i=0;i<6;i++)
           U[i] = 0.0;
-        if (atom->WhatIsSet & ASET_tempFactor)
-          U[0] = (apireal)atom->tempFactor;
+        if (atom->WhatIsSet & mmdb::ASET_tempFactor)
+          U[0] = (mmdb::machine::apireal)atom->tempFactor;
         else if (*iRet>=RWBERR_Ok)
           *iRet |= RWBWAR_NoTempFactor;
         *BIso = U[0];
       }
 
       // get occupancy now
-      if (atom->WhatIsSet & ASET_Occupancy)
-        *occ = (apireal)atom->occupancy;
+      if (atom->WhatIsSet & mmdb::ASET_Occupancy)
+        *occ = (mmdb::machine::apireal)atom->occupancy;
       else  {
         *occ = 0.0;
         if (*iRet>=RWBERR_Ok)  *iRet |= RWBWAR_NoOccupancy;
@@ -1929,7 +1927,7 @@ PAtom   atom;
       atom->x = 0.0;
       atom->y = 0.0;
       atom->z = 0.0;
-      atom->WhatIsSet |= ASET_Coordinates;
+      atom->WhatIsSet |= mmdb::ASET_Coordinates;
       atom->occupancy  = 1.0;
       atom->tempFactor = 1.0;
       atom->u11 = 0.0;
@@ -1948,20 +1946,20 @@ PAtom   atom;
           yy = *y;
           zz = *z;
           channel[k]->Frac2Orth ( xx,yy,zz,atom->x,atom->y,atom->z );
-          atom->WhatIsSet |= ASET_Coordinates;
+          atom->WhatIsSet |= mmdb::ASET_Coordinates;
         } else  {
           atom->x = *x;
           atom->y = *y;
           atom->z = *z;
           *iRet   = RWBERR_NoMatrices;
-          atom->WhatIsSet &= ~ASET_Coordinates;
+          atom->WhatIsSet &= ~mmdb::ASET_Coordinates;
         }
       } else  {
         // store orthogonal coordinates
         atom->x = *x;
         atom->y = *y;
         atom->z = *z;
-        atom->WhatIsSet |= ASET_Coordinates;
+        atom->WhatIsSet |= mmdb::ASET_Coordinates;
       }
 
       atom->Het = (m>0);
@@ -1977,7 +1975,7 @@ PAtom   atom;
                 channel[k]->Cryst2Orth ( AU );
           else  *iRet = RWBERR_NoMatrices;
         }
-        *BIso = (apireal)(8.0*Pi*Pi*(AU[0]+AU[1]+AU[2])/3.0);
+        *BIso = (mmdb::machine::apireal)(8.0*mmdb::Pi*mmdb::Pi*(AU[0]+AU[1]+AU[2])/3.0);
         atom->tempFactor = *BIso;
         atom->u11 = AU[0];
         atom->u22 = AU[1];
@@ -1985,7 +1983,7 @@ PAtom   atom;
         atom->u12 = AU[3];
         atom->u13 = AU[4];
         atom->u23 = AU[5];
-        atom->WhatIsSet |= ASET_tempFactor | ASET_Anis_tFac;
+        atom->WhatIsSet |= mmdb::ASET_tempFactor | mmdb::ASET_Anis_tFac;
       } else  {
         *BIso = U[0];
         atom->tempFactor = *BIso;
@@ -1995,12 +1993,12 @@ PAtom   atom;
         atom->u12 = 0.0;
         atom->u13 = 0.0;
         atom->u23 = 0.0;
-        atom->WhatIsSet |= ASET_tempFactor;
+        atom->WhatIsSet |= mmdb::ASET_tempFactor;
       }
 
       // store occupancy now
       atom->occupancy = *occ;
-      atom->WhatIsSet |= ASET_Occupancy;
+      atom->WhatIsSet |= mmdb::ASET_Occupancy;
 
     }
 
@@ -2015,12 +2013,12 @@ PAtom   atom;
 FORTRAN_SUBR ( MMDB_F_SETCELL, mmdb_f_setcell,
                (   //   lengths-at-end list
                 int     * iUnit,    // unit number
-                apireal * a,        // cell parameter a, angstroms
-                apireal * b,        // cell parameter b, angstroms
-                apireal * c,        // cell parameter c, angstroms
-                apireal * alpha,    // cell parameter alpha, degrees
-                apireal * beta,     // cell parameter beta,  degrees
-                apireal * gamma,    // cell parameter gamma, degrees
+                mmdb::machine::apireal * a,        // cell parameter a, angstroms
+                mmdb::machine::apireal * b,        // cell parameter b, angstroms
+                mmdb::machine::apireal * c,        // cell parameter c, angstroms
+                mmdb::machine::apireal * alpha,    // cell parameter alpha, degrees
+                mmdb::machine::apireal * beta,     // cell parameter beta,  degrees
+                mmdb::machine::apireal * gamma,    // cell parameter gamma, degrees
                 int     * ArgNCode, // orthogonalization code, 1-6
                 int     * iRet      // return code:
                                     //   RWBERR_Ok  - success
@@ -2044,13 +2042,13 @@ FORTRAN_SUBR ( MMDB_F_SETCELL, mmdb_f_setcell,
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
                 int     * iUnit,
-                apireal * a,        apireal * b,    apireal * c,
-                apireal * alpha,    apireal * beta, apireal * gamma,
+                mmdb::machine::apireal * a,        mmdb::machine::apireal * b,    mmdb::machine::apireal * c,
+                mmdb::machine::apireal * alpha,    mmdb::machine::apireal * beta, mmdb::machine::apireal * gamma,
                 int     * ArgNCode, int     * iRet
                ), ( // lengths-follow list
                 int     * iUnit,
-                apireal * a,        apireal * b,    apireal * c,
-                apireal * alpha,    apireal * beta, apireal * gamma,
+                mmdb::machine::apireal * a,        mmdb::machine::apireal * b,    mmdb::machine::apireal * c,
+                mmdb::machine::apireal * alpha,    mmdb::machine::apireal * beta, mmdb::machine::apireal * gamma,
                 int     * ArgNCode, int     * iRet
                ) )  {
 int  k;
@@ -2075,7 +2073,7 @@ FORTRAN_SUBR ( MMDB_F_WBSPGRP, mmdb_f_wbspgrp,
                (   //   lengths-at-end list
                 int   * iUnit,  // unit number; *iUnit<=0 means
                                 // "the last mentioned unit"
-                fpstr spGroup,  // space group
+                mmdb::machine::fpstr spGroup,  // space group
                 int   * iRet,   // return code:
                                 //   RWBERR_Ok  - success
                                 //   RWBERR_NoChannel     if unit
@@ -2085,14 +2083,14 @@ FORTRAN_SUBR ( MMDB_F_WBSPGRP, mmdb_f_wbspgrp,
                                 //              has been disposed
                 int spGroup_len // fortran-hidden length of spGroup
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr spGroup, int * iRet
+                int * iUnit, mmdb::machine::fpstr spGroup, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr spGroup, int spGroup_len,
+                int * iUnit, mmdb::machine::fpstr spGroup, int spGroup_len,
                 int * iRet
                )
        )  {
-int      k;
-SymGroup spaceGroup;
+int            k;
+mmdb::SymGroup spaceGroup;
 
   strcpy ( LastFunc,"MMDB_F_WBSpGrp" );
   if (*iUnit>0)
@@ -2104,7 +2102,7 @@ SymGroup spaceGroup;
   else  {
 //    GetStrTer ( spaceGroup,FTN_STR(spGroup),0,
 //                sizeof(spaceGroup),FTN_LEN(spGroup) );
-    strcpy_ncss(spaceGroup,FTN_STR(spGroup),IMin(FTN_LEN(spGroup),
+    mmdb::strcpy_ncss(spaceGroup,FTN_STR(spGroup),mmdb::IMin(FTN_LEN(spGroup),
                  sizeof(spaceGroup)-1) );
     *iRet = channel[k]->SetSpGroup ( spaceGroup );
   }
@@ -2119,7 +2117,7 @@ FORTRAN_SUBR ( MMDB_F_RBSPGRP, mmdb_f_rbspgrp,
                (   //   lengths-at-end list
                 int   * iUnit,  // unit number; *iUnit<=0 means
                                 // "the last mentioned unit"
-                fpstr spGroup,  // space group
+                mmdb::machine::fpstr spGroup,  // space group
                 int   * iRet,   // return code:
                                 //   RWBERR_Ok  - success
                                 //   RWBERR_NoChannel     if unit
@@ -2129,9 +2127,9 @@ FORTRAN_SUBR ( MMDB_F_RBSPGRP, mmdb_f_rbspgrp,
                                 //              has been disposed
                 int spGroup_len // fortran-hidden length of spGroup
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr spGroup, int * iRet
+                int * iUnit, mmdb::machine::fpstr spGroup, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr spGroup, int spGroup_len,
+                int * iUnit, mmdb::machine::fpstr spGroup, int spGroup_len,
                 int * iRet
                )
        )  {
@@ -2148,8 +2146,8 @@ char SpaceGroup[100];
       else  *iRet = channel[k]->GetSpGroup ( SpaceGroup );
 
 // all extra "superficial spaces" are killed in the following
-  CutSpaces ( SpaceGroup,SCUTKEY_BEGEND );
-  strcpy_ns ( FTN_STR(spGroup),SpaceGroup,FTN_LEN(spGroup) );
+  mmdb::CutSpaces ( SpaceGroup,mmdb::SCUTKEY_BEGEND );
+  mmdb::strcpy_ns ( FTN_STR(spGroup),SpaceGroup,FTN_LEN(spGroup) );
 
   LastRC = *iRet;
 
@@ -2161,7 +2159,7 @@ FORTRAN_SUBR ( MMDB_F_WBCELL , mmdb_f_wbcell,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number; *iUnit<=0 means
                                     // "the last mentioned unit"
-                apireal * ArgCell,  // array to accept the cell parameters
+                mmdb::machine::apireal * ArgCell,  // array to accept the cell parameters
                                     // if ArgCell(1) is set to 0, then
                                     // the cell does not change
                 int     * ArgNCode, // orthogonalisation code
@@ -2176,10 +2174,10 @@ FORTRAN_SUBR ( MMDB_F_WBCELL , mmdb_f_wbcell,
                                     //   RWBERR_NoFile        if unit
                                     //              has been disposed
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * ArgCell,
+                int * iUnit,    mmdb::machine::apireal * ArgCell,
                 int * ArgNCode, int     * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * ArgCell,
+                int * iUnit,    mmdb::machine::apireal * ArgCell,
                 int * ArgNCode, int     * iRet
                )
              )  {
@@ -2206,8 +2204,8 @@ int k;
 FORTRAN_SUBR ( MMDB_F_RBCELL, mmdb_f_rbcell,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number
-                apireal * celld,    // array to accept the cell parameters
-                apireal * cvol,     // returns the cell volume
+                mmdb::machine::apireal * celld,    // array to accept the cell parameters
+                mmdb::machine::apireal * cvol,     // returns the cell volume
                 int     * iRet      // return code
                         //   RWBERR_Ok  - success
                         //   RWBERR_NoChannel     if unit
@@ -2228,15 +2226,15 @@ FORTRAN_SUBR ( MMDB_F_RBCELL, mmdb_f_rbcell,
                         // rather indicate a programming
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int     * iUnit,  apireal * celld,
-                apireal * cvol,   int     * iRet
+                int     * iUnit,  mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,   int     * iRet
                ), ( // lengths-follow list
-                int     * iUnit,  apireal * celld,
-                apireal * cvol,   int     * iRet
+                int     * iUnit,  mmdb::machine::apireal * celld,
+                mmdb::machine::apireal * cvol,   int     * iRet
                ) )  {
-realtype p[6];
-realtype v;
-int      k,i,nc;
+mmdb::realtype p[6];
+mmdb::realtype v;
+int            k,i,nc;
 
   strcpy ( LastFunc,"MMDB_F_RBCell" );
   if (*iUnit>0)
@@ -2253,8 +2251,8 @@ int      k,i,nc;
 
   if (*iRet==RWBERR_Ok)  {
     for (i=0;i<6;i++)
-      celld[i] = (apireal)p[i];
-    *cvol = (apireal)v;
+      celld[i] = (mmdb::machine::apireal)p[i];
+    *cvol = (mmdb::machine::apireal)v;
   }
 
   LastRC = *iRet;
@@ -2266,8 +2264,8 @@ int      k,i,nc;
 FORTRAN_SUBR ( MMDB_F_RBCELLN, mmdb_f_rbcelln,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number
-                apireal * celld,    // array to accept the cell parameters
-                apireal * cvol,     // returns the cell volume
+                mmdb::machine::apireal * celld,    // array to accept the cell parameters
+                mmdb::machine::apireal * cvol,     // returns the cell volume
                 int     * ArgNCode, // returns the orthogonalization code, 1-6
                 int     * iRet      // return code
                         //   RWBERR_Ok  - success
@@ -2289,15 +2287,15 @@ FORTRAN_SUBR ( MMDB_F_RBCELLN, mmdb_f_rbcelln,
                         // rather indicate a programming
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * celld, apireal * cvol,
+                int * iUnit,    mmdb::machine::apireal * celld, mmdb::machine::apireal * cvol,
                 int * ArgNCode, int     * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * celld, apireal * cvol,
+                int * iUnit,    mmdb::machine::apireal * celld, mmdb::machine::apireal * cvol,
                 int * ArgNCode, int     * iRet
                ) )  {
-realtype p[6];
-realtype v;
-int      k,i,nc;
+mmdb::realtype p[6];
+mmdb::realtype v;
+int            k,i,nc;
 
   strcpy ( LastFunc,"MMDB_F_RBCellN" );
   if (*iUnit>0)
@@ -2313,8 +2311,8 @@ int      k,i,nc;
   *iRet = channel[k]->GetCell ( p[0],p[1],p[2],p[3],p[4],p[5],v,nc );
   if (*iRet==RWBERR_Ok)  {
     for (i=0;i<6;i++)
-      celld[i] = (apireal)p[i];
-    *cvol     = (apireal)v;
+      celld[i] = (mmdb::machine::apireal)p[i];
+    *cvol     = (mmdb::machine::apireal)v;
     *ArgNCode = nc;
   }
 
@@ -2327,9 +2325,9 @@ int      k,i,nc;
 FORTRAN_SUBR ( MMDB_F_RBRCEL, mmdb_f_rbrcel,
                (    // lengths-at-end list
                 int     * iUnit,    // unit number
-                apireal * rcell,    // array to accept the reciprocal
+                mmdb::machine::apireal * rcell,    // array to accept the reciprocal
                                     // cell parameters
-                apireal * rvol,     // returns the reciprocal cell volume
+                mmdb::machine::apireal * rvol,     // returns the reciprocal cell volume
                 int     * iRet      // return code
                         //   RWBERR_Ok  - success
                         //   RWBERR_NoChannel     if unit
@@ -2350,15 +2348,15 @@ FORTRAN_SUBR ( MMDB_F_RBRCEL, mmdb_f_rbrcel,
                         // rather indicate a programming
                         // error in mmdb_rwbrook.cpp
                ), ( // lengths-in-structure list
-                int * iUnit,    apireal * rcell, apireal * rvol,
+                int * iUnit,    mmdb::machine::apireal * rcell, mmdb::machine::apireal * rvol,
                 int * iRet
                ), ( // lengths-follow list
-                int * iUnit,    apireal * rcell, apireal * rvol,
+                int * iUnit,    mmdb::machine::apireal * rcell, mmdb::machine::apireal * rvol,
                 int * iRet
                ) )  {
-realtype p[6];
-realtype v;
-int      k,i;
+mmdb::realtype p[6];
+mmdb::realtype v;
+int            k,i;
 
   strcpy ( LastFunc,"MMDB_F_RBRCel" );
   if (*iUnit>0)
@@ -2374,8 +2372,8 @@ int      k,i;
   *iRet = channel[k]->GetRCell ( p[0],p[1],p[2],p[3],p[4],p[5],v );
   if (*iRet==RWBERR_Ok)  {
     for (i=0;i<6;i++)
-      rcell[i] = (apireal)p[i];
-    *rvol = (apireal)v;
+      rcell[i] = (mmdb::machine::apireal)p[i];
+    *rvol = (mmdb::machine::apireal)v;
   }
 
   LastRC = *iRet;
@@ -2387,8 +2385,8 @@ int      k,i;
 FORTRAN_SUBR ( MMDB_F_RBORF, mmdb_f_rborf,
                (     // lengths-at-end list
                 int     * iUnit, // unit number
-                apireal * RO,    // array for orthogonalising matrix
-                apireal * RF,    // array for fractionalising matrix
+                mmdb::machine::apireal * RO,    // array for orthogonalising matrix
+                mmdb::machine::apireal * RF,    // array for fractionalising matrix
                 int     * LCode, // buffer for orthogonalisation code
                 int     * iRet   // return code:
                                  //   RWBERR_Ok  - success
@@ -2402,14 +2400,14 @@ FORTRAN_SUBR ( MMDB_F_RBORF, mmdb_f_rborf,
                                  //              matrices were not
                                  //              calculated
                ), (  // lengths-in-structure list
-                int * iUnit, apireal * RO, apireal * RF,
+                int * iUnit, mmdb::machine::apireal * RO, mmdb::machine::apireal * RF,
                 int * LCode, int * iRet
                ), (  // lengths-follow list
-                int * iUnit, apireal * RO, apireal * RF,
+                int * iUnit, mmdb::machine::apireal * RO, mmdb::machine::apireal * RF,
                 int * LCode, int * iRet )
                )  {
 int         i,j,k,l;
-PCryst Cryst;
+mmdb::PCryst Cryst;
 
   strcpy ( LastFunc,"MMDB_F_RBORF" );
   if (*iUnit>0)
@@ -2436,12 +2434,12 @@ PCryst Cryst;
   if (RO[0]<=0.0000000001)  {
     for (j=0;j<4;j++)
       for (i=0;i<4;i++)  {
-        RF[l] = (apireal)Cryst->RF[i][j];
-        RO[l] = (apireal)Cryst->RO[i][j];
+        RF[l] = (mmdb::machine::apireal)Cryst->RF[i][j];
+        RO[l] = (mmdb::machine::apireal)Cryst->RO[i][j];
         l++;
       }
     *LCode = Cryst->NCode;
-    if (!(Cryst->WhatIsSet & CSET_Transforms))
+    if (!(Cryst->WhatIsSet & mmdb::CSET_Transforms))
       *iRet = RWBERR_NoMatrices;
   } else  {
     for (j=0;j<4;j++)
@@ -2451,7 +2449,7 @@ PCryst Cryst;
         l++;
       }
     Cryst->NCode = *LCode;
-    Cryst->WhatIsSet |= CSET_Transforms;
+    Cryst->WhatIsSet |= mmdb::CSET_Transforms;
   }
 
   LastRC = *iRet;
@@ -2463,12 +2461,12 @@ FORTRAN_SUBR ( MMDB_F_ORTHMAT, mmdb_f_orthmat,
                (     // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                apireal * Cell,  // array of cell parameters:
+                mmdb::machine::apireal * Cell,  // array of cell parameters:
                                  //  Cell(1) - a   Cell(4) - alpha
                                  //  Cell(2) - b   Cell(5) - beta
                                  //  Cell(3) - c   Cell(6) - gamma
-                apireal * Vol,   // returns cell volume
-                apireal * RRR,   // array (3,3,6), returns
+                mmdb::machine::apireal * Vol,   // returns cell volume
+                mmdb::machine::apireal * RRR,   // array (3,3,6), returns
                                  // orthogonalisation matrices
                 int     * iRet   // return code:
                                  //   RWBERR_Ok  - success
@@ -2482,16 +2480,16 @@ FORTRAN_SUBR ( MMDB_F_ORTHMAT, mmdb_f_orthmat,
                                  //              matrices were not
                                  //              calculated
                ), ( // lengths-in-structure list
-                int     * iUnit, apireal * Cell, apireal * Vol,
-                apireal * RRR,   int * iRet
+                int     * iUnit, mmdb::machine::apireal * Cell, mmdb::machine::apireal * Vol,
+                mmdb::machine::apireal * RRR,   int * iRet
                ), ( // lengths-follow list
-                int     * iUnit, apireal * Cell, apireal * Vol,
-                apireal * RRR,   int * iRet
+                int     * iUnit, mmdb::machine::apireal * Cell, mmdb::machine::apireal * Vol,
+                mmdb::machine::apireal * RRR,   int * iRet
                )
              )  {
-int         i,j,k,l,m;
-PCryst Cryst;
-realtype    CelDel;
+int            i,j,k,l,m;
+mmdb::PCryst   Cryst;
+mmdb::realtype CelDel;
 
   strcpy ( LastFunc,"MMDB_F_OrthMat" );
   if (*iUnit>0)
@@ -2513,18 +2511,18 @@ realtype    CelDel;
 
   CelDel = 0.0;
   if (Cell[0]>0.0)  {
-    if ((Cryst->WhatIsSet & CSET_CellParams)==CSET_CellParams)  {
+    if ((Cryst->WhatIsSet & mmdb::CSET_CellParams)==mmdb::CSET_CellParams)  {
       CelDel = fabs((Cell[0]-Cryst->a)/Cell[0]);
       if (Cell[1]!=0.0)
-        CelDel = RMax(CelDel,fabs((Cell[1]-Cryst->b)/Cell[1]));
+        CelDel = mmdb::RMax(CelDel,fabs((Cell[1]-Cryst->b)/Cell[1]));
       if (Cell[2]!=0.0)
-        CelDel = RMax(CelDel,fabs((Cell[2]-Cryst->c)/Cell[2]));
+        CelDel = mmdb::RMax(CelDel,fabs((Cell[2]-Cryst->c)/Cell[2]));
       if (Cell[3]!=0.0)
-        CelDel = RMax(CelDel,fabs((Cell[3]-Cryst->alpha)/Cell[3]));
+        CelDel = mmdb::RMax(CelDel,fabs((Cell[3]-Cryst->alpha)/Cell[3]));
       if (Cell[4]!=0.0)
-        CelDel = RMax(CelDel,fabs((Cell[4]-Cryst->beta )/Cell[4]));
+        CelDel = mmdb::RMax(CelDel,fabs((Cell[4]-Cryst->beta )/Cell[4]));
       if (Cell[5]!=0.0)
-        CelDel = RMax(CelDel,fabs((Cell[5]-Cryst->gamma)/Cell[5]));
+        CelDel = mmdb::RMax(CelDel,fabs((Cell[5]-Cryst->gamma)/Cell[5]));
       if (FSimRWBROOK && (CelDel>0.01))
         printf ( "\n Inconsistency in Cell Dimensions"
                  " - replacing old:\n"
@@ -2542,17 +2540,17 @@ realtype    CelDel;
     Cryst->alpha = Cell[3];
     Cryst->beta  = Cell[4];
     Cryst->gamma = Cell[5];
-    Cryst->WhatIsSet |= CSET_CellParams;
+    Cryst->WhatIsSet |= mmdb::CSET_CellParams;
   } else  {
-    Cell[0] = (apireal)Cryst->a;
-    Cell[1] = (apireal)Cryst->b;
-    Cell[2] = (apireal)Cryst->c;
-    Cell[3] = (apireal)Cryst->alpha;
-    Cell[4] = (apireal)Cryst->beta;
-    Cell[5] = (apireal)Cryst->gamma;
+    Cell[0] = (mmdb::machine::apireal)Cryst->a;
+    Cell[1] = (mmdb::machine::apireal)Cryst->b;
+    Cell[2] = (mmdb::machine::apireal)Cryst->c;
+    Cell[3] = (mmdb::machine::apireal)Cryst->alpha;
+    Cell[4] = (mmdb::machine::apireal)Cryst->beta;
+    Cell[5] = (mmdb::machine::apireal)Cryst->gamma;
   }
 
-  if ((Cryst->WhatIsSet & CSET_CellParams)!=CSET_CellParams)  {
+  if ((Cryst->WhatIsSet & mmdb::CSET_CellParams)!=mmdb::CSET_CellParams)  {
     *iRet  = RWBERR_NoCellParams;
     LastRC = *iRet;
     return;
@@ -2562,16 +2560,16 @@ realtype    CelDel;
 
   //  Cryst->CalcOrthMatrices();  <-- old version, changed 09.01.2004
   Cryst->CalcCoordTransforms();
-  Cryst->WhatIsSet |= CSET_Transforms;
+  Cryst->WhatIsSet |= mmdb::CSET_Transforms;
 
-  if (CelDel>0.01)  *Vol = -(apireal)Cryst->Vol;
-              else  *Vol =  (apireal)Cryst->Vol;
+  if (CelDel>0.01)  *Vol = -(mmdb::machine::apireal)Cryst->Vol;
+              else  *Vol =  (mmdb::machine::apireal)Cryst->Vol;
 
   l = 0;
   for (j=0;j<3;j++)
     for (i=0;i<3;i++)
       for (m=0;m<6;m++)
-        RRR[l++] = (apireal)Cryst->RR[m][j][i];
+        RRR[l++] = (mmdb::machine::apireal)Cryst->RR[m][j][i];
 
   LastRC = *iRet;
 
@@ -2582,7 +2580,7 @@ FORTRAN_SUBR ( MMDB_F_CVANISOU, mmdb_f_cvanisou,
                (     // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                apireal * U,     // array of coordinates to convert
+                mmdb::machine::apireal * U,     // array of coordinates to convert
                 int     * iFlag, // =0: convert from fract. to orthog.
                                  // =1: convert from orthog. to fract.
                 int     * iRet   // return code:
@@ -2597,14 +2595,14 @@ FORTRAN_SUBR ( MMDB_F_CVANISOU, mmdb_f_cvanisou,
                                  //              matrices were not
                                  //              calculated
                ), ( // lengths-in-structure list
-                int * iUnit, apireal * U, int * iFlag, int * iRet
+                int * iUnit, mmdb::machine::apireal * U, int * iFlag, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, apireal * U, int * iFlag, int * iRet
+                int * iUnit, mmdb::machine::apireal * U, int * iFlag, int * iRet
                )
              )  {
-int         k,i;
-PCryst Cryst;
-realtype    U1[6];
+int            k,i;
+mmdb::PCryst   Cryst;
+mmdb::realtype U1[6];
 
   strcpy ( LastFunc,"MMDB_F_CVAnisou" );
   if (*iUnit>0)
@@ -2636,7 +2634,7 @@ realtype    U1[6];
 
   if (*iRet==RWBERR_Ok)
     for (i=0;i<6;i++)
-      U[i] = (apireal)U1[i];
+      U[i] = (mmdb::machine::apireal)U1[i];
 
   LastRC = *iRet;
 
@@ -2648,7 +2646,7 @@ FORTRAN_SUBR ( MMDB_F_WREMARK, mmdb_f_wremark,
                (    // lengths-at-end list
                 int     * iUnit, // unit number; *iUnit<=0 means
                                  // "the last mentioned unit"
-                fpstr     Line,  // line to be added
+                mmdb::machine::fpstr     Line,  // line to be added
                 int     * iRet,  // return code:
                                  //   RWBERR_Ok  - success
                                  //   RWBERR_NoChannel     if unit
@@ -2660,9 +2658,9 @@ FORTRAN_SUBR ( MMDB_F_WREMARK, mmdb_f_wremark,
                                  // returned by xyzopen1_(..)
                 int    Line_len  // fortran-hidden length of Line
                ), ( // lengths-in-structure list
-                int * iUnit, fpstr Line, int * iRet
+                int * iUnit, mmdb::machine::fpstr Line, int * iRet
                ), ( // lengths-follow list
-                int * iUnit, fpstr Line, int Line_len, int *iRet
+                int * iUnit, mmdb::machine::fpstr Line, int Line_len, int *iRet
                )
              )  {
 int  k;
@@ -2680,7 +2678,7 @@ char S[500];
   }
 
   if (channel[k]->MMDBManager)  {
-    GetStrTer ( S,FTN_STR(Line),FTN_LEN(Line),sizeof(S),FTN_LEN(Line) );
+    mmdb::GetStrTer ( S,FTN_STR(Line),FTN_LEN(Line),sizeof(S),FTN_LEN(Line) );
     *iRet =  channel[k]->MMDBManager->PutPDBString ( S );
   } else
     *iRet = RWBERR_NoFile;
@@ -2692,9 +2690,9 @@ char S[500];
 
 /*
 FORTRAN_SUBR ( RBRINV, rbrinv,
-               ( apireal * A, apireal * AI ),
-               ( apireal * A, apireal * AI ),
-               ( apireal * A, apireal * AI ) )  {
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI ),
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI ),
+               ( mmdb::machine::apireal * A, mmdb::machine::apireal * AI ) )  {
 mat44  A1,AI1;
 int    i,j,k;
 
@@ -2715,16 +2713,16 @@ int    i,j,k;
 /*
 FORTRAN_SUBR ( RES3TO1, res3to1,
                (     // lengths-at-end list
-                fpstr ResNm3,   // 3-char name, 4th char
+                mmdb::machine::fpstr ResNm3,   // 3-char name, 4th char
                                 // will be set blank
-                fpstr ResNm1,   // 1-char name
+                mmdb::machine::fpstr ResNm1,   // 1-char name
                 int ResNm3_len, // fortran-hidden length of ResNm3
                 int ResNm1_len  // fortran-hidden length of ResNm3
                ), ( // lengths-in-structure list
-                fpstr ResNm3, fpstr ResNm1
+                mmdb::machine::fpstr ResNm3, mmdb::machine::fpstr ResNm1
                ), ( // lengths-follow list
-                fpstr ResNm3, int ResNm3_len,
-                fpstr ResNm1, int ResNm1_len
+                mmdb::machine::fpstr ResNm3, int ResNm3_len,
+                mmdb::machine::fpstr ResNm1, int ResNm1_len
                )
              )  {
 int i;
@@ -2760,71 +2758,71 @@ int i;
 }
 */
 
-static pstr MSG_NoChannel       = pstr("unassigned unit");
-static pstr MSG_NoFile          = pstr("unassigned unit or disposed file");
-static pstr MSG_NoLogicalName   = pstr("logical name does not exist");
+static mmdb::pstr MSG_NoChannel       = mmdb::pstr("unassigned unit");
+static mmdb::pstr MSG_NoFile          = mmdb::pstr("unassigned unit or disposed file");
+static mmdb::pstr MSG_NoLogicalName   = mmdb::pstr("logical name does not exist");
 
-static pstr MSG_CantOpenFile    = pstr("cannot open a file");
-static pstr MSG_WrongInteger    = pstr("unrecognized integer at reading a file");
-static pstr MSG_WrongModelNo    = pstr("wrong model number read from a file");
-static pstr MSG_DuplicatedModel = pstr("duplicated model number");
-static pstr MSG_ForeignFile     = pstr("unknown file format");
-static pstr MSG_WrongEdition    = pstr("unknown file version");
+static mmdb::pstr MSG_CantOpenFile    = mmdb::pstr("cannot open a file");
+static mmdb::pstr MSG_WrongInteger    = mmdb::pstr("unrecognized integer at reading a file");
+static mmdb::pstr MSG_WrongModelNo    = mmdb::pstr("wrong model number read from a file");
+static mmdb::pstr MSG_DuplicatedModel = mmdb::pstr("duplicated model number");
+static mmdb::pstr MSG_ForeignFile     = mmdb::pstr("unknown file format");
+static mmdb::pstr MSG_WrongEdition    = mmdb::pstr("unknown file version");
 
-static pstr MSG_ATOM_Unrecognd  = pstr("unrecognized data in coordinate section");
-static pstr MSG_ATOM_AlreadySet = pstr("duplicate atom serial number");
-static pstr MSG_ATOM_NoResidue  = pstr("residue for atom cannot be found");
-static pstr MSG_ATOM_Unmatch    = pstr("ambiguous data in coordinate section");
+static mmdb::pstr MSG_ATOM_Unrecognd  = mmdb::pstr("unrecognized data in coordinate section");
+static mmdb::pstr MSG_ATOM_AlreadySet = mmdb::pstr("duplicate atom serial number");
+static mmdb::pstr MSG_ATOM_NoResidue  = mmdb::pstr("residue for atom cannot be found");
+static mmdb::pstr MSG_ATOM_Unmatch    = mmdb::pstr("ambiguous data in coordinate section");
 
-static pstr MSG_NoAdvance       = pstr("atom position was not advanced");
-static pstr MSG_EmptyPointer    = pstr("atom was not allocated");
-static pstr MSG_NoMatrices      = pstr("no coordinate transformation matrices");
+static mmdb::pstr MSG_NoAdvance       = mmdb::pstr("atom position was not advanced");
+static mmdb::pstr MSG_EmptyPointer    = mmdb::pstr("atom was not allocated");
+static mmdb::pstr MSG_NoMatrices      = mmdb::pstr("no coordinate transformation matrices");
 
-static pstr MSG_NoCoordinates   = pstr("no atom coordinates set");
+static mmdb::pstr MSG_NoCoordinates   = mmdb::pstr("no atom coordinates set");
 
-static pstr MSG_Disagreement    = pstr("ambiguous cell parameters");
-static pstr MSG_NoOrthCode      = pstr("no orthogonalization code");
-static pstr MSG_NoCheck         = pstr("missing check of cell parameters");
+static mmdb::pstr MSG_Disagreement    = mmdb::pstr("ambiguous cell parameters");
+static mmdb::pstr MSG_NoOrthCode      = mmdb::pstr("no orthogonalization code");
+static mmdb::pstr MSG_NoCheck         = mmdb::pstr("missing check of cell parameters");
 
-static pstr MSG_NoCellParams    = pstr("no cell parameters");
+static mmdb::pstr MSG_NoCellParams    = mmdb::pstr("no cell parameters");
 
-static pstr MSG_NotACIFFile     = pstr("not a CIF file: 'data_' tag missing");
-static pstr MSG_NoData          = pstr("expected data is not met at reading a file");
-static pstr MSG_UnrecognCIFItems  = pstr("unrecognized CIF items (syntax error?)");
-static pstr MSG_MissingCIFField   = pstr("missing CIF data field");
-static pstr MSG_EmptyCIFLoop      = pstr("CIF loop does not contain any data");
-static pstr MSG_UnexpEndOfCIF     = pstr("unexpected end of CIF file");
-static pstr MSG_MissgCIFLoopField = pstr("CIF loop is incomplete");
-static pstr MSG_NotACIFStructure  = pstr("wrong use of CIF structure (as a loop?)");
-static pstr MSG_NotACIFLoop       = pstr("wrong use of CIF loop (as a structure?)");
-static pstr MSG_WrongReal         = pstr("unrecognized real at reading a file");
+static mmdb::pstr MSG_NotACIFFile     = mmdb::pstr("not a CIF file: 'data_' tag missing");
+static mmdb::pstr MSG_NoData          = mmdb::pstr("expected data is not met at reading a file");
+static mmdb::pstr MSG_UnrecognCIFItems  = mmdb::pstr("unrecognized CIF items (syntax error?)");
+static mmdb::pstr MSG_MissingCIFField   = mmdb::pstr("missing CIF data field");
+static mmdb::pstr MSG_EmptyCIFLoop      = mmdb::pstr("CIF loop does not contain any data");
+static mmdb::pstr MSG_UnexpEndOfCIF     = mmdb::pstr("unexpected end of CIF file");
+static mmdb::pstr MSG_MissgCIFLoopField = mmdb::pstr("CIF loop is incomplete");
+static mmdb::pstr MSG_NotACIFStructure  = mmdb::pstr("wrong use of CIF structure (as a loop?)");
+static mmdb::pstr MSG_NotACIFLoop       = mmdb::pstr("wrong use of CIF loop (as a structure?)");
+static mmdb::pstr MSG_WrongReal         = mmdb::pstr("unrecognized real at reading a file");
 
-static pstr MSG_WrongChainID      = pstr("Wrong or inconsistent chain ID");
-static pstr MSG_WrongEntryID      = pstr("Wrong or insonsistent entry ID");
-static pstr MSG_SEQRES_serNum     = pstr("Wrong serial number in SEQRES");
-static pstr MSG_SEQRES_numRes     = pstr("Wrong number of residues in SEQRES");
-static pstr MSG_SEQRES_extraRes   = pstr("Extra residues in SEQRES");
-static pstr MSG_NCSM_Unrecogn     = pstr("Unrecognized item in NCSM cards");
-static pstr MSG_NCSM_AlreadySet   = pstr("Attempt to reset NCSM");
-static pstr MSG_NCSM_WrongSerial  = pstr("Wrong serial number in NCSM cards");
-static pstr MSG_NCSM_UnmatchIG    = pstr("Unmatched IG parameter in NCSM cards");
-static pstr MSG_NoModel           = pstr("MMDB's error in structuring models");
-static pstr MSG_NoSheetID         = pstr("No sheet ID on SHEET card(s)");
-static pstr MSG_WrongSheetID      = pstr("Wrong sheet ID on SHEET card(s)");
-static pstr MSG_WrongStrandNo     = pstr("Wrong strand no. on SHEET card(s)");
-static pstr MSG_WrongNofStrands   = pstr("Wrong number of strands in sheet");
-static pstr MSG_WrongSheetOrder   = pstr("Wrong sheet ordering");
-static pstr MSG_HBondInconsistency = pstr("Inconsistency in H-bonds");
-static pstr MSG_EmptyResidueName  = pstr("No (blank) residue name");
-static pstr MSG_DuplicateSeqNum   = pstr("Duplicated sequence number and insertion code");
-static pstr MSG_GeneralError1     = pstr("MMDB's general error #1");
+static mmdb::pstr MSG_WrongChainID      = mmdb::pstr("Wrong or inconsistent chain ID");
+static mmdb::pstr MSG_WrongEntryID      = mmdb::pstr("Wrong or insonsistent entry ID");
+static mmdb::pstr MSG_SEQRES_serNum     = mmdb::pstr("Wrong serial number in SEQRES");
+static mmdb::pstr MSG_SEQRES_numRes     = mmdb::pstr("Wrong number of residues in SEQRES");
+static mmdb::pstr MSG_SEQRES_extraRes   = mmdb::pstr("Extra residues in SEQRES");
+static mmdb::pstr MSG_NCSM_Unrecogn     = mmdb::pstr("Unrecognized item in NCSM cards");
+static mmdb::pstr MSG_NCSM_AlreadySet   = mmdb::pstr("Attempt to reset NCSM");
+static mmdb::pstr MSG_NCSM_WrongSerial  = mmdb::pstr("Wrong serial number in NCSM cards");
+static mmdb::pstr MSG_NCSM_UnmatchIG    = mmdb::pstr("Unmatched IG parameter in NCSM cards");
+static mmdb::pstr MSG_NoModel           = mmdb::pstr("MMDB's error in structuring models");
+static mmdb::pstr MSG_NoSheetID         = mmdb::pstr("No sheet ID on SHEET card(s)");
+static mmdb::pstr MSG_WrongSheetID      = mmdb::pstr("Wrong sheet ID on SHEET card(s)");
+static mmdb::pstr MSG_WrongStrandNo     = mmdb::pstr("Wrong strand no. on SHEET card(s)");
+static mmdb::pstr MSG_WrongNofStrands   = mmdb::pstr("Wrong number of strands in sheet");
+static mmdb::pstr MSG_WrongSheetOrder   = mmdb::pstr("Wrong sheet ordering");
+static mmdb::pstr MSG_HBondInconsistency = mmdb::pstr("Inconsistency in H-bonds");
+static mmdb::pstr MSG_EmptyResidueName  = mmdb::pstr("No (blank) residue name");
+static mmdb::pstr MSG_DuplicateSeqNum   = mmdb::pstr("Duplicated sequence number and insertion code");
+static mmdb::pstr MSG_GeneralError1     = mmdb::pstr("MMDB's general error #1");
 
 
-static pstr MSG_Error1          = pstr("internal error #1 -- report to developer");
-static pstr MSG_Error2          = pstr("internal error #2 -- report to developer");
-static pstr MSG_Error3          = pstr("internal error #3 -- report to developer");
+static mmdb::pstr MSG_Error1          = mmdb::pstr("internal error #1 -- report to developer");
+static mmdb::pstr MSG_Error2          = mmdb::pstr("internal error #2 -- report to developer");
+static mmdb::pstr MSG_Error3          = mmdb::pstr("internal error #3 -- report to developer");
 
-static pstr MSG_Unknown         = pstr("unknown return code");
+static mmdb::pstr MSG_Unknown         = mmdb::pstr("unknown return code");
 
 
 #define nWarnings  7
@@ -2839,14 +2837,14 @@ static int RWBWarCode[nWarnings] = {
   RWBWAR_NoTempFactor
 };
 
-static pstr RWBWarning[nWarnings] = {
-  pstr("output file rewind"),
-  pstr("rewind or backspace at top of file"),
-  pstr("atom serial number does not match position"),
-  pstr("unknown form factor encountered"),
-  pstr("ambiguous form factor encountered"),
-  pstr("occupancy was not set"),
-  pstr("temperature factor was not set")
+static mmdb::pstr RWBWarning[nWarnings] = {
+  mmdb::pstr("output file rewind"),
+  mmdb::pstr("rewind or backspace at top of file"),
+  mmdb::pstr("atom serial number does not match position"),
+  mmdb::pstr("unknown form factor encountered"),
+  mmdb::pstr("ambiguous form factor encountered"),
+  mmdb::pstr("occupancy was not set"),
+  mmdb::pstr("temperature factor was not set")
 };
 
 
@@ -2864,9 +2862,9 @@ FORTRAN_SUBR ( RBERRSTOP, rberrstop,
                 int * iPlace, int * iRet,
                 int * iUnit,  int * iStop
                ) )  {
-int  i,k,lcount;
-pstr Msg;
-char ErrLine[500];
+int        i,k,lcount;
+mmdb::pstr Msg;
+char       ErrLine[500];
 
   strcpy ( ErrLine,"" );
   lcount = -11;
@@ -3030,9 +3028,12 @@ FORTRAN_SUBR ( RBCHECKERR, rbcheckerr,
 */
 
 FORTRAN_SUBR ( HY36ENCODE_F, hy36encode_f,
-               (const int *iwidth, int *value, fpstr strval, int strval_len),
-               (const int *iwidth, int *value, fpstr strval),
-               (const int *iwidth, int *value, fpstr strval, int strval_len))
+               (const int *iwidth, int *value,
+                mmdb::machine::fpstr strval, int strval_len),
+               (const int *iwidth, int *value,
+                mmdb::machine::fpstr strval),
+               (const int *iwidth, int *value,
+                mmdb::machine::fpstr strval, int strval_len))
 {
   unsigned width;
   char result[6];
@@ -3042,7 +3043,7 @@ FORTRAN_SUBR ( HY36ENCODE_F, hy36encode_f,
   if (hy36encode(width, *value, result)) {
     printf("problem in hy36encode_f! \n");
   }
-  strcpy_ns(FTN_STR(strval),result,FTN_LEN(strval));
+  mmdb::strcpy_ns(FTN_STR(strval),result,FTN_LEN(strval));
 
 }
 
@@ -3058,9 +3059,12 @@ FORTRAN_SUBR ( HY36ENCODE_F, hy36encode_f,
 
 
 FORTRAN_SUBR ( HY36DECODE_F, hy36decode_f,
-               (const int *iwidth, fpstr strval, int *value, int strval_len),
-               (const int *iwidth, fpstr strval, int *value),
-               (const int *iwidth, fpstr strval, int strval_len, int *value))
+               (const int *iwidth,
+                mmdb::machine::fpstr strval, int *value, int strval_len),
+               (const int *iwidth,
+                mmdb::machine::fpstr strval, int *value),
+               (const int *iwidth,
+                mmdb::machine::fpstr strval, int strval_len, int *value))
 { UNUSED_ARGUMENT(strval);
   unsigned width;
   size_t length = FTN_LEN(strval);
@@ -3075,4 +3079,4 @@ FORTRAN_SUBR ( HY36DECODE_F, hy36decode_f,
   }
 
 }
-}
+
