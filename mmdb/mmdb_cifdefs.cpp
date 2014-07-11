@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    21.11.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -138,6 +138,7 @@ namespace mmdb  {
   cpstr CIFCAT_NDB_NONSTANDARD_LIST       = cpstr("_ndb_nonstandard_list");
   cpstr CIFCAT_NDB_POLY_SEQ_SCHEME        = cpstr("_ndb_poly_seq_scheme");
   cpstr CIFCAT_PDBX_POLY_SEQ_SCHEME       = cpstr("_pdbx_poly_seq_scheme");
+  cpstr CIFCAT_REFINE                     = cpstr("_refine");
   cpstr CIFCAT_SPRSDE                     = cpstr("_ndb_database_pdb_obs_spr");
   cpstr CIFCAT_STRUCT                     = cpstr("_struct");
   cpstr CIFCAT_STRUCT_ASYM                = cpstr("_struct_asym");
@@ -221,6 +222,7 @@ namespace mmdb  {
   cpstr CIFTAG_LENGTH_A                      = cpstr("length_a");
   cpstr CIFTAG_LENGTH_B                      = cpstr("length_b");
   cpstr CIFTAG_LENGTH_C                      = cpstr("length_c");
+  cpstr CIFTAG_LS_D_RES_HIGH                 = cpstr("ls_d_res_high");
   cpstr CIFTAG_MATRIX11                      = cpstr("matrix[1][1]");
   cpstr CIFTAG_MATRIX12                      = cpstr("matrix[1][2]");
   cpstr CIFTAG_MATRIX13                      = cpstr("matrix[1][3]");

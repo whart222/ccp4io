@@ -962,6 +962,7 @@ namespace mmdb  {
                                 int aminoSelHnd=-1 );
   //    int   CalcSecStructure  ( bool flagBulge=true );
 
+      PHetCompounds GetHetInfo() { return &hetCompounds; }
       void  RemoveHetInfo     ();
 
 

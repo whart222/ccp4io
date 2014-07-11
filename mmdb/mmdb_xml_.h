@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    06.12.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -117,7 +117,10 @@ namespace mmdb  {
 
         inline PXMLObject GetParent() { return parent; }
 
-        void   AddObject   ( PXMLObject XMLObject , int lenInc=10 );
+        void   AddObject    ( PXMLObject XMLObject, int lenInc=10 );
+        void   InsertObject ( PXMLObject XMLObject, int pos,
+                              int lenInc=10 );
+
         XML_RC WriteObject ( cpstr FName, int pos=0, int ident=2  );
         void   WriteObject ( io::RFile f, int pos=0, int ident=2  );
         XML_RC ReadObject  ( cpstr FName );
@@ -155,4 +158,5 @@ namespace mmdb  {
 }  // namespace mmdb
 
 #endif
+
 

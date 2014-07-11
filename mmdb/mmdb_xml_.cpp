@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    06.12.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -539,10 +539,9 @@ namespace mmdb  {
       return NULL;
     }
 
-
     void  XMLObject::AddObject ( PXMLObject XMLObject, int lenInc )  {
     PPXMLObject obj1;
-    int          i;
+    int         i;
 
       if (!XMLObject)  return;
 
@@ -559,6 +558,38 @@ namespace mmdb  {
 
       if (object[nObjects])  delete object[nObjects];
       object[nObjects] = XMLObject;
+      XMLObject->SetParent ( this );
+      nObjects++;
+
+    }
+
+
+    void  XMLObject::InsertObject ( PXMLObject XMLObject, int pos,
+                                    int lenInc )  {
+    PPXMLObject obj1;
+    int         i;
+
+      if (!XMLObject)  return;
+      if (pos>=nObjects)  {
+        AddObject ( XMLObject,lenInc );
+        return;
+      }
+
+      if (nObjects>=nAlloc)  {
+        nAlloc += lenInc;
+        obj1 = new PXMLObject[nAlloc];
+        for (i=0;i<nObjects;i++)
+          obj1[i] = object[i];
+        for (i=nObjects;i<nAlloc;i++)
+          obj1[i] = NULL;
+        if (object)  delete[] object;
+        object = obj1;
+      }
+
+      for (i=nObjects;i>pos;i--)
+        object[i] = object[i-1];
+
+      object[pos] = XMLObject;
       XMLObject->SetParent ( this );
       nObjects++;
 
@@ -688,7 +719,7 @@ namespace mmdb  {
     }
 
     XML_RC XMLObject::ReadObject ( io::RFile f, pstr S,
-                                 int & pos, int slen )  {
+                                   int & pos, int slen )  {
     PXMLObject xmlObject;
     pstr       S1;
     int        k,k1,k2;

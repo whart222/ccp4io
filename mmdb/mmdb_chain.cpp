@@ -678,7 +678,7 @@ namespace mmdb  {
       i  = 0;
       sN = 1;
       while (i<numRes)  {
-        PutInteger ( &(S[8]),sN,2 );
+        PutInteger ( &(S[8]),sN,3 );
         k = 19;
         while ((i<numRes) && (k<70))  {
           if (resName[i][0])
@@ -711,7 +711,7 @@ namespace mmdb  {
       chain->chainID[1] = char(0);
     } else
       chain->chainID[0] = char(0);
-    GetInteger ( sN,&(S[8]) ,2 );
+    GetInteger ( sN,&(S[8]) ,3 );
     GetInteger ( nR,&(S[13]),4 );
     if (sN==0)  {
       FreeMemory();

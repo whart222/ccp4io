@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    21.11.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -917,20 +917,24 @@ namespace mmdb  {
     if (cifStruct)  {
 
       RC = CIFGetReal ( a,cifStruct,CIFTAG_LENGTH_A );
-      if (!RC)  RC = CIFGetReal ( b,cifStruct,CIFTAG_LENGTH_B );
-      if (!RC)  RC = CIFGetReal ( c,cifStruct,CIFTAG_LENGTH_C );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( b,cifStruct,CIFTAG_LENGTH_B );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( c,cifStruct,CIFTAG_LENGTH_C );
       if (RC==Error_UnrecognizedReal)  return RC;
-      if (!RC)  WhatIsSet |= CSET_CellParams1;
+      if (RC==Error_NoError)  WhatIsSet |= CSET_CellParams1;
 
       RC = CIFGetReal ( alpha,cifStruct,CIFTAG_ANGLE_ALPHA );
-      if (!RC)  RC = CIFGetReal ( beta,cifStruct,CIFTAG_ANGLE_BETA );
-      if (!RC)  RC = CIFGetReal ( gamma,cifStruct,CIFTAG_ANGLE_GAMMA );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( beta,cifStruct,CIFTAG_ANGLE_BETA );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( gamma,cifStruct,CIFTAG_ANGLE_GAMMA );
       if (RC==Error_UnrecognizedReal)  return RC;
-      if (!RC)  WhatIsSet |= CSET_CellParams2;
+      if (RC==Error_NoError)  WhatIsSet |= CSET_CellParams2;
 
       RC = CIFGetInteger ( Z,cifStruct,CIFTAG_Z_PDB );
       if (RC==Error_UnrecognizedReal)  return RC;
-      if (!RC) WhatIsSet |= CSET_ZValue;
+      if (RC==Error_NoError) WhatIsSet |= CSET_ZValue;
 
     }
 
@@ -967,52 +971,63 @@ namespace mmdb  {
     cifStruct = CIF->GetStructure ( CIFCAT_DATABASE_PDB_MATRIX );
     if (cifStruct)  {
       RC = CIFGetReal ( o[0][0],cifStruct,CIFTAG_ORIGX11 );
-      if (!RC)  RC = CIFGetReal ( o[0][1],cifStruct,CIFTAG_ORIGX12 );
-      if (!RC)  RC = CIFGetReal ( o[0][2],cifStruct,CIFTAG_ORIGX13 );
-      if (!RC)  RC = CIFGetReal ( o[1][0],cifStruct,CIFTAG_ORIGX21 );
-      if (!RC)  RC = CIFGetReal ( o[1][1],cifStruct,CIFTAG_ORIGX22 );
-      if (!RC)  RC = CIFGetReal ( o[1][2],cifStruct,CIFTAG_ORIGX23 );
-      if (!RC)  RC = CIFGetReal ( o[2][0],cifStruct,CIFTAG_ORIGX31 );
-      if (!RC)  RC = CIFGetReal ( o[2][1],cifStruct,CIFTAG_ORIGX32 );
-      if (!RC)  RC = CIFGetReal ( o[2][2],cifStruct,CIFTAG_ORIGX33 );
-      if (!RC)  RC = CIFGetReal ( t[0]   ,cifStruct,CIFTAG_ORIGX_VECTOR1 );
-      if (!RC)  RC = CIFGetReal ( t[1]   ,cifStruct,CIFTAG_ORIGX_VECTOR2 );
-      if (!RC)  RC = CIFGetReal ( t[2]   ,cifStruct,CIFTAG_ORIGX_VECTOR3 );
-      if (RC)  return RC;
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[0][1],cifStruct,CIFTAG_ORIGX12 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[0][2],cifStruct,CIFTAG_ORIGX13 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[1][0],cifStruct,CIFTAG_ORIGX21 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[1][1],cifStruct,CIFTAG_ORIGX22 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[1][2],cifStruct,CIFTAG_ORIGX23 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[2][0],cifStruct,CIFTAG_ORIGX31 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[2][1],cifStruct,CIFTAG_ORIGX32 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( o[2][2],cifStruct,CIFTAG_ORIGX33 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( t[0],cifStruct,CIFTAG_ORIGX_VECTOR1 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( t[1],cifStruct,CIFTAG_ORIGX_VECTOR2 );
+      if (RC==Error_NoError)
+        RC = CIFGetReal ( t[2],cifStruct,CIFTAG_ORIGX_VECTOR3 );
+      if (RC!=Error_NoError)  return RC;
       WhatIsSet |= CSET_OrigMatrix;
     }
 
     cifStruct = CIF->GetStructure ( CIFCAT_ATOM_SITES );
     if (cifStruct)  {
       RC = CIFGetReal ( s[0][0],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX11 );
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[0][1],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX12);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[0][2],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX13);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[1][0],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX21);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[1][1],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX22);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[1][2],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX23);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[2][0],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX31);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[2][1],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX32);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(s[2][2],cifStruct,CIFTAG_FRACT_TRANSF_MATRIX33);
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(u[0]   ,cifStruct,CIFTAG_FRACT_TRANSF_VECTOR1 );
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(u[1]   ,cifStruct,CIFTAG_FRACT_TRANSF_VECTOR2 );
-      if (!RC)
+      if (RC==Error_NoError)
         RC = CIFGetReal(u[2]   ,cifStruct,CIFTAG_FRACT_TRANSF_VECTOR3 );
-      if (RC)  return RC;
+      if (RC!=Error_NoError)  return RC;
       WhatIsSet |= CSET_ScaleMatrix;
     }
 
     RC = ncsMatrix.GetCIF(CIF,ClassID_NCSMatrix);
-    if (RC) return RC;
+    if (RC!=Error_NoError) return RC;
 
     RC = tVect.GetCIF(CIF,ClassID_TVect);
     return RC;

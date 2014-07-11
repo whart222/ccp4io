@@ -519,6 +519,10 @@ namespace mmdb  {
 
       PCryst GetCrystData()  { return &cryst; }
 
+      PClassContainer GetUnparsedA()  { return &SA; }
+      PClassContainer GetUnparsedB()  { return &SB; }
+      PClassContainer GetUnparsedC()  { return &SC; }
+
     protected :
 
       word       Flags;    // special effect flags

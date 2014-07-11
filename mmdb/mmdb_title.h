@@ -613,8 +613,15 @@ namespace mmdb  {
       // code is there, returns "Not available".
       pstr  GetStructureTitle ( pstr & S );
 
-      PTitleContainer GetRemarks();
-      PTitleContainer GetJournal();
+      PTitleContainer GetObsData () { return &obsData;  }
+      PTitleContainer GetCaveat  () { return &caveat;   }
+      PTitleContainer GetCompound() { return &compound; }
+      PTitleContainer GetSource  () { return &source;   }
+      PKeyWords       GetKeyWords() { return &keyWords; }
+      PTitleContainer GetExpData () { return &expData;  }
+      PTitleContainer GetMdlType () { return &mdlType;  }
+      PTitleContainer GetRemarks () { return &remark;   }
+      PTitleContainer GetJournal () { return &journal;  }
 
       realtype GetResolution(); // -1.0 mean no resolution record in file
 

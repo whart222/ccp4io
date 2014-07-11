@@ -2587,7 +2587,7 @@ namespace mmdb  {
     }
 
     int  Data::GetReal ( realtype & R, cpstr CName,
-                               cpstr TName, bool Remove )  {
+                         cpstr TName, bool Remove )  {
     int i = GetCategoryNo ( CName );
       if (i<0)  return CIFRC_NoCategory;
       if (Category[i]->GetCategoryID()!=MMCIF_Struct)
@@ -2758,7 +2758,7 @@ namespace mmdb  {
     }
 
     int  Data::PutString ( cpstr S, cpstr CName,
-                                 cpstr TName, bool Concatenate )  {
+                           cpstr TName, bool Concatenate )  {
     //   PutString(..), PutReal(..) and PutInteger(..) will put the
     // values given into the specified category (CName) under the
     // specified tag (TName). The category, tag and field are created
@@ -2827,7 +2827,7 @@ namespace mmdb  {
     }
 
     int  Data::PutReal ( realtype R, cpstr CName,
-                               cpstr TName, int prec )  {
+                         cpstr TName, int prec )  {
     char rS[100];
       sprintf ( rS,"%.*g",prec,R );
       return PutString ( rS,CName,TName,false );

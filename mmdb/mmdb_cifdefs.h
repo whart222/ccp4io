@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    21.11.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -96,6 +96,7 @@ namespace mmdb  {
   extern cpstr CIFCAT_NDB_NONSTANDARD_LIST       ;
   extern cpstr CIFCAT_NDB_POLY_SEQ_SCHEME        ;
   extern cpstr CIFCAT_PDBX_POLY_SEQ_SCHEME       ;
+  extern cpstr CIFCAT_REFINE                     ;
   extern cpstr CIFCAT_SPRSDE                     ;
   extern cpstr CIFCAT_STRUCT                     ;
   extern cpstr CIFCAT_STRUCT_ASYM                ;
@@ -179,6 +180,7 @@ namespace mmdb  {
   extern cpstr CIFTAG_LENGTH_A                      ;
   extern cpstr CIFTAG_LENGTH_B                      ;
   extern cpstr CIFTAG_LENGTH_C                      ;
+  extern cpstr CIFTAG_LS_D_RES_HIGH                 ;
   extern cpstr CIFTAG_MATRIX11                      ;
   extern cpstr CIFTAG_MATRIX12                      ;
   extern cpstr CIFTAG_MATRIX13                      ;

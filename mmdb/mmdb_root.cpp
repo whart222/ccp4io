@@ -272,6 +272,8 @@ namespace mmdb  {
       }
     } while (!fend);
 
+    title.GetResolution(); // only to fetch resolution from remarks
+
     if (RC!=Error_WrongSection)  return RC;
 
     ignoreRemarks = (Flags & MMDBF_IgnoreRemarks)!=0;
@@ -508,7 +510,7 @@ namespace mmdb  {
 
     RC = title.GetCIF ( CIFD );
 
-    if (RC)  {
+    if (RC!=Error_NoError)  {
       CIFD->Optimize();
       return RC;
     }
@@ -516,13 +518,13 @@ namespace mmdb  {
     SwitchModel ( 1 );
     if (!crModel)  return Error_GeneralError1;
     RC = crModel->GetCIF ( CIFD );
-    if (RC)  {
+    if (RC!=Error_NoError)  {
       CIFD->Optimize();
       return RC;
     }
 
     RC = cryst.GetCIF ( CIFD );
-    if (RC)  {
+    if (RC!=Error_NoError)  {
       CIFD->Optimize();
       return RC;
     }
@@ -559,7 +561,7 @@ namespace mmdb  {
       }
     }
 
-    if (!RC)  {
+    if (RC==Error_NoError)  {
       //  deleting these CIF loops here is a temporary solution
       // taken in order to avoid mess at rewriting the CIF file.
       CIFD->DeleteLoop ( CIFCAT_ATOM_SITE           );

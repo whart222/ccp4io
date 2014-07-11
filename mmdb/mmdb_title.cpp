@@ -22,7 +22,7 @@
 //
 //  =================================================================
 //
-//    12.09.13   <--  Date of Last Modification.
+//    21.11.13   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  -----------------------------------------------------------------
 //
@@ -2011,6 +2011,8 @@ namespace mmdb  {
       ContainerClass = new Remark(PDBString);
       remark.AddData ( ContainerClass );
 
+    } else if (!strncmp(PDBString,"SPLIT ",6))  {
+      // do nothing at the moment
     } else
       return Error_WrongSection;
 
@@ -2025,14 +2027,6 @@ namespace mmdb  {
 
     return  Error_NoError;
 
-  }
-
-  PTitleContainer Title::GetRemarks()  {
-    return &remark;
-  }
-
-  PTitleContainer Title::GetJournal()  {
-    return &journal;
   }
 
   realtype Title::GetResolution()  {
@@ -2179,6 +2173,10 @@ namespace mmdb  {
       S = NULL;
     } else
       depDate[0] = char(0);
+
+    if (CIF->GetReal(resolution,CIFCAT_REFINE,
+                     CIFTAG_LS_D_RES_HIGH,false)!=mmcif::CIFRC_Ok)
+      resolution = -2.0;
 
     obsData .GetCIF ( CIF,ClassID_ObsLine   );
     title   .GetCIF ( CIF,ClassID_TitleLine );
@@ -2379,6 +2377,8 @@ namespace mmdb  {
       CIF->PutString ( DateCIF,CIFCAT_DATABASE,CIFTAG_DATE_ORIGINAL );
     } else
       CIF->PutString ( NULL,CIFCAT_DATABASE,CIFTAG_DATE_ORIGINAL );
+
+    CIF->PutReal ( resolution,CIFCAT_REFINE,CIFTAG_LS_D_RES_HIGH,3 );
 
     obsData  .MakeCIF ( CIF );
     title    .MakeCIF ( CIF );
