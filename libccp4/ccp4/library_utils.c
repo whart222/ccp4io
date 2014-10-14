@@ -663,7 +663,7 @@ float asinf(float x) {
 
 #endif
 
-#  if (defined _MSC_VER)
+#  if defined (_MSC_VER) && (_MSC_VER < 1800)
 double rint(double x) { 
   if (x >= 0.) {
    return (double)(int)(x+.5);
