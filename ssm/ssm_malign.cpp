@@ -682,7 +682,10 @@ void  ssm::MultAlign::DeleteStructures()  {
 int i;
   if (S)  {
     for (i=0;i<nStruct;i++)
+    {
       S[i]->Dispose();
+      delete S[i];
+    }
     delete[] S;
     S = NULL;
   }
@@ -805,7 +808,7 @@ int  i,j,rc;
 
   if ((nStructures<1) || (!MMDB))  return MALIGN_BadInput;
 
-  //   Allocate an dinitialize structures
+  //   Allocate and initialize structures
 
   nStruct = nStructures;
   S       = new PMAStruct[nStruct];
@@ -2006,6 +2009,7 @@ int            i,j,k,m;
     S[i]->RestoreCoordinates();
 
   mmdb::FreeVectorMemory ( sc,0 );
+  mmdb::FreeVectorMemory ( ix,0 );
 
 }
 
