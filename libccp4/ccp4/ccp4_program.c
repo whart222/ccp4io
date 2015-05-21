@@ -55,13 +55,13 @@ char *ccp4_vers_no(void)
   int i;
 
   if (!init) {
-  memset(ccp4version, '\0', MAXLEN_PROGVERSION);
+  bzero(ccp4version,MAXLEN_PROGVERSION);
   strcpy(ccp4version,CCP4_VERSION_NO);
 
   filepath = (char *) getenv("CCP4");
   if (filepath) {
       filename = (char *) ccp4_utils_malloc(sizeof(char)*(strlen(filepath)+strlen(vfile)));
-	  memset(filename, '\0', strlen(filepath)+strlen(vfile));
+      bzero(filename,strlen(filepath)+strlen(vfile));
       strcpy(filename,filepath);
       strcat(filename,vfile);
       if (ccpexists(filename)) {
