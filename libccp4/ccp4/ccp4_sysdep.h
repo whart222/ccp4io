@@ -119,7 +119,7 @@
 #endif
 
 /* defined in library_utils.c */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) &&  _MSC_VER < 1800 
   double rint(double x);
 #endif
 
