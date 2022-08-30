@@ -69,7 +69,17 @@ void ccp4f_mem_tidy(void) {
 #ifdef GFORTRAN
 extern int _gfortran_iargc(void);
 extern void _gfortran_getarg(int *i,char *arg,int arg_len);
+#else
+FORTRAN_SUBR(OUTBUF,outbuf,(),(),());
+FORTRAN_FUN(int, IARGC, iargc, (), (), ());
+FORTRAN_SUBR(GETARG, getarg, (int *i, char *arg, int arg_len), (int *i, char *arg), (int *i, char *arg, int arg_len));
+FORTRAN_SUBR(CCP4H_INIT, ccp4h_init, (), (), ());
+FORTRAN_SUBR (CCP4_FFLUSH_STDOUT, ccp4_fflush_stdout, (), (), ());
+FORTRAN_SUBR (CCP4H_SUMMARY_BEG, ccp4h_summary_beg, (), (), ());
+FORTRAN_SUBR (CCP4H_SUMMARY_END, ccp4h_summary_end, (), (), ());
+FORTRAN_SUBR (CCP4H_PRE_BEG, ccp4h_pre_beg, (), (), ());
 #endif
+
 
 FORTRAN_SUBR ( CCPFYP, ccpfyp,
                (),

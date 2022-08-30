@@ -103,6 +103,8 @@ void CCP4H_INIT_LIB(int *ihtml, int *isumm);
 #else
  void __stdcall CCP4H_INIT_LIB(int *ihtml, int *isumm);
 #endif
+#else
+FORTRAN_SUBR(CCP4H_INIT_LIB, ccp4h_init_lib, (int*,int*), (int*,int*), (int*,int*));
 #endif
 
 void MtzMemTidy(void) {
